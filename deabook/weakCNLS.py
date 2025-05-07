@@ -326,7 +326,7 @@ class weakCNLS:
         self.__model__.lamda.display()
 
     def display_residual(self):
-        """Display residual value"""
+        """Dispaly residual value"""
         tools.assert_optimized(self.optimization_status)
         self.__model__.epsilon.display()
 
@@ -357,7 +357,7 @@ class weakCNLS:
         else:
             beta = pd.DataFrame(beta)  # force transition from Series -> df
         # multi-index the columns
-        beta.columns = map(lamda x: "beta"+str(x) ,beta.columns)
+        beta.columns = map(lambda x: "beta"+str(x) ,beta.columns)
         return beta
 
     def get_residual(self):
@@ -377,7 +377,7 @@ class weakCNLS:
         else:
             lamda = pd.DataFrame(lamda)  # force transition from Series -> df
         # multi-index the columns
-        lamda.columns = map(lamda x: "beta"+str(x) ,lamda.columns)
+        lamda.columns = map(lambda x: "beta"+str(x) ,lamda.columns)
         return lamda
 
     def get_frontier(self):
@@ -403,7 +403,7 @@ class weakCNLS:
         else:
             delta = pd.DataFrame(delta)  # force transition from Series -> df
         # multi-index the columns
-        delta.columns = map(lamda x: "beta"+str(x) ,delta.columns)
+        delta.columns = map(lambda x: "beta"+str(x) ,delta.columns)
         return delta
 
     def info(self):

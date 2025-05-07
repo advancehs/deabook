@@ -284,14 +284,14 @@ class weakCNLSDRF():
         #
         print(obj)
         # obj = pd.DataFrame(obj,index=["obj"]).T
-        beta.columns = beta.columns.map(lamda x : "Input"+ str(x)+"'s shadow price" )
-        gamma.columns = gamma.columns.map(lamda y : "Output"+ str(y)+"'s shadow price" )
-        delta.columns = delta.columns.map(lamda b : "Undesirable"+ str(b)+"'s shadow price" )
+        beta.columns = beta.columns.map(lambda x : "Input"+ str(x)+"'s shadow price" )
+        gamma.columns = gamma.columns.map(lambda y : "Output"+ str(y)+"'s shadow price" )
+        delta.columns = delta.columns.map(lambda b : "Undesirable"+ str(b)+"'s shadow price" )
 
         # spy = pd.DataFrame(spy).T
-        # spy.columns = spy.columns.map(lamda y : "Output"+ str(y)+"'s shadow price" )
+        # spy.columns = spy.columns.map(lambda y : "Output"+ str(y)+"'s shadow price" )
         # spb = pd.DataFrame(spb).T
-        # spb.columns = spb.columns.map(lamda b : "Undesirable Output"+ str(b)+"'s shadow price" )
+        # spb.columns = spb.columns.map(lambda b : "Undesirable Output"+ str(b)+"'s shadow price" )
         sp=pd.concat([beta,gamma],axis=1)
         sp=pd.concat([sp,delta],axis=1)
         # data3 = pd.concat([obj,sp],axis=1)
@@ -299,7 +299,7 @@ class weakCNLSDRF():
 
 
     def info(self, dmu = "all"):
-        """Show the information of the lp model
+        """Show the infomation of the lp model
 
         Args:
             dmu (string): The solver chosen for optimization. Default is "all".

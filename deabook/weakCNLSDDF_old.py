@@ -212,4 +212,4 @@ class weakCNLSDDF(weakCNLS.weakCNLS):
 
     def get_frontier(self):
         """Return estimated frontier value by array"""
-        raise ValueError("DDF has no frontier.")
+        raise ValueError("DDF hsa no frontier.")

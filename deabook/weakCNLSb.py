@@ -325,7 +325,7 @@ class weakCNLSb:
         self.__model__.lamda.display()
 
     def display_residual(self):
-        """Display residual value"""
+        """Dispaly residual value"""
         tools.assert_optimized(self.optimization_status)
         self.__model__.epsilon.display()
 

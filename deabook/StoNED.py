@@ -255,7 +255,7 @@ class StoNED:
         # residual-=self.residual_mean
         # def __quassi_likelihood_estimation(lamda, eps):
         #     """ This function computes the negative of the log likelihood function
-        #     given parameter (lamda) and residual (eps).
+        #     given parameter (lambda) and residual (eps).
         #
         #     Args:
         #         lamda (float): signal-to-noise ratio
@@ -288,7 +288,7 @@ class StoNED:
         #     return -(-len(epsilon) * log(sigma) + np.sum(np.log(pn)) -
         #              0.5 * np.sum(epsilon ** 2) / sigma ** 2)
         #
-        # constraints = {'type': 'ineq', 'fun': lamda x: x[0]-0.001}  # lamda > 0
+        # constraints = {'type': 'ineq', 'fun': lambda x: x[0]-0.001}  # lamda > 0
         #
         # if self.model.fun == FUN_PROD:
         #     result = opt.minimize(__quassi_likelihood_estimation,
@@ -310,7 +310,7 @@ class StoNED:
 
         def __quassi_likelihood_estimation(lamda, eps):
             """ This function computes the negative of the log likelihood function
-            given parameter (lamda) and residual (eps).
+            given parameter (lambda) and residual (eps).
 
             Args:
                 lamda (float): signal-to-noise ratio
@@ -358,7 +358,7 @@ class StoNED:
             # TODO(error/warning handling): Raise error while undefined fun
             return False
 
-        # use estimate of lamda to calculate sigma Eq. (3.26) in Johnson and Kuosmanen (2015)
+        # use estimate of lambda to calculate sigma Eq. (3.26) in Johnson and Kuosmanen (2015)
         sigma = sqrt(np.mean(residual ** 2) /
                      (1 - (2 * lamda ** 2) / (pi * (1 + lamda ** 2))))
 

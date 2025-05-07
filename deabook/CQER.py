@@ -246,17 +246,17 @@ class CQR:
         self.__model__.lamda.display()
 
     # def display_residual(self):
-    #     """Display residual value"""
+    #     """Dispaly residual value"""
     #     tools.assert_optimized(self.optimization_status)
     #     self.__model__.epsilon_plus.display()
 
     def display_positive_residual(self):
-        """Display positive residual value"""
+        """Dispaly positive residual value"""
         tools.assert_optimized(self.optimization_status)
         self.__model__.epsilon_plus.display()
 
     def display_negative_residual(self):
-        """Display negative residual value"""
+        """Dispaly negative residual value"""
         tools.assert_optimized(self.optimization_status)
         self.__model__.epsilon_minus.display()
 
@@ -281,7 +281,7 @@ class CQR:
         else:
             beta = pd.DataFrame(beta)  # force transition from Series -> df
         # multi-index the columns
-        beta.columns = map(lamda x: "beta"+str(x) ,beta.columns)
+        beta.columns = map(lambda x: "beta"+str(x) ,beta.columns)
         return beta
 
     def get_lamda(self):
@@ -289,7 +289,7 @@ class CQR:
         tools.assert_optimized(self.optimization_status)
         tools.assert_contextual_variable(self.z)
         lamda = pd.DataFrame(self.__model__.lamda.extract_values(),index=self.z.index)
-        lamda.columns = map(lamda x: "lamda"+str(x) ,lamda.columns)
+        lamda.columns = map(lambda x: "lamda"+str(x) ,lamda.columns)
         return lamda
 
     def get_residual(self):
@@ -339,7 +339,7 @@ class CQR:
     #     else:
     #         delta = pd.DataFrame(delta)  # force transition from Series -> df
     #     # multi-index the columns
-    #     delta.columns = map(lamda x: "beta"+str(x) ,delta.columns)
+    #     delta.columns = map(lambda x: "beta"+str(x) ,delta.columns)
     #     return delta
 
 class CER(CQR):

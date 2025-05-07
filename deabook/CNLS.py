@@ -242,7 +242,7 @@ class CNLS:
         self.__model__.lamda.display()
 
     def display_residual(self):
-        """Display residual value"""
+        """Dispaly residual value"""
         tools.assert_optimized(self.optimization_status)
         self.__model__.epsilon.display()
 
@@ -297,7 +297,7 @@ class CNLS:
         return self.get_residual() - np.amax(self.get_residual())
 
     def get_adjusted_alpha(self):
-        """Return the shifted constant(alpha) term by CCNLS"""
+        """Return the shifted constatnt(alpha) term by CCNLS"""
         tools.assert_optimized(self.optimization_status)
         return self.get_alpha() + np.amax(self.get_residual())
 

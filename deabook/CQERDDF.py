@@ -246,7 +246,7 @@ class CQRDDF(CQER.CQR):
         else:
             gamma = pd.DataFrame(gamma)  # force transition from Series -> df
         # multi-index the columns
-        gamma.columns = map(lamda x: "gamma"+str(x) ,gamma.columns)
+        gamma.columns = map(lambda x: "gamma"+str(x) ,gamma.columns)
         return gamma
 
     def display_delta(self):
@@ -265,7 +265,7 @@ class CQRDDF(CQER.CQR):
         else:
             delta = pd.DataFrame(delta)  # force transition from Series -> df
         # multi-index the columns
-        delta.columns = map(lamda x: "delta"+str(x) ,delta.columns)
+        delta.columns = map(lambda x: "delta"+str(x) ,delta.columns)
         return delta
 
 

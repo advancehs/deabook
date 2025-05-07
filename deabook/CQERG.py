@@ -144,17 +144,17 @@ class CQRG:
         self.__model__.lamda.display()
 
     # def display_residual(self):
-    #     """Display residual value"""
+    #     """Dispaly residual value"""
     #     tools.assert_optimized(self.optimization_status)
     #     self.__model__.epsilon.display()
 
     def display_positive_residual(self):
-        """Display positive residual value"""
+        """Dispaly positive residual value"""
         tools.assert_optimized(self.optimization_status)
         self.__model__.epsilon_plus.display()
 
     def display_negative_residual(self):
-        """Display negative residual value"""
+        """Dispaly negative residual value"""
         tools.assert_optimized(self.optimization_status)
         self.__model__.epsilon_minus.display()
 
@@ -378,17 +378,17 @@ class CERG:
         self.__model__.lamda.display()
 
     # def display_residual(self):
-    #     """Display residual value"""
+    #     """Dispaly residual value"""
     #     tools.assert_optimized(self.optimization_status)
     #     self.__model__.epsilon.display()
 
     def display_positive_residual(self):
-        """Display positive residual value"""
+        """Dispaly positive residual value"""
         tools.assert_optimized(self.optimization_status)
         self.__model__.epsilon_plus.display()
 
     def display_negative_residual(self):
-        """Display negative residual value"""
+        """Dispaly negative residual value"""
         tools.assert_optimized(self.optimization_status)
         self.__model__.epsilon_minus.display()
 

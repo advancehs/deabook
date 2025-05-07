@@ -207,7 +207,7 @@ class CQRDDFG:
         self.__model__.lamda.display()
 
     def display_residual(self):
-        """Display residual value"""
+        """Dispaly residual value"""
         tools.assert_optimized(self.optimization_status)
         self.__model__.epsilon.display()
 
@@ -259,7 +259,7 @@ class CQRDDFG:
 
     def get_frontier(self):
         """Return estimated frontier value by array"""
-        raise ValueError("DDF has no frontier.")
+        raise ValueError("DDF hsa no frontier.")
 
     def get_delta(self):
         """Return delta value by array"""

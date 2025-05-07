@@ -300,12 +300,12 @@ class weakCNLSDDF(weakCNLS.weakCNLS):
         else:
             gamma = pd.DataFrame(gamma)  # force transition from Series -> df
         # multi-index the columns
-        gamma.columns = map(lamda x: "beta"+str(x) ,gamma.columns)
+        gamma.columns = map(lambda x: "beta"+str(x) ,gamma.columns)
         return gamma
 
     def get_frontier(self):
         """Return estimated frontier value by array"""
-        raise ValueError("DDF has no frontier.")
+        raise ValueError("DDF hsa no frontier.")
 
     def info(self):
         return self.__model__.pprint()
