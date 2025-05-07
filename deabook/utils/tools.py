@@ -808,7 +808,7 @@ def assert_optimized(optimization_status):
 def assert_contextual_variable(z):
     if type(z) == type(None):
         raise Exception(
-            "Estimated coefficient (lambda) cannot be retrieved due to no contextual variable (z variable) included in the model.")
+            "Estimated coefficient (lamda) cannot be retrieved due to no contextual variable (z variable) included in the model.")
 
 def assert_desirable_output(y):
     if type(y) == type(None):
