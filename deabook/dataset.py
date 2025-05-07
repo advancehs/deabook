@@ -133,8 +133,8 @@ def load_Tim_Coelli_frontier(x_select=['capital', 'labour'], y_select=['output']
     return production_data(dmu, x, y)
 
 
-def load_Philipines_rice_production(year=None, x_select=['AREA', 'LABOR', 'NPK', 'OTHER', 'AREAP', 'LABORP', 'NPKP', 'OTHERP'], y_select=['PROD', 'PRICE']):
-    """Loading Philipines rice data
+def load_Philippines_rice_production(year=None, x_select=['AREA', 'LABOR', 'NPK', 'OTHER', 'AREAP', 'LABORP', 'NPKP', 'OTHERP'], y_select=['PROD', 'PRICE']):
+    """Loading Philippines rice data
 
     Args:
         year (Numbers, optional): years. Defaults to None.

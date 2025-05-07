@@ -268,7 +268,7 @@ class CNLSSDweakmeta(CNLSSDweak):
         self.__model__.omega.display()
 
     def display_residual(self):
-        """Dispaly residual value"""
+        """Display residual value"""
         tools.assert_optimized(self.optimization_status)
         self.__model__.epsilon.display()
 
@@ -336,7 +336,7 @@ class CNLSSDweakmeta(CNLSSDweak):
         return self.get_residual() - np.amax(self.get_residual())
 
     def get_adjusted_alpha(self):
-        """Return the shifted constatnt(alpha) term by CCNLS"""
+        """Return the shifted constant(alpha) term by CCNLS"""
         tools.assert_optimized(self.optimization_status)
         return self.get_alpha() + np.amax(self.get_residual())
 
@@ -366,7 +366,7 @@ class CNLSDDFweakmeta(CNLSDDFweak):
             gb (list, optional): undesirable output directional vector. Defaults to [1].
             fun (String, optional): FUN_PROD (production frontier) or FUN_COST (cost frontier). Defaults to FUN_PROD.
             rts (String, optional): RTS_VRS (variable returns to scale) or RTS_CRS (constant returns to scale). Defaults to RTS_VRS.
-            kind(string): 'col_name' or 'constatnt'. Defaults to 'col_name'.
+            kind(string): 'col_name' or 'constant'. Defaults to 'col_name'.
         """
         # TODO(error/warning handling): Check the configuration of the model exist
         kind_lt = data[kind].unique()

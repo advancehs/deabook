@@ -201,14 +201,14 @@ class CNLSDDFG(CNLS.CNLS):
         self.__model__.beta.display()
 
 
-    def display_lamda(self):
-        """Display lamda value"""
+    def display_lambda(self):
+        """Display lambda value"""
         tools.assert_optimized(self.optimization_status)
         tools.assert_contextual_variable(self.z)
-        self.__model__.lamda.display()
+        self.__model__.lambda.display()
 
     def display_residual(self):
-        """Dispaly residual value"""
+        """Display residual value"""
         tools.assert_optimized(self.optimization_status)
         self.__model__.epsilon.display()
 
@@ -250,12 +250,12 @@ class CNLSDDFG(CNLS.CNLS):
         residual = list(self.__model__.epsilon[:].value)
         return np.asarray(residual)
 
-    def get_lamda(self):
+    def get_lambda(self):
         """Return beta value by array"""
         tools.assert_optimized(self.optimization_status)
         tools.assert_contextual_variable(self.z)
-        lamda = list(self.__model__.lamda[:].value)
-        return np.asarray(lamda)
+        lambda = list(self.__model__.lambda[:].value)
+        return np.asarray(lambda)
 
 
 
@@ -282,4 +282,4 @@ class CNLSDDFG(CNLS.CNLS):
 
     def get_frontier(self):
         """Return estimated frontier value by array"""
-        raise ValueError("DDF hsa no frontier.")
+        raise ValueError("DDF has no frontier.")

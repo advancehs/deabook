@@ -37,7 +37,7 @@ class CNLS:
             self.__model__.K = Set(initialize=range(len(self.z[0])))
 
             # Initialize the variables for z variable
-            self.__model__.lamda = Var(self.__model__.K, doc='z coefficient')
+            self.__model__.lambda = Var(self.__model__.K, doc='z coefficient')
 
         # Initialize the sets
         self.__model__.I = Set(initialize=range(len(self.y)))
@@ -101,7 +101,7 @@ class CNLS:
                     def regression_rule(model, i):
                         return self.y[i] == model.alpha[i] \
                             + sum(model.beta[i, j] * self.x[i][j] for j in model.J) \
-                            - sum(model.lamda[k] * self.z[i][k] for k in model.K) \
+                            - sum(model.lambda[k] * self.z[i][k] for k in model.K) \
                             - model.epsilon[i]
 
                     return regression_rule
@@ -116,7 +116,7 @@ class CNLS:
                 if type(self.z) != type(None):
                     def regression_rule(model, i):
                         return self.y[i] == sum(model.beta[i, j] * self.x[i][j] for j in model.J) \
-                            - sum(model.lamda[k] * self.z[i][k] for k in model.K) \
+                            - sum(model.lambda[k] * self.z[i][k] for k in model.K) \
                             - model.epsilon[i]
 
                     return regression_rule
@@ -131,7 +131,7 @@ class CNLS:
             if type(self.z) != type(None):
                 def regression_rule(model, i):
                     return log(self.y[i]) == log(model.frontier[i] + 1) \
-                        - sum(model.lamda[k] * self.z[i][k] for k in model.K) \
+                        - sum(model.lambda[k] * self.z[i][k] for k in model.K) \
                         - model.epsilon[i]
 
                 return regression_rule
@@ -235,14 +235,14 @@ class CNLS:
         tools.assert_optimized(self.optimization_status)
         self.__model__.beta.display()
 
-    def display_lamda(self):
-        """Display lamda value"""
+    def display_lambda(self):
+        """Display lambda value"""
         tools.assert_optimized(self.optimization_status)
         tools.assert_contextual_variable(self.z)
-        self.__model__.lamda.display()
+        self.__model__.lambda.display()
 
     def display_residual(self):
-        """Dispaly residual value"""
+        """Display residual value"""
         tools.assert_optimized(self.optimization_status)
         self.__model__.epsilon.display()
 
@@ -272,12 +272,12 @@ class CNLS:
         residual = list(self.__model__.epsilon[:].value)
         return np.asarray(residual)
 
-    def get_lamda(self):
-        """Return lamda value by array"""
+    def get_lambda(self):
+        """Return lambda value by array"""
         tools.assert_optimized(self.optimization_status)
         tools.assert_contextual_variable(self.z)
-        lamda = list(self.__model__.lamda[:].value)
-        return np.asarray(lamda)
+        lambda = list(self.__model__.lambda[:].value)
+        return np.asarray(lambda)
 
     def get_frontier(self):
         """Return estimated frontier value by array"""
@@ -286,7 +286,7 @@ class CNLS:
             frontier = np.asarray(list(self.__model__.frontier[:].value)) + 1
         elif self.cet == CET_MULT and type(self.z) != type(None):
             frontier = list(np.multiply(self.y, np.exp(
-                self.get_residual() + self.get_lamda() * np.asarray(self.z)[:, 0])) - 1)
+                self.get_residual() + self.get_lambda() * np.asarray(self.z)[:, 0])) - 1)
         elif self.cet == CET_ADDI:
             frontier = np.asarray(self.y) + self.get_residual()
         return np.asarray(frontier)
@@ -297,7 +297,7 @@ class CNLS:
         return self.get_residual() - np.amax(self.get_residual())
 
     def get_adjusted_alpha(self):
-        """Return the shifted constatnt(alpha) term by CCNLS"""
+        """Return the shifted constant(alpha) term by CCNLS"""
         tools.assert_optimized(self.optimization_status)
         return self.get_alpha() + np.amax(self.get_residual())
 

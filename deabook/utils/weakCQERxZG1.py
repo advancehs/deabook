@@ -56,7 +56,7 @@ class weakCQRxZG1:
                                    self.__model__.L,
                                    bounds=(0.0, None),
                                    doc='gamma')
-        self.__model__.lamda = Var(self.__model__.K, doc='Zvalue')
+        self.__model__.lambda = Var(self.__model__.K, doc='Zvalue')
         self.__model__.epsilon_plus = Var(
             self.__model__.I, bounds=(0.0, None), doc='positive error term')
         self.__model__.epsilon_minus = Var(
@@ -120,7 +120,7 @@ class weakCQRxZG1:
                     return self.x[i][0] == - model.alpha[i] \
                         + sum(model.gamma[i, j] * self.y[i][j] for j in model.J) \
                         - sum(model.delta[i, l] * self.b[i][l] for l in model.L) \
-                        + sum(model.lamda[k] * self.z[i][k] for k in model.K) \
+                        + sum(model.lambda[k] * self.z[i][k] for k in model.K) \
                         + model.epsilon_minus[i] - model.epsilon_plus[i]
 
                 return regression_rule
@@ -129,7 +129,7 @@ class weakCQRxZG1:
                 def regression_rule(model, i):
                     return self.x[i][0] == sum(model.gamma[i, j] * self.y[i][j] for j in model.J) \
                         - sum(model.delta[i, l] * self.b[i][l] for l in model.L) \
-                        + sum(model.lamda[k] * self.z[i][k] for k in model.K) \
+                        + sum(model.lambda[k] * self.z[i][k] for k in model.K) \
                         + model.epsilon_minus[i] - model.epsilon_plus[i]
 
                 return regression_rule
@@ -138,7 +138,7 @@ class weakCQRxZG1:
 
             def regression_rule(model, i):
                 return log(self.x[i][0]) == - log(model.frontier[i] + 1) \
-                    + sum(model.lamda[k] * self.z[i][k] for k in model.K) \
+                    + sum(model.lambda[k] * self.z[i][k] for k in model.K) \
                     + model.epsilon_minus[i] - model.epsilon_plus[i]
 
             return regression_rule

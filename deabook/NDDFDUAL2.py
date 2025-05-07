@@ -189,7 +189,7 @@ class NDDFDUAL2():
 
 
     def info(self, dmu = "all"):
-        """Show the infomation of the lp model
+        """Show the information of the lp model
 
         Args:
             dmu (string): The solver chosen for optimization. Default is "all".

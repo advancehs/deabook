@@ -80,7 +80,7 @@ class weakCNLSDDFZG2(weakCNLSDDFZG1.weakCNLSDDFZG1):
             # Initialize the set of z
             self.__model__.M = Set(initialize=range(len(self.z.iloc[0])))
             # Initialize the variables for z variable
-            self.__model__.lamda = Var(self.__model__.M, doc='z coefficient')
+            self.__model__.lambda = Var(self.__model__.M, doc='z coefficient')
 
         # Setup the objective function and constraints
         self.__model__.objective = Objective(rule=self._weakCNLSDDFZG1__objective_rule(),

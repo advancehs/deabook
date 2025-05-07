@@ -39,7 +39,7 @@ class CQR:
             self.__model__.K = Set(initialize=range(len(self.z[0])))
 
             # Initialize the variables for z variable
-            self.__model__.lamda = Var(self.__model__.K, doc='z coefficient')
+            self.__model__.lambda = Var(self.__model__.K, doc='z coefficient')
 
         # Initialize the sets
         self.__model__.I = Set(initialize=range(len(self.y)))
@@ -109,7 +109,7 @@ class CQR:
                     def regression_rule(model, i):
                         return self.y[i] == model.alpha[i] \
                             + sum(model.beta[i, j] * self.x[i][j] for j in model.J) \
-                            - sum(model.lamda[k] * self.z[i][k]
+                            - sum(model.lambda[k] * self.z[i][k]
                                   for k in model.K) + model.epsilon_plus[i] - model.epsilon_minus[i]
                     return regression_rule
 
@@ -123,7 +123,7 @@ class CQR:
                 if type(self.z) != type(None):
                     def regression_rule(model, i):
                         return self.y[i] == sum(model.beta[i, j] * self.x[i][j] for j in model.J) \
-                            - sum(model.lamda[k] * self.z[i][k] for k in model.K) \
+                            - sum(model.lambda[k] * self.z[i][k] for k in model.K) \
                             + model.epsilon_plus[i] - model.epsilon_minus[i]
                     return regression_rule
 
@@ -136,7 +136,7 @@ class CQR:
             if type(self.z) != type(None):
                 def regression_rule(model, i):
                     return log(self.y[i]) == log(model.frontier[i] + 1) \
-                        - sum(model.lamda[k] * self.z[i][k] for k in model.K) \
+                        - sum(model.lambda[k] * self.z[i][k] for k in model.K) \
                         + model.epsilon_plus[i] - model.epsilon_minus[i]
                 return regression_rule
 
@@ -239,24 +239,24 @@ class CQR:
         tools.assert_optimized(self.optimization_status)
         self.__model__.beta.display()
 
-    def display_lamda(self):
-        """Display lamda value"""
+    def display_lambda(self):
+        """Display lambda value"""
         tools.assert_optimized(self.optimization_status)
         tools.assert_contextual_variable(self.z)
-        self.__model__.lamda.display()
+        self.__model__.lambda.display()
 
     # def display_residual(self):
-    #     """Dispaly residual value"""
+    #     """Display residual value"""
     #     tools.assert_optimized(self.optimization_status)
     #     self.__model__.epsilon_plus.display()
 
     def display_positive_residual(self):
-        """Dispaly positive residual value"""
+        """Display positive residual value"""
         tools.assert_optimized(self.optimization_status)
         self.__model__.epsilon_plus.display()
 
     def display_negative_residual(self):
-        """Dispaly negative residual value"""
+        """Display negative residual value"""
         tools.assert_optimized(self.optimization_status)
         self.__model__.epsilon_minus.display()
 
@@ -284,13 +284,13 @@ class CQR:
         beta.columns = map(lambda x: "beta"+str(x) ,beta.columns)
         return beta
 
-    def get_lamda(self):
+    def get_lambda(self):
         """Return beta value by array"""
         tools.assert_optimized(self.optimization_status)
         tools.assert_contextual_variable(self.z)
-        lamda = pd.DataFrame(self.__model__.lamda.extract_values(),index=self.z.index)
-        lamda.columns = map(lambda x: "lamda"+str(x) ,lamda.columns)
-        return lamda
+        lambda = pd.DataFrame(self.__model__.lambda.extract_values(),index=self.z.index)
+        lambda.columns = map(lambda x: "lambda"+str(x) ,lambda.columns)
+        return lambda
 
     def get_residual(self):
         """Return residual value by array"""
@@ -318,7 +318,7 @@ class CQR:
     #         frontier = np.asarray(list(self.__model__.frontier[:].value)) + 1
     #     elif self.cet == CET_MULT and type(self.z) != type(None):
     #         frontier = list(np.divide(np.exp(
-    #              self.get_residual() + self.get_lamda() * np.asarray(self.z)[:, 0]),  self.b) - 1)
+    #              self.get_residual() + self.get_lambda() * np.asarray(self.z)[:, 0]),  self.b) - 1)
     #     elif self.cet == CET_ADDI:
     #         frontier = np.asarray(self.y) + self.get_residual()
     #     return np.asarray(frontier)

@@ -65,7 +65,7 @@ class CQRDDFZG1:
         # Initialize the set of z
         self.__model__.M = Set(initialize=range(len(self.z[0])))
         # Initialize the variables for z variable
-        self.__model__.lamda = Var(self.__model__.M, doc='z coefficient')
+        self.__model__.lambda = Var(self.__model__.M, doc='z coefficient')
 
         self.__model__.epsilon_plus = Var(
             self.__model__.I, bounds=(0.0, None), doc='positive error term')
@@ -130,14 +130,14 @@ class CQRDDFZG1:
                         == model.alpha[i] \
                         + sum(model.beta[i, j] * self.x[i][j] for j in model.J) \
                         + sum(model.delta[i, l] * self.b[i][l] for l in model.L) \
-                        - sum(model.lamda[m] * self.z[i][m] for m in model.M) \
+                        - sum(model.lambda[m] * self.z[i][m] for m in model.M) \
                         - model.epsilon_minus[i] + model.epsilon_plus[i]
                 return regression_rule
             def regression_rule(model, i):
                 return sum(model.gamma[i, k] * self.y[i][k] for k in model.K) \
                     == model.alpha[i] \
                     + sum(model.beta[i, j] * self.x[i][j] for j in model.J) \
-                    - sum(model.lamda[m] * self.z[i][m] for m in model.M) \
+                    - sum(model.lambda[m] * self.z[i][m] for m in model.M) \
                     - model.epsilon_minus[i] + model.epsilon_plus[i]
             return regression_rule
         elif self.rts == RTS_CRS:
@@ -146,13 +146,13 @@ class CQRDDFZG1:
                     return sum(model.gamma[i, k] * self.y[i][k] for k in model.K) \
                         == sum(model.beta[i, j] * self.x[i][j] for j in model.J) \
                         + sum(model.delta[i, l] * self.b[i][l] for l in model.L) \
-                        - sum(model.lamda[m] * self.z[i][m] for m in model.M) \
+                        - sum(model.lambda[m] * self.z[i][m] for m in model.M) \
                         - model.epsilon_minus[i] + model.epsilon_plus[i]
                 return regression_rule
             def regression_rule(model, i):
                 return sum(model.gamma[i, k] * self.y[i][k] for k in model.K) \
                     == sum(model.beta[i, j] * self.x[i][j] for j in model.J) \
-                    - sum(model.lamda[m] * self.z[i][m] for m in model.M) \
+                    - sum(model.lambda[m] * self.z[i][m] for m in model.M) \
                     - model.epsilon_minus[i] + model.epsilon_plus[i]
             return regression_rule
         raise ValueError("Undefined model parameters.")

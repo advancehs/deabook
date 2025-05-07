@@ -66,7 +66,7 @@ class CQRDDFZG2(CQERDDFZG1.CQRDDFZG1):
         # Initialize the set of z
         self.__model__.M = Set(initialize=range(len(self.z[0])))
         # Initialize the variables for z variable
-        self.__model__.lamda = Var(self.__model__.M, doc='z coefficient')
+        self.__model__.lambda = Var(self.__model__.M, doc='z coefficient')
 
         self.__model__.epsilon_plus = Var(
             self.__model__.I, bounds=(0.0, None), doc='positive error term')

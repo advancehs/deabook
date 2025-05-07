@@ -253,12 +253,12 @@ class StoNED:
         # self.__gaussian_kernel_estimation(self.model.get_residual())
         self.residual_mean = np.mean(residual)
         # residual-=self.residual_mean
-        # def __quassi_likelihood_estimation(lamda, eps):
+        # def __quassi_likelihood_estimation(lambda, eps):
         #     """ This function computes the negative of the log likelihood function
         #     given parameter (lambda) and residual (eps).
         #
         #     Args:
-        #         lamda (float): signal-to-noise ratio
+        #         lambda (float): signal-to-noise ratio
         #         eps (list): values of the residual
         #
         #     Returns:
@@ -267,28 +267,28 @@ class StoNED:
         #     # sigma Eq. (3.26) in Johnson and Kuosmanen (2015)
         #
         #     sigma = np.sqrt(
-        #         np.mean(eps ** 2) / (1 - 2 * lamda ** 2 / (pi * (1 + lamda ** 2))))
+        #         np.mean(eps ** 2) / (1 - 2 * lambda ** 2 / (pi * (1 + lambda ** 2))))
         #
         #     # bias adjusted residuals Eq. (3.25)
         #     # mean
-        #     mu = sqrt(2 / pi) * sigma * lamda / sqrt(1 + lamda ** 2)
+        #     mu = sqrt(2 / pi) * sigma * lambda / sqrt(1 + lambda ** 2)
         #
         #     # adj. res.
         #     epsilon = eps - mu
         #
         #     # log-likelihood function Eq. (3.24)
-        #     pn = stats.norm.cdf(-epsilon * lamda / sigma)
+        #     pn = stats.norm.cdf(-epsilon * lambda / sigma)
         #     # print("asasasas",self.residual_mean)
-        #     lamda = (-len(epsilon) * log(sigma) + np.sum(np.log(pn)) -
+        #     lambda = (-len(epsilon) * log(sigma) + np.sum(np.log(pn)) -
         #              0.5 * np.sum(epsilon ** 2) / sigma ** 2)
-        #     print("lamda",lamda)
+        #     print("lambda",lambda)
         #     # if (-len(epsilon) * log(sigma) + np.sum(np.log(pn)) -
         #     #          0.5 * np.sum(epsilon ** 2) / sigma ** 2) < 0:
         #     #     return np.inf
         #     return -(-len(epsilon) * log(sigma) + np.sum(np.log(pn)) -
         #              0.5 * np.sum(epsilon ** 2) / sigma ** 2)
         #
-        # constraints = {'type': 'ineq', 'fun': lambda x: x[0]-0.001}  # lamda > 0
+        # constraints = {'type': 'ineq', 'fun': lambda x: x[0]-0.001}  # lambda > 0
         #
         # if self.model.fun == FUN_PROD:
         #     result = opt.minimize(__quassi_likelihood_estimation,
@@ -296,46 +296,46 @@ class StoNED:
         #                           args=(residual,),  # Pass residual as an argument
         #                           method='SLSQP',
         #                           constraints=constraints)
-        #     lamda = result.x[0]
+        #     lambda = result.x[0]
         # elif self.model.fun == FUN_COST:
         #     result = opt.minimize(__quassi_likelihood_estimation,
         #                           1.0,  # Initial guess in a list
         #                           args=(residual,),  # Pass residual as an argument
         #                           method='SLSQP',
         #                           constraints=constraints)
-        #     lamda = result.x[0]
+        #     lambda = result.x[0]
         # else:
         #     # TODO(error/warning handling): Raise error while undefined fun
         #     return False
 
-        def __quassi_likelihood_estimation(lamda, eps):
+        def __quassi_likelihood_estimation(lambda, eps):
             """ This function computes the negative of the log likelihood function
             given parameter (lambda) and residual (eps).
 
             Args:
-                lamda (float): signal-to-noise ratio
+                lambda (float): signal-to-noise ratio
                 eps (list): values of the residual
 
             Returns:
                 float: -logl, negative value of log likelihood with penalty
             """
-            # Add a penalty if lamda is less than or equal to zero
+            # Add a penalty if lambda is less than or equal to zero
             penalty =  0  # Adjust the penalty as needed
-            # penalty = 1e9 if lamda <= 0.0 else 0  # Adjust the penalty as needed
+            # penalty = 1e9 if lambda <= 0.0 else 0  # Adjust the penalty as needed
 
             # sigma Eq. (3.26) in Johnson and Kuosmanen (2015)
             sigma = np.sqrt(
-                np.mean(eps ** 2) / (1 - 2 * lamda ** 2 / (pi * (1 + lamda ** 2))))
+                np.mean(eps ** 2) / (1 - 2 * lambda ** 2 / (pi * (1 + lambda ** 2))))
 
             # bias adjusted residuals Eq. (3.25)
             # mean
-            mu = sqrt(2 / pi) * sigma * lamda / sqrt(1 + lamda ** 2)
+            mu = sqrt(2 / pi) * sigma * lambda / sqrt(1 + lambda ** 2)
 
             # adj. res.
             epsilon = eps -mu
 
             # log-likelihood function Eq. (3.24)
-            pn = stats.norm.cdf(-epsilon * lamda / sigma)
+            pn = stats.norm.cdf(-epsilon * lambda / sigma)
 
             log_likelihood = (-len(epsilon) * log(sigma) + np.sum(np.log(pn)) -
                               0.5 * np.sum(epsilon ** 2) / sigma ** 2)
@@ -347,29 +347,29 @@ class StoNED:
                                   [1.0],  # Initial guess in a list
                                   args=(residual,),  # Pass residual as an argument
                                   method='BFGS')  # You can use BFGS now
-            lamda = result.x[0]
+            lambda = result.x[0]
         elif self.model.fun == FUN_COST:
             result = opt.minimize(__quassi_likelihood_estimation,
                                   [1.0],  # Initial guess in a list
                                   args=(residual,),  # Pass residual as an argument
                                   method='BFGS')  # You can use BFGS now
-            lamda = result.x[0]
+            lambda = result.x[0]
         else:
             # TODO(error/warning handling): Raise error while undefined fun
             return False
 
         # use estimate of lambda to calculate sigma Eq. (3.26) in Johnson and Kuosmanen (2015)
         sigma = sqrt(np.mean(residual ** 2) /
-                     (1 - (2 * lamda ** 2) / (pi * (1 + lamda ** 2))))
+                     (1 - (2 * lambda ** 2) / (pi * (1 + lambda ** 2))))
 
         # calculate bias correction
         # (unconditional) mean
-        self.mu = sqrt(2) * sigma * lamda / sqrt(pi * (1 + lamda ** 2))
+        self.mu = sqrt(2) * sigma * lambda / sqrt(pi * (1 + lambda ** 2))
 
         # calculate sigma.u and sigma.v
-        self.sigma_v = (sigma ** 2 / (1 + lamda ** 2)) ** (1 / 2)
-        self.sigma_u = self.sigma_v * lamda
-        print("lamda22", lamda)
+        self.sigma_v = (sigma ** 2 / (1 + lambda ** 2)) ** (1 / 2)
+        self.sigma_u = self.sigma_v * lambda
+        print("lambda22", lambda)
 
         if self.model.fun == FUN_PROD:
             self.residual_minus = residual-self.mu

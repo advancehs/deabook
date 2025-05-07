@@ -80,7 +80,7 @@ class weakCNLSDDF(weakCNLS.weakCNLS):
             # Initialize the set of z
             self.__model__.M = Set(initialize=range(len(self.z.iloc[0])))
             # Initialize the variables for z variable
-            self.__model__.lamda = Var(self.__model__.M, doc='z coefficient')
+            self.__model__.lambda = Var(self.__model__.M, doc='z coefficient')
 
         # Setup the objective function and constraints
         self.__model__.objective = Objective(rule=self._weakCNLS__objective_rule(),
@@ -143,7 +143,7 @@ class weakCNLSDDF(weakCNLS.weakCNLS):
                         == model.alpha[i] \
                         + sum(model.beta[i, k] * self.x.loc[i,self.xcol[k]] for k in model.K) \
                         + sum(model.delta[i, j] * self.b.loc[i,self.bcol[j]] for j in model.J) \
-                        - sum(model.lamda[m] * self.z.loc[i,self.zcol[m]] for m in model.M) \
+                        - sum(model.lambda[m] * self.z.loc[i,self.zcol[m]] for m in model.M) \
                     - model.epsilon[i]
                 return regression_rule
 
@@ -161,7 +161,7 @@ class weakCNLSDDF(weakCNLS.weakCNLS):
                     return sum(model.gamma[i, l] * self.y.loc[i,self.ycol[l]] for l in model.L) \
                         == sum(model.beta[i, k] * self.x.loc[i,self.xcol[k]] for k in model.K) \
                         + sum(model.delta[i, j] * self.b.loc[i,self.bcol[j]] for j in model.J) \
-                        - sum(model.lamda[m] * self.z.loc[i,self.zcol[m]] for m in model.M) \
+                        - sum(model.lambda[m] * self.z.loc[i,self.zcol[m]] for m in model.M) \
                     - model.epsilon[i]
                 return regression_rule
 
@@ -305,7 +305,7 @@ class weakCNLSDDF(weakCNLS.weakCNLS):
 
     def get_frontier(self):
         """Return estimated frontier value by array"""
-        raise ValueError("DDF hsa no frontier.")
+        raise ValueError("DDF has no frontier.")
 
     def info(self):
         return self.__model__.pprint()

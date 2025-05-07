@@ -40,7 +40,7 @@ class DEA:
 
             # Initialize variable
             self.__model__.rho = Var( doc='efficiency')
-            self.__model__.lamda = Var(self.__model__.R, bounds=(0.0, None), doc='intensity variables')
+            self.__model__.lambda = Var(self.__model__.R, bounds=(0.0, None), doc='intensity variables')
 
             # Setup the objective function and constraints
             if sum(self.gx) >= 1:
@@ -81,37 +81,37 @@ class DEA:
             def input_rule(model, j):
                 if self.gx[j] == 1:
 
-                    return (sum(model.lamda[ r]*self.xref[r][j] for r in model.R) <= \
+                    return (sum(model.lambda[ r]*self.xref[r][j] for r in model.R) <= \
                             model.rho*self.x[self.ii][j]   )
                 else:
-                    return (sum(model.lamda[ r]*self.xref[r][j] for r in model.R) <= \
+                    return (sum(model.lambda[ r]*self.xref[r][j] for r in model.R) <= \
                             self.x[self.ii][j] )
             return input_rule
         elif sum(self.gy) >=1:
             def input_rule(model,  j):
-                return sum(model.lamda[ r] * self.xref[r][j] for r in model.R) <= self.x[self.ii][j]
+                return sum(model.lambda[ r] * self.xref[r][j] for r in model.R) <= self.x[self.ii][j]
             return input_rule
 
     def __output_rule(self):
         """Return the proper output constraint"""
         if sum(self.gx) >= 1:
             def output_rule(model,  k):
-                return sum(model.lamda[ r] * self.yref[r][k] for r in model.R) >= self.y[self.ii][k]
+                return sum(model.lambda[ r] * self.yref[r][k] for r in model.R) >= self.y[self.ii][k]
             return output_rule
         elif sum(self.gy) >= 1:
             def output_rule(model, k):
                 if sum(self.gy) >= 1:
 
-                    return (sum(model.lamda[ r]*self.yref[r][k] for r in model.R) >= \
+                    return (sum(model.lambda[ r]*self.yref[r][k] for r in model.R) >= \
                             model.rho*self.y[self.ii][k]   )
                 else:
-                    return sum(model.lamda[r] * self.yref[r][k] for r in model.R) >= self.y[self.ii][k]
+                    return sum(model.lambda[r] * self.yref[r][k] for r in model.R) >= self.y[self.ii][k]
 
             return output_rule
 
     def __vrs_rule(self):
         def vrs_rule(model):
-            return sum(model.lamda[ r] for r in model.R) == 1
+            return sum(model.lambda[ r] for r in model.R) == 1
         return vrs_rule
 
     def optimize(self, email=OPT_LOCAL, solver=OPT_DEFAULT):
@@ -143,11 +143,11 @@ class DEA:
             tools.assert_optimized(self.optimization_status.loc[ind,'optimization_status'])
             problem.rho.display()
 
-    def display_lamda(self):
-        """Display lamda value"""
+    def display_lambda(self):
+        """Display lambda value"""
         for ind, problem in self.modeldict.items():
             tools.assert_optimized(self.optimization_status.loc[ind,'optimization_status'])
-            problem.lamda.display()
+            problem.lambda.display()
 
 
     def get_status(self):
@@ -165,16 +165,16 @@ class DEA:
         print("rho_lt", len(rho_lt[0]))
         return np.asarray(rho_lt)
 
-    def get_lamda(self):
-        """Return lamda value by array"""
-        lamda_lt=[]
+    def get_lambda(self):
+        """Return lambda value by array"""
+        lambda_lt=[]
         for ind, problem in self.modeldict.items():
 
             tools.assert_optimized(self.optimization_status.loc[ind,'optimization_status'])
-            lamda = list(problem.lamda[:].value)
-            lamda_lt.append(lamda)
+            lambda = list(problem.lambda[:].value)
+            lambda_lt.append(lambda)
 
-        return np.asarray(lamda_lt)
+        return np.asarray(lambda_lt)
 
 
 
@@ -211,7 +211,7 @@ class DDF(DEA):
             # Initialize variable
             self.__model__.rho = Var( doc='directional distance')
 
-            self.__model__.lamda = Var( self.__model__.R, bounds=(0.0, None), doc='intensity variables')
+            self.__model__.lambda = Var( self.__model__.R, bounds=(0.0, None), doc='intensity variables')
 
             # Setup the objective function and constraints
             self.__model__.objective = Objective(rule=self._DEA__objective_rule(), sense=maximize, doc='objective function')
@@ -235,7 +235,7 @@ class DDF(DEA):
     def __input_rule(self):
         """Return the proper input constraint"""
         def input_rule(model,  j):
-            return sum(model.lamda[ r] * self.xref[r][j] for r in model.R) <= \
+            return sum(model.lambda[ r] * self.xref[r][j] for r in model.R) <= \
                     self.x[self.ii][j] - model.rho*self.gx[j]*self.x[self.ii][j]
 
         return input_rule
@@ -243,7 +243,7 @@ class DDF(DEA):
     def __output_rule(self):
         """Return the proper output constraint"""
         def output_rule(model, k):
-            return sum(model.lamda[ r] * self.yref[r][k] for r in model.R) >= \
+            return sum(model.lambda[ r] * self.yref[r][k] for r in model.R) >= \
                         self.y[self.ii][k] + model.rho*self.gy[k]*self.y[self.ii][k]
 
         return output_rule
@@ -253,7 +253,7 @@ class DDF(DEA):
     def __vrs_rule(self):
         """Return the VRS constraint"""
         def vrs_rule(model):
-            return sum(model.lamda[ r] for r in model.R) == 1
+            return sum(model.lambda[ r] for r in model.R) == 1
         return vrs_rule
 
 

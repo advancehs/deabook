@@ -268,24 +268,24 @@ class weakCQRG:
         tools.assert_optimized(self.optimization_status)
         self.__model__.delta.display()
 
-    def display_lamda(self):
-        """Display lamda value"""
+    def display_lambda(self):
+        """Display lambda value"""
         tools.assert_optimized(self.optimization_status)
         tools.assert_contextual_variable(self.z)
-        self.__model__.lamda.display()
+        self.__model__.lambda.display()
 
     # def display_residual(self):
-    #     """Dispaly residual value"""
+    #     """Display residual value"""
     #     tools.assert_optimized(self.optimization_status)
     #     self.__model__.epsilon.display()
 
     def display_positive_residual(self):
-        """Dispaly positive residual value"""
+        """Display positive residual value"""
         tools.assert_optimized(self.optimization_status)
         self.__model__.epsilon_plus.display()
 
     def display_negative_residual(self):
-        """Dispaly negative residual value"""
+        """Display negative residual value"""
         tools.assert_optimized(self.optimization_status)
         self.__model__.epsilon_minus.display()
 
@@ -337,12 +337,12 @@ class weakCQRG:
         residual_minus = list(self.__model__.epsilon_minus[:].value)
         return np.asarray(residual_minus)
 
-    def get_lamda(self):
+    def get_lambda(self):
         """Return beta value by array"""
         tools.assert_optimized(self.optimization_status)
         tools.assert_contextual_variable(self.z)
-        lamda = list(self.__model__.lamda[:].value)
-        return np.asarray(lamda)
+        lambda = list(self.__model__.lambda[:].value)
+        return np.asarray(lambda)
 
     def get_frontier(self):
         """Return estimated frontier value by array"""
@@ -351,7 +351,7 @@ class weakCQRG:
             frontier = np.asarray(list(self.__model__.frontier[:].value))+1
         elif self.cet == CET_MULT and type(self.z) != type(None):
             frontier = list(np.divide(self.y, np.exp(
-                - self.get_residual() - self.get_lamda()*np.asarray(self.z)[:, 0])) - 1)
+                - self.get_residual() - self.get_lambda()*np.asarray(self.z)[:, 0])) - 1)
         elif self.cet == CET_ADDI:
             frontier = np.asarray(self.y) + self.get_residual()
         return np.asarray(frontier)

@@ -49,7 +49,7 @@ class CNLSZG2(CNLSZG1.CNLSZG1):
                                   self.__model__.J,
                                   bounds=(0.0, None),
                                   doc='beta')
-        self.__model__.lamda = Var(self.__model__.K, doc='zvalue')
+        self.__model__.lambda = Var(self.__model__.K, doc='zvalue')
         self.__model__.epsilon = Var(self.__model__.I, doc='residual')
         self.__model__.frontier = Var(self.__model__.I,
                                       bounds=(0.0, None),

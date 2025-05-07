@@ -59,7 +59,7 @@ class weakCNLSxZG2(weakCNLSxZG1.weakCNLSxZG1):
             # Initialize the set of z
             self.__model__.M = Set(initialize=range(len(self.z.iloc[0])))
             # Initialize the variables for z variable
-            self.__model__.lamda = Var(self.__model__.M, doc='z coefficient')
+            self.__model__.lambda = Var(self.__model__.M, doc='z coefficient')
 
         # Initialize the variables
         self.__model__.alpha = Var(self.__model__.I, doc='alpha')

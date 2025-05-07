@@ -101,8 +101,8 @@ class weakCQRNDDF(CQERDDF.CQRDDF):
             # Initialize the set of z
             self.__model__.M = Set(initialize=range(len(self.z.iloc[0])))
             # Initialize the variables for z variable
-            self.__model__.lamda = Var(self.__model__.M, doc='z coefficient')
-            # self.__model__.lamda.pprint()
+            self.__model__.lambda = Var(self.__model__.M, doc='z coefficient')
+            # self.__model__.lambda.pprint()
             # Setup the objective function and constraints
         self.__model__.objective = Objective(rule=self.__objective_rule(),
                                              sense=minimize,
@@ -176,7 +176,7 @@ class weakCQRNDDF(CQERDDF.CQRDDF):
                         == model.alpha[i] \
                         + sum(model.beta[i, k] * self.x.loc[i,self.xcol[k]]  for k in model.K) \
                         + sum(model.delta[i, j] * self.b.loc[i,self.bcol[j]] for j in model.J) \
-                        - sum(model.lamda[m] * self.z.loc[i,self.zcol[m]] for m in model.M) \
+                        - sum(model.lambda[m] * self.z.loc[i,self.zcol[m]] for m in model.M) \
                         + model.epsilon_plus[i] - model.epsilon_minus[i]
 
                 return regression_rule
@@ -196,7 +196,7 @@ class weakCQRNDDF(CQERDDF.CQRDDF):
                         == \
                         + sum(model.beta[i, k] * self.x.loc[i,self.xcol[k]]  for k in model.K) \
                         + sum(model.delta[i, j] * self.b.loc[i,self.bcol[j]] for j in model.J) \
-                        - sum(model.lamda[m] * self.z.loc[i,self.zcol[m]] for m in model.M) \
+                        - sum(model.lambda[m] * self.z.loc[i,self.zcol[m]] for m in model.M) \
                         + model.epsilon_plus[i] - model.epsilon_minus[i]
                 return regression_rule
 

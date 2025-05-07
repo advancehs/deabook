@@ -40,7 +40,7 @@ class weakCQRZG1:
 
 
         self.__model__.K = Set(initialize=range(len(self.z[0])))
-        self.__model__.lamda = Var(self.__model__.K, doc='z coefficient')
+        self.__model__.lambda = Var(self.__model__.K, doc='z coefficient')
 
         # Initialize the sets
         self.__model__.I = Set(initialize=range(len(self.y)))
@@ -120,7 +120,7 @@ class weakCQRZG1:
                     return self.y[i] == model.alpha[i] \
                             + sum(model.beta[i, j] * self.x[i][j] for j in model.J) \
                             + sum(model.delta[i, l] * self.b[i][l] for l in model.L) \
-                            - sum(model.lamda[k] * self.z[i][k] for k in model.K) \
+                            - sum(model.lambda[k] * self.z[i][k] for k in model.K) \
                             + model.epsilon_plus[i] - model.epsilon_minus[i]
                 return regression_rule
 
@@ -128,7 +128,7 @@ class weakCQRZG1:
                 def regression_rule(model, i):
                     return self.y[i] == sum(model.beta[i, j] * self.x[i][j] for j in model.J) \
                             + sum(model.delta[i, l] * self.b[i][l] for l in model.L) \
-                            - sum(model.lamda[k] * self.z[i][k] for k in model.K) \
+                            - sum(model.lambda[k] * self.z[i][k] for k in model.K) \
                             + model.epsilon_plus[i] - model.epsilon_minus[i]
                 return regression_rule
 
@@ -136,7 +136,7 @@ class weakCQRZG1:
 
             def regression_rule(model, i):
                 return log(self.y[i]) == log(model.frontier[i] + 1) \
-                        - sum(model.lamda[k] * self.z[i][k] for k in model.K) \
+                        - sum(model.lambda[k] * self.z[i][k] for k in model.K) \
                         + model.epsilon_plus[i] - model.epsilon_minus[i]
             return regression_rule
 
