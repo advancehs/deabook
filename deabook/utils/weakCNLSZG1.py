@@ -52,7 +52,7 @@ class weakCNLSZG1:
         if type(self.z) != type(None):
             self.__model__.M = Set(initialize=range(len(self.z.iloc[0])))
             # Initialize the variables for z variable
-            self.__model__.lambda = Var(self.__model__.M, doc='z coefficient')
+            self.__model__.lamda = Var(self.__model__.M, doc='z coefficient')
 
         # Initialize the variables
         self.__model__.alpha = Var(self.__model__.I, doc='alpha')
@@ -124,7 +124,7 @@ class weakCNLSZG1:
                             == model.alpha[i] \
                             + sum(model.beta[i, k] * self.x.loc[i, self.xcol[k]] for k in model.K) \
                             + sum(model.delta[i, j] * self.b.loc[i, self.bcol[j]] for j in model.J) \
-                            - sum(model.lambda[m] * self.z.loc[i, self.zcol[m]] for m in model.M) \
+                            - sum(model.lamda[m] * self.z.loc[i, self.zcol[m]] for m in model.M) \
                             - model.epsilon[i]
 
                     return regression_rule
@@ -143,7 +143,7 @@ class weakCNLSZG1:
                         return np.array((self.y.loc[i,])) == \
                             sum(model.beta[i, k] * self.x.loc[i, self.xcol[k]] for k in model.K) \
                             + sum(model.delta[i, j] * self.b.loc[i, self.bcol[j]] for j in model.J) \
-                            - sum(model.lambda[m] * self.z.loc[i, self.zcol[m]] for m in model.M) \
+                            - sum(model.lamda[m] * self.z.loc[i, self.zcol[m]] for m in model.M) \
                             - model.epsilon[i]
 
                     return regression_rule
@@ -160,7 +160,7 @@ class weakCNLSZG1:
             if type(self.z) != type(None):
                 def regression_rule(model, i):
                     return log(np.array(self.y.loc[i, :])) == log(model.frontier[i] + 1) \
-                        - sum(model.lambda[m] * self.z.loc[i, self.zcol[m]] for m in model.M) \
+                        - sum(model.lamda[m] * self.z.loc[i, self.zcol[m]] for m in model.M) \
                         - model.epsilon[i]
 
                 return regression_rule

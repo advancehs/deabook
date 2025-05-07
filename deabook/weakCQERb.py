@@ -56,7 +56,7 @@ class weakCQRb():
             # Initialize the set of z
             self.__model__.M = Set(initialize=range(len(self.z.iloc[0])))
             # Initialize the variables for z variable
-            self.__model__.lambda = Var(self.__model__.M, doc='z coefficient')
+            self.__model__.lamda = Var(self.__model__.M, doc='z coefficient')
         # Initialize the variables
         self.__model__.alpha = Var(self.__model__.I, doc='alpha')
         self.__model__.beta = Var(self.__model__.I,
@@ -129,7 +129,7 @@ class weakCQRb():
                         return np.array((self.b.loc[i,]))  == -model.alpha[i] \
                                 - sum(model.beta[i, k] * self.x.loc[i,self.xcol[k]] for k in model.K) \
                                 + sum(model.gamma[i, l] * self.y.loc[i,self.ycol[l]] for l in model.L) \
-                                + sum(model.lambda[m] * self.z.loc[i,self.zcol[m]] for m in model.M) \
+                                + sum(model.lamda[m] * self.z.loc[i,self.zcol[m]] for m in model.M) \
                                 + model.epsilon_minus[i] - model.epsilon_plus[i]
 
                     return regression_rule
@@ -147,7 +147,7 @@ class weakCQRb():
                         return np.array((self.b.loc[i,]))  ==  \
                                 - sum(model.beta[i, k] * self.x.loc[i,self.xcol[k]] for k in model.K) \
                                 + sum(model.gamma[i, l] * self.y.loc[i,self.ycol[l]] for l in model.L) \
-                                + sum(model.lambda[m] * self.z.loc[i,self.zcol[m]] for m in model.M) \
+                                + sum(model.lamda[m] * self.z.loc[i,self.zcol[m]] for m in model.M) \
                                 + model.epsilon_minus[i] - model.epsilon_plus[i]
 
                     return regression_rule
@@ -164,7 +164,7 @@ class weakCQRb():
             if type(self.z) != type(None):
                 def regression_rule(model, i):
                     return log(np.array((self.b.loc[i,]))) == - log(model.frontier[i] + 1) \
-                            + sum(model.lambda[m] * self.z.loc[i,self.zcol[m]] for m in model.M) \
+                            + sum(model.lamda[m] * self.z.loc[i,self.zcol[m]] for m in model.M) \
                             + model.epsilon_minus[i] - model.epsilon_plus[i]
                 return regression_rule
 
@@ -258,11 +258,11 @@ class weakCQRb():
         tools.assert_optimized(self.optimization_status)
         self.__model__.beta.display()
 
-    def display_lambda(self):
-        """Display lambda value"""
+    def display_lamda(self):
+        """Display lamda value"""
         tools.assert_optimized(self.optimization_status)
         tools.assert_contextual_variable(self.z)
-        self.__model__.lambda.display()
+        self.__model__.lamda.display()
 
     def display_gamma(self):
         """Display delta value"""
@@ -291,12 +291,12 @@ class weakCQRb():
         beta = beta.pivot(index='Name', columns='Key', values='Value')
         return beta.to_numpy()
 
-    def get_lambda(self):
+    def get_lamda(self):
         """Return beta value by array"""
         tools.assert_optimized(self.optimization_status)
         tools.assert_contextual_variable(self.z)
-        lambda = list(self.__model__.lambda[:].value)
-        return np.asarray(lambda)
+        lamda = list(self.__model__.lamda[:].value)
+        return np.asarray(lamda)
 
     def get_gamma(self):
         """Return delta value by array"""
@@ -322,7 +322,7 @@ class weakCQRb():
             frontier = np.asarray(list(self.__model__.frontier[:].value)) + 1
         elif self.cet == CET_MULT and type(self.z) != type(None):
             frontier = list(np.divide(np.exp(
-                self.get_residual() + self.get_lambda() * np.asarray(self.z)[:, 0]), self.b) - 1)
+                self.get_residual() + self.get_lamda() * np.asarray(self.z)[:, 0]), self.b) - 1)
         elif self.cet == CET_ADDI:
             frontier = -np.asarray(self.b) + self.get_residual()
         return np.asarray(frontier)

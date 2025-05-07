@@ -50,7 +50,7 @@ class weakCQRDDF(CQERDDF.CQRDDF):
         # Initialize the sets
         self.__model__.I = Set(initialize=self.x.index)  ## I 是 被评价决策单元的数量
         if self.referenceflag:
-            # self.__model__.I2 = Set(initialize=  [*map(lambda x : x[1] ,self.xref.index)]   )  ## I2 是 参考决策单元的数量
+            # self.__model__.I2 = Set(initialize=  [*map(lamda x : x[1] ,self.xref.index)]   )  ## I2 是 参考决策单元的数量
             self.__model__.I2 = Set(initialize=self.xref.index)  ## I2 是 参考决策单元的数量
         self.__model__.K = Set(initialize=range(len(self.x.iloc[0])))  ## K 是投入个数
         self.__model__.L = Set(initialize=range(len(self.y.iloc[0])))  ## L 是产出个数 被评价单元和参考单元的K，L一样
@@ -74,8 +74,8 @@ class weakCQRDDF(CQERDDF.CQRDDF):
             # Initialize the set of z
             self.__model__.M = Set(initialize=range(len(self.z.iloc[0])))
             # Initialize the variables for z variable
-            self.__model__.lambda = Var(self.__model__.M, doc='z coefficient')
-            # self.__model__.lambda.pprint()
+            self.__model__.lamda = Var(self.__model__.M, doc='z coefficient')
+            # self.__model__.lamda.pprint()
             # Setup the objective function and constraints
         self.__model__.objective = Objective(rule=self.__objective_rule(),
                                              sense=minimize,
@@ -143,7 +143,7 @@ class weakCQRDDF(CQERDDF.CQRDDF):
                         == model.alpha[i] \
                         + sum(model.beta[i, k] * self.x.loc[i,self.xcol[k]]  for k in model.K) \
                         + sum(model.delta[i, j] * self.b.loc[i,self.bcol[j]] for j in model.J) \
-                        - sum(model.lambda[m] * self.z.loc[i,self.zcol[m]] for m in model.M) \
+                        - sum(model.lamda[m] * self.z.loc[i,self.zcol[m]] for m in model.M) \
                         + model.epsilon_plus[i] - model.epsilon_minus[i]
 
                 return regression_rule
@@ -163,7 +163,7 @@ class weakCQRDDF(CQERDDF.CQRDDF):
                         == \
                         + sum(model.beta[i, k] * self.x.loc[i,self.xcol[k]]  for k in model.K) \
                         + sum(model.delta[i, j] * self.b.loc[i,self.bcol[j]] for j in model.J) \
-                        - sum(model.lambda[m] * self.z.loc[i,self.zcol[m]] for m in model.M) \
+                        - sum(model.lamda[m] * self.z.loc[i,self.zcol[m]] for m in model.M) \
                         + model.epsilon_plus[i] - model.epsilon_minus[i]
                 return regression_rule
 

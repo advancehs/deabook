@@ -39,7 +39,7 @@ class CQR:
             self.__model__.K = Set(initialize=range(len(self.z[0])))
 
             # Initialize the variables for z variable
-            self.__model__.lambda = Var(self.__model__.K, doc='z coefficient')
+            self.__model__.lamda = Var(self.__model__.K, doc='z coefficient')
 
         # Initialize the sets
         self.__model__.I = Set(initialize=range(len(self.y)))
@@ -109,7 +109,7 @@ class CQR:
                     def regression_rule(model, i):
                         return self.y[i] == model.alpha[i] \
                             + sum(model.beta[i, j] * self.x[i][j] for j in model.J) \
-                            - sum(model.lambda[k] * self.z[i][k]
+                            - sum(model.lamda[k] * self.z[i][k]
                                   for k in model.K) + model.epsilon_plus[i] - model.epsilon_minus[i]
                     return regression_rule
 
@@ -123,7 +123,7 @@ class CQR:
                 if type(self.z) != type(None):
                     def regression_rule(model, i):
                         return self.y[i] == sum(model.beta[i, j] * self.x[i][j] for j in model.J) \
-                            - sum(model.lambda[k] * self.z[i][k] for k in model.K) \
+                            - sum(model.lamda[k] * self.z[i][k] for k in model.K) \
                             + model.epsilon_plus[i] - model.epsilon_minus[i]
                     return regression_rule
 
@@ -136,7 +136,7 @@ class CQR:
             if type(self.z) != type(None):
                 def regression_rule(model, i):
                     return log(self.y[i]) == log(model.frontier[i] + 1) \
-                        - sum(model.lambda[k] * self.z[i][k] for k in model.K) \
+                        - sum(model.lamda[k] * self.z[i][k] for k in model.K) \
                         + model.epsilon_plus[i] - model.epsilon_minus[i]
                 return regression_rule
 
@@ -239,11 +239,11 @@ class CQR:
         tools.assert_optimized(self.optimization_status)
         self.__model__.beta.display()
 
-    def display_lambda(self):
-        """Display lambda value"""
+    def display_lamda(self):
+        """Display lamda value"""
         tools.assert_optimized(self.optimization_status)
         tools.assert_contextual_variable(self.z)
-        self.__model__.lambda.display()
+        self.__model__.lamda.display()
 
     # def display_residual(self):
     #     """Display residual value"""
@@ -281,16 +281,16 @@ class CQR:
         else:
             beta = pd.DataFrame(beta)  # force transition from Series -> df
         # multi-index the columns
-        beta.columns = map(lambda x: "beta"+str(x) ,beta.columns)
+        beta.columns = map(lamda x: "beta"+str(x) ,beta.columns)
         return beta
 
-    def get_lambda(self):
+    def get_lamda(self):
         """Return beta value by array"""
         tools.assert_optimized(self.optimization_status)
         tools.assert_contextual_variable(self.z)
-        lambda = pd.DataFrame(self.__model__.lambda.extract_values(),index=self.z.index)
-        lambda.columns = map(lambda x: "lambda"+str(x) ,lambda.columns)
-        return lambda
+        lamda = pd.DataFrame(self.__model__.lamda.extract_values(),index=self.z.index)
+        lamda.columns = map(lamda x: "lamda"+str(x) ,lamda.columns)
+        return lamda
 
     def get_residual(self):
         """Return residual value by array"""
@@ -318,7 +318,7 @@ class CQR:
     #         frontier = np.asarray(list(self.__model__.frontier[:].value)) + 1
     #     elif self.cet == CET_MULT and type(self.z) != type(None):
     #         frontier = list(np.divide(np.exp(
-    #              self.get_residual() + self.get_lambda() * np.asarray(self.z)[:, 0]),  self.b) - 1)
+    #              self.get_residual() + self.get_lamda() * np.asarray(self.z)[:, 0]),  self.b) - 1)
     #     elif self.cet == CET_ADDI:
     #         frontier = np.asarray(self.y) + self.get_residual()
     #     return np.asarray(frontier)
@@ -339,7 +339,7 @@ class CQR:
     #     else:
     #         delta = pd.DataFrame(delta)  # force transition from Series -> df
     #     # multi-index the columns
-    #     delta.columns = map(lambda x: "beta"+str(x) ,delta.columns)
+    #     delta.columns = map(lamda x: "beta"+str(x) ,delta.columns)
     #     return delta
 
 class CER(CQR):

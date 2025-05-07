@@ -46,7 +46,7 @@ class CNLSZG1():
                                   self.__model__.J,
                                   bounds=(0.0, None),
                                   doc='beta')
-        self.__model__.lambda = Var(self.__model__.K, doc='Zvalue')
+        self.__model__.lamda = Var(self.__model__.K, doc='Zvalue')
         self.__model__.epsilon = Var(self.__model__.I, doc='residual')
         self.__model__.frontier = Var(self.__model__.I,
                                       bounds=(0.0, None),
@@ -99,13 +99,13 @@ class CNLSZG1():
                 def regression_rule(model, i):
                     return self.y[i] == model.alpha[i] \
                         + sum(model.beta[i, j] * self.x[i][j] for j in model.J) \
-                        - sum(model.lambda[k] * self.z[i][k] for k in model.K) - model.epsilon[i]
+                        - sum(model.lamda[k] * self.z[i][k] for k in model.K) - model.epsilon[i]
                 return regression_rule
             elif self.rts == RTS_CRS:
 
                 def regression_rule(model, i):
                     return self.y[i] == sum(model.beta[i, j] * self.x[i][j] for j in model.J) \
-                        - sum(model.lambda[k] * self.z[i][k] for k in model.K) - model.epsilon[i]
+                        - sum(model.lamda[k] * self.z[i][k] for k in model.K) - model.epsilon[i]
 
                 return regression_rule
 
@@ -113,7 +113,7 @@ class CNLSZG1():
 
             def regression_rule(model, i):
                 return log(self.y[i]) == log(model.frontier[i] + 1) \
-                                - sum(model.lambda[k] * self.z[i][k] for k in model.K) - model.epsilon[i]
+                                - sum(model.lamda[k] * self.z[i][k] for k in model.K) - model.epsilon[i]
 
             return regression_rule
 

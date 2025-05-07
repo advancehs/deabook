@@ -48,7 +48,7 @@ class CQRZG1():
                                   self.__model__.J,
                                   bounds=(0.0, None),
                                   doc='beta')
-        self.__model__.lambda = Var(self.__model__.K, doc='Zvalue')
+        self.__model__.lamda = Var(self.__model__.K, doc='Zvalue')
         self.__model__.epsilon_plus = Var(
             self.__model__.I, bounds=(0.0, None), doc='positive error term')
         self.__model__.epsilon_minus = Var(
@@ -109,7 +109,7 @@ class CQRZG1():
                 def regression_rule(model, i):
                     return self.y[i] == model.alpha[i] \
                         + sum(model.beta[i, j] * self.x[i][j] for j in model.J) \
-                        - sum(model.lambda[k] * self.z[i][k] for k in model.K) \
+                        - sum(model.lamda[k] * self.z[i][k] for k in model.K) \
                         - model.epsilon_minus[i] + model.epsilon_plus[i]
 
                 return regression_rule
@@ -117,7 +117,7 @@ class CQRZG1():
 
                 def regression_rule(model, i):
                     return self.y[i] == sum(model.beta[i, j] * self.x[i][j] for j in model.J) \
-                        + sum(model.lambda[k] * self.z[i][k] for k in model.K) \
+                        + sum(model.lamda[k] * self.z[i][k] for k in model.K) \
                         - model.epsilon_minus[i] + model.epsilon_plus[i]
                 return regression_rule
 
@@ -125,7 +125,7 @@ class CQRZG1():
 
             def regression_rule(model, i):
                 return log(self.y[i]) == log(model.frontier[i] + 1) \
-                    - sum(model.lambda[k] * self.z[i][k] for k in model.K) \
+                    - sum(model.lamda[k] * self.z[i][k] for k in model.K) \
                     - model.epsilon_minus[i] + model.epsilon_plus[i]
             return regression_rule
 

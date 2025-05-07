@@ -60,7 +60,7 @@ class weakCQRbZG2(weakCQERbZG1.weakCQRbZG1):
                                    self.__model__.L,
                                    bounds=(0.0, None),
                                    doc='gamma')
-        self.__model__.lambda = Var(self.__model__.K, doc='Zvalue')
+        self.__model__.lamda = Var(self.__model__.K, doc='Zvalue')
         self.__model__.epsilon_plus = Var(
             self.__model__.I, bounds=(0.0, None), doc='positive error term')
         self.__model__.epsilon_minus = Var(

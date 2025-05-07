@@ -127,11 +127,11 @@ class DDFDUAL():
 
         obj = pd.DataFrame(obj,index=["obj"]).T
         spx = pd.DataFrame(spx).T
-        spx.columns = spx.columns.map(lambda x : "Input"+ str(x)+"'s shadow price" )
+        spx.columns = spx.columns.map(lamda x : "Input"+ str(x)+"'s shadow price" )
         spy = pd.DataFrame(spy).T
-        spy.columns = spy.columns.map(lambda y : "Output"+ str(y)+"'s shadow price" )
+        spy.columns = spy.columns.map(lamda y : "Output"+ str(y)+"'s shadow price" )
         spb = pd.DataFrame(spb).T
-        spb.columns = spb.columns.map(lambda b : "Undesirable Output"+ str(b)+"'s shadow price" )
+        spb.columns = spb.columns.map(lamda b : "Undesirable Output"+ str(b)+"'s shadow price" )
         sp=pd.concat([spx,spy],axis=1)
         sp=pd.concat([sp,spb],axis=1)
         data3 = pd.concat([obj,sp],axis=1)

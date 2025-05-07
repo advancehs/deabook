@@ -220,11 +220,11 @@ class NDDFDUAL():
                 # pomega[ind]=
         obj = pd.DataFrame(obj,index=["obj"]).T
         px = pd.DataFrame(px).T
-        px.columns = px.columns.map(lambda x : "Input"+ str(x)+"'s shadow price" )
+        px.columns = px.columns.map(lamda x : "Input"+ str(x)+"'s shadow price" )
         py = pd.DataFrame(py).T
-        py.columns = py.columns.map(lambda y : "Output"+ str(y)+"'s shadow price" )
+        py.columns = py.columns.map(lamda y : "Output"+ str(y)+"'s shadow price" )
         pb = pd.DataFrame(pb).T
-        pb.columns = pb.columns.map(lambda b : "Undesirable Output"+ str(b)+"'s shadow price" )
+        pb.columns = pb.columns.map(lamda b : "Undesirable Output"+ str(b)+"'s shadow price" )
         p=pd.concat([px,py],axis=1)
         p=pd.concat([p,pb],axis=1)
         # data3 = pd.concat([data2,obj],axis=1)

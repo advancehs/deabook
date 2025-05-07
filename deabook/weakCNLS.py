@@ -58,7 +58,7 @@ class weakCNLS:
             # Initialize the set of z
             self.__model__.M = Set(initialize=range(len(self.z.iloc[0])))
             # Initialize the variables for z variable
-            self.__model__.lambda = Var(self.__model__.M, doc='z coefficient')
+            self.__model__.lamda = Var(self.__model__.M, doc='z coefficient')
 
 
         # Initialize the variables
@@ -140,7 +140,7 @@ class weakCNLS:
                             == model.alpha[i] \
                                 + sum(model.beta[i, k] * self.x.loc[i,self.xcol[k]] for k in model.K) \
                                 + sum(model.delta[i, j] * self.b.loc[i,self.bcol[j]] for j in model.J) \
-                                - sum(model.lambda[m] * self.z.loc[i,self.zcol[m]] for m in model.M) \
+                                - sum(model.lamda[m] * self.z.loc[i,self.zcol[m]] for m in model.M) \
                                 - model.epsilon[i]
                     return regression_rule
 
@@ -158,7 +158,7 @@ class weakCNLS:
                         return np.array((self.y.loc[i,]))   == \
                                 sum(model.beta[i, k] * self.x.loc[i,self.xcol[k]] for k in model.K) \
                                 + sum(model.delta[i, j] * self.b.loc[i,self.bcol[j]] for j in model.J) \
-                                - sum(model.lambda[m] * self.z.loc[i,self.zcol[m]] for m in model.M) \
+                                - sum(model.lamda[m] * self.z.loc[i,self.zcol[m]] for m in model.M) \
                                 - model.epsilon[i]
                     return regression_rule
 
@@ -173,7 +173,7 @@ class weakCNLS:
             if type(self.z) != type(None):
                 def regression_rule(model, i):
                     return log(np.array(self.y.loc[i,:]) ) == log(model.frontier[i] + 1) \
-                            - sum(model.lambda[m] * self.z.loc[i,self.zcol[m]] for m in model.M) \
+                            - sum(model.lamda[m] * self.z.loc[i,self.zcol[m]] for m in model.M) \
                             - model.epsilon[i]
                 return regression_rule
 
@@ -319,11 +319,11 @@ class weakCNLS:
         tools.assert_optimized(self.optimization_status)
         self.__model__.beta.display()
 
-    def display_lambda(self):
-        """Display lambda value"""
+    def display_lamda(self):
+        """Display lamda value"""
         tools.assert_optimized(self.optimization_status)
         tools.assert_contextual_variable(self.z)
-        self.__model__.lambda.display()
+        self.__model__.lamda.display()
 
     def display_residual(self):
         """Display residual value"""
@@ -357,7 +357,7 @@ class weakCNLS:
         else:
             beta = pd.DataFrame(beta)  # force transition from Series -> df
         # multi-index the columns
-        beta.columns = map(lambda x: "beta"+str(x) ,beta.columns)
+        beta.columns = map(lamda x: "beta"+str(x) ,beta.columns)
         return beta
 
     def get_residual(self):
@@ -366,19 +366,19 @@ class weakCNLS:
         residual = pd.Series(self.__model__.epsilon.extract_values())
         return residual
 
-    def get_lambda(self):
+    def get_lamda(self):
         """Return beta value by array"""
         tools.assert_optimized(self.optimization_status)
         tools.assert_contextual_variable(self.z)
-        lambda = pd.Series(self.__model__.lambda.extract_values(),index=self.__model__.lambda.extract_values().keys())
+        lamda = pd.Series(self.__model__.lamda.extract_values(),index=self.__model__.lamda.extract_values().keys())
         # if the series is multi-indexed we need to unstack it...
-        if type(lambda.index[0]) == tuple:  # it is multi-indexed
-            lambda = lambda.unstack(level=1)
+        if type(lamda.index[0]) == tuple:  # it is multi-indexed
+            lamda = lamda.unstack(level=1)
         else:
-            lambda = pd.DataFrame(lambda)  # force transition from Series -> df
+            lamda = pd.DataFrame(lamda)  # force transition from Series -> df
         # multi-index the columns
-        lambda.columns = map(lambda x: "beta"+str(x) ,lambda.columns)
-        return lambda
+        lamda.columns = map(lamda x: "beta"+str(x) ,lamda.columns)
+        return lamda
 
     def get_frontier(self):
         """Return estimated frontier value by array"""
@@ -387,7 +387,7 @@ class weakCNLS:
             frontier = np.asarray(list(self.__model__.frontier[:].value)) + 1
         elif self.cet == CET_MULT and type(self.z) != type(None):
             frontier = list(np.multiply(self.y, np.exp(
-                self.get_residual() + self.get_lambda() * np.asarray(self.z)[:, 0])) - 1)
+                self.get_residual() + self.get_lamda() * np.asarray(self.z)[:, 0])) - 1)
         elif self.cet == CET_ADDI:
             frontier = np.asarray(self.y) + self.get_residual()
         return np.asarray(frontier)
@@ -403,7 +403,7 @@ class weakCNLS:
         else:
             delta = pd.DataFrame(delta)  # force transition from Series -> df
         # multi-index the columns
-        delta.columns = map(lambda x: "beta"+str(x) ,delta.columns)
+        delta.columns = map(lamda x: "beta"+str(x) ,delta.columns)
         return delta
 
     def info(self):

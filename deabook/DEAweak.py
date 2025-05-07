@@ -46,7 +46,7 @@ class DEAweak(DEA):
         elif self.rts == RTS_VRS2:
             self.__model__.mu = Var(self.__model__.I, self.__model__.R, bounds=(0.0, None),doc='emission reduction factor2')
 
-        self.__model__.lambda = Var(self.__model__.I, self.__model__.R, bounds=(0.0, None), doc='intensity variables')
+        self.__model__.lamda = Var(self.__model__.I, self.__model__.R, bounds=(0.0, None), doc='intensity variables')
 
         # Setup the objective function and constraints
         if sum(self.gy) >= 1:
@@ -81,26 +81,26 @@ class DEAweak(DEA):
             if self.rts == RTS_VRS2:
                 def input_rule(model, o, j):
                     if self.gx[j]==1:
-                        return sum((model.lambda[o, r]+model.mu[o,r])*self.xref[r][j] for r in model.R)<=model.rho[o]*self.x[o][j]
+                        return sum((model.lamda[o, r]+model.mu[o,r])*self.xref[r][j] for r in model.R)<=model.rho[o]*self.x[o][j]
                     else:
-                        return sum((model.lambda[o, r]+model.mu[o,r])*self.xref[r][j] for r in model.R)<=self.x[o][j]
+                        return sum((model.lamda[o, r]+model.mu[o,r])*self.xref[r][j] for r in model.R)<=self.x[o][j]
 
                 return input_rule
             else:
                 def input_rule(model, o, j):
                     if self.gx[j]==1:
-                        return sum(model.lambda[o, r]*self.xref[r][j] for r in model.R)<=model.rho[o]*self.x[o][j]
+                        return sum(model.lamda[o, r]*self.xref[r][j] for r in model.R)<=model.rho[o]*self.x[o][j]
                     else:
-                        return sum(model.lambda[o, r]*self.xref[r][j] for r in model.R)<=self.x[o][j]
+                        return sum(model.lamda[o, r]*self.xref[r][j] for r in model.R)<=self.x[o][j]
                 return input_rule
         else:
             if self.rts == RTS_VRS2:
                 def input_rule(model, o, j):
-                    return sum((model.lambda[o, r]+model.mu[o,r])*self.xref[r][j] for r in model.R)<=self.x[o][j]
+                    return sum((model.lamda[o, r]+model.mu[o,r])*self.xref[r][j] for r in model.R)<=self.x[o][j]
                 return input_rule
             else:
                 def input_rule(model, o, j):
-                    return sum(model.lambda[o, r] * self.xref[r][j] for r in model.R) <= self.x[o][j]
+                    return sum(model.lamda[o, r] * self.xref[r][j] for r in model.R) <= self.x[o][j]
 
                 return input_rule
 
@@ -112,15 +112,15 @@ class DEAweak(DEA):
 
             def output_rule(model, o, k):
                 if self.gy[k] == 1:
-                    return sum(model.lambda[o, r]*self.yref[r][k] for r in model.R) >= model.rho[o]*self.y[o][k]
+                    return sum(model.lamda[o, r]*self.yref[r][k] for r in model.R) >= model.rho[o]*self.y[o][k]
                 else:
-                    return sum(model.lambda[o, r] * self.yref[r][k] for r in model.R) >= self.y[o][k]
+                    return sum(model.lamda[o, r] * self.yref[r][k] for r in model.R) >= self.y[o][k]
 
             return output_rule
 
         else:
             def output_rule(model, o, k):
-                return sum(model.lambda[o, r] * self.yref[r][k] for r in model.R) >= self.y[o][k]
+                return sum(model.lamda[o, r] * self.yref[r][k] for r in model.R) >= self.y[o][k]
             return output_rule
 
     def __unoutput_rule(self):
@@ -128,25 +128,25 @@ class DEAweak(DEA):
         if sum(self.gb)>=1:
             def unoutput_rule(model, o, l):
                 if self.gb[l] == 1:
-                    return sum(model.lambda[o, r]*self.bref[r][l] for r in model.R) == model.rho[o]*self.b[o][l]
+                    return sum(model.lamda[o, r]*self.bref[r][l] for r in model.R) == model.rho[o]*self.b[o][l]
                 else:
-                    return sum(model.lambda[o, r] * self.bref[r][l] for r in model.R) == self.b[o][l]
+                    return sum(model.lamda[o, r] * self.bref[r][l] for r in model.R) == self.b[o][l]
 
             return unoutput_rule
         else:
             def unoutput_rule(model, o, l):
-                return sum(model.lambda[o, r] * self.bref[r][l] for r in model.R) == self.b[o][l]
+                return sum(model.lamda[o, r] * self.bref[r][l] for r in model.R) == self.b[o][l]
             return unoutput_rule
 
     def __vrs_rule(self):
         if self.rts==RTS_VRS1:
             def vrs_rule(model, o):
-                return sum(model.lambda[o, r] for r in model.R) == model.theta[o]
+                return sum(model.lamda[o, r] for r in model.R) == model.theta[o]
             return vrs_rule
 
         elif self.rts==RTS_VRS2:
             def vrs_rule(model, o):
-                return sum((model.lambda[o, r]+model.mu[o, r] )for r in model.R) == 1
+                return sum((model.lamda[o, r]+model.mu[o, r] )for r in model.R) == 1
 
             return vrs_rule
 
@@ -175,10 +175,10 @@ class DEAweak(DEA):
         tools.assert_optimized(self.optimization_status)
         self.__model__.rho.display()
 
-    def display_lambda(self):
-        """Display lambda value"""
+    def display_lamda(self):
+        """Display lamda value"""
         tools.assert_optimized(self.optimization_status)
-        self.__model__.lambda.display()
+        self.__model__.lamda.display()
 
     def get_status(self):
         """Return status"""
@@ -196,14 +196,14 @@ class DEAweak(DEA):
         rho = list(self.__model__.rho[:].value)
         return np.asarray(rho)
 
-    def get_lambda(self):
-        """Return lambda value by array"""
+    def get_lamda(self):
+        """Return lamda value by array"""
         tools.assert_optimized(self.optimization_status)
-        lambda = np.asarray([i + tuple([j]) for i, j in zip(list(self.__model__.lambda),
-                                                          list(self.__model__.lambda[:, :].value))])
-        lambda = pd.DataFrame(lambda, columns=['Name', 'Key', 'Value'])
-        lambda = lambda.pivot(index='Name', columns='Key', values='Value')
-        return lambda.to_numpy()
+        lamda = np.asarray([i + tuple([j]) for i, j in zip(list(self.__model__.lamda),
+                                                          list(self.__model__.lamda[:, :].value))])
+        lamda = pd.DataFrame(lamda, columns=['Name', 'Key', 'Value'])
+        lamda = lamda.pivot(index='Name', columns='Key', values='Value')
+        return lamda.to_numpy()
 
 
 class DDFweak(DEAweak):
@@ -244,7 +244,7 @@ class DDFweak(DEAweak):
             self.__model__.mu = Var(self.__model__.I, self.__model__.R, bounds=(0.0, None),
                                        doc='emission reduction factor2')
 
-        self.__model__.lambda = Var(self.__model__.I, self.__model__.R, bounds=(0.0, None), doc='intensity variables')
+        self.__model__.lamda = Var(self.__model__.I, self.__model__.R, bounds=(0.0, None), doc='intensity variables')
 
         # Setup the objective function and constraints
         self.__model__.objective = Objective(
@@ -268,26 +268,26 @@ class DDFweak(DEAweak):
         if self.rts == RTS_VRS2:
 
             def input_rule(model, o, j):
-                return sum((model.lambda[o, r]+model.mu[o, r]) * self.xref[r][j] for r in model.R) \
+                return sum((model.lamda[o, r]+model.mu[o, r]) * self.xref[r][j] for r in model.R) \
                             <= self.x[o][j] - model.rho[o]*self.gx[j]*self.x[o][j]
             return input_rule
         else:
 
             def input_rule(model, o, j):
-                return sum(model.lambda[o, r] * self.xref[r][j] for r in model.R) \
+                return sum(model.lamda[o, r] * self.xref[r][j] for r in model.R) \
                             <= self.x[o][j] - model.rho[o]*self.gx[j]*self.x[o][j]
             return input_rule
 
     def __output_rule(self):
         """Return the proper output constraint"""
         def output_rule(model, o, k):
-            return sum(model.lambda[o, r] * self.yref[r][k] for r in model.R) >= self.y[o][k] + model.rho[o]*self.gy[k]*self.y[o][k]
+            return sum(model.lamda[o, r] * self.yref[r][k] for r in model.R) >= self.y[o][k] + model.rho[o]*self.gy[k]*self.y[o][k]
         return output_rule
 
     def __undesirable_output_rule(self):
         """Return the proper undesirable output constraint"""
         def undesirable_output_rule(model, o, l):
-            return sum(model.lambda[o, r] * self.bref[r][l] for r in model.R) == self.b[o][l] - model.rho[o]*self.gb[l]*self.b[o][l]
+            return sum(model.lamda[o, r] * self.bref[r][l] for r in model.R) == self.b[o][l] - model.rho[o]*self.gb[l]*self.b[o][l]
         return undesirable_output_rule
 
     def __vrs_rule(self):
@@ -295,12 +295,12 @@ class DDFweak(DEAweak):
         if self.rts == RTS_VRS1:
 
             def vrs_rule(model, o):
-                return sum(model.lambda[o, r] for r in model.R) == model.theta[o]
+                return sum(model.lamda[o, r] for r in model.R) == model.theta[o]
             return vrs_rule
         elif self.rts == RTS_VRS2:
 
             def vrs_rule(model, o):
-                return sum((model.lambda[o, r]+model.mu[o, r] )for r in model.R) == 1
+                return sum((model.lamda[o, r]+model.mu[o, r] )for r in model.R) == 1
             return vrs_rule
 
 

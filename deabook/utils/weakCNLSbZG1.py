@@ -55,7 +55,7 @@ class weakCNLSbZG1():
             # Initialize the set of z
             self.__model__.M = Set(initialize=range(len(self.z.iloc[0])))
             # Initialize the variables for z variable
-            self.__model__.lambda = Var(self.__model__.M, doc='z coefficient')
+            self.__model__.lamda = Var(self.__model__.M, doc='z coefficient')
         # Initialize the variables
         self.__model__.alpha = Var(self.__model__.I, doc='alpha')
         self.__model__.beta = Var(self.__model__.I,
@@ -124,7 +124,7 @@ class weakCNLSbZG1():
                         return np.array((self.b.loc[i,]))  == -model.alpha[i] \
                                 - sum(model.beta[i, k] * self.x.loc[i,self.xcol[k]] for k in model.K) \
                                 + sum(model.gamma[i, l] * self.y.loc[i,self.ycol[l]] for l in model.L) \
-                                + sum(model.lambda[m] * self.z.loc[i,self.zcol[m]] for m in model.M) \
+                                + sum(model.lamda[m] * self.z.loc[i,self.zcol[m]] for m in model.M) \
                                 + model.epsilon[i]
 
                     return regression_rule
@@ -141,7 +141,7 @@ class weakCNLSbZG1():
                     def regression_rule(model, i):
                         return np.array((self.b.loc[i,])) == -sum(model.beta[i, k] * self.x.loc[i,self.xcol[k]] for k in model.K) \
                                 + sum(model.gamma[i, l] * self.y.loc[i,self.ycol[l]] for l in model.L) \
-                                + sum(model.lambda[m] * self.z.loc[i,self.ycol[m]] for m in model.M) \
+                                + sum(model.lamda[m] * self.z.loc[i,self.ycol[m]] for m in model.M) \
                                 + model.epsilon[i]
 
                     return regression_rule
@@ -157,7 +157,7 @@ class weakCNLSbZG1():
             if type(self.z) != type(None):
                 def regression_rule(model, i):
                     return log(np.array((self.b.loc[i,]))) == - log(model.frontier[i] + 1) \
-                            + sum(model.lambda[m] * self.z.loc[i,self.ycol[m]]  for m in model.M) \
+                            + sum(model.lamda[m] * self.z.loc[i,self.ycol[m]]  for m in model.M) \
                             + model.epsilon[i]
 
                 return regression_rule

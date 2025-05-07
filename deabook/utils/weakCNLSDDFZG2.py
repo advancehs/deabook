@@ -80,7 +80,7 @@ class weakCNLSDDFZG2(weakCNLSDDFZG1.weakCNLSDDFZG1):
             # Initialize the set of z
             self.__model__.M = Set(initialize=range(len(self.z.iloc[0])))
             # Initialize the variables for z variable
-            self.__model__.lambda = Var(self.__model__.M, doc='z coefficient')
+            self.__model__.lamda = Var(self.__model__.M, doc='z coefficient')
 
         # Setup the objective function and constraints
         self.__model__.objective = Objective(rule=self._weakCNLSDDFZG1__objective_rule(),
@@ -262,7 +262,7 @@ class weakCNLSDDFZG2(weakCNLSDDFZG1.weakCNLSDDFZG1):
         else:
             beta = pd.DataFrame(beta)  # force transition from Series -> df
         # multi-index the columns
-        beta.columns = map(lambda x: "beta"+str(x) ,beta.columns)
+        beta.columns = map(lamda x: "beta"+str(x) ,beta.columns)
         return beta
 
     def get_delta(self):
@@ -276,7 +276,7 @@ class weakCNLSDDFZG2(weakCNLSDDFZG1.weakCNLSDDFZG1):
         else:
             delta = pd.DataFrame(delta)  # force transition from Series -> df
         # multi-index the columns
-        delta.columns = map(lambda x: "delta"+str(x) ,delta.columns)
+        delta.columns = map(lamda x: "delta"+str(x) ,delta.columns)
         return delta
 
     def get_gamma(self):
@@ -290,5 +290,5 @@ class weakCNLSDDFZG2(weakCNLSDDFZG1.weakCNLSDDFZG1):
         else:
             gamma = pd.DataFrame(gamma)  # force transition from Series -> df
         # multi-index the columns
-        gamma.columns = map(lambda x: "delta"+str(x) ,gamma.columns)
+        gamma.columns = map(lamda x: "delta"+str(x) ,gamma.columns)
         return gamma

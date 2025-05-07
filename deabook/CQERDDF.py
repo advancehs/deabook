@@ -100,7 +100,7 @@ class CQRDDF(CQER.CQR):
                         return sum(model.gamma[i, k] * self.y[i][k] for k in model.K) \
                             == model.alpha[i] \
                             + sum(model.beta[i, j] * self.x[i][j] for j in model.J) \
-                            - sum(model.lambda[m] * self.z[i][m] for m in model.M) \
+                            - sum(model.lamda[m] * self.z[i][m] for m in model.M) \
                             - model.epsilon_minus[i] + model.epsilon_plus[i]
                     return regression_rule
 
@@ -119,7 +119,7 @@ class CQRDDF(CQER.CQR):
                             == model.alpha[i] \
                             + sum(model.beta[i, j] * self.x[i][j] for j in model.J) \
                             + sum(model.delta[i, l] * self.b[i][l] for l in model.L) \
-                            - sum(model.lambda[m] * self.z[i][m] for m in model.M) \
+                            - sum(model.lamda[m] * self.z[i][m] for m in model.M) \
                             - model.epsilon_minus[i] + model.epsilon_plus[i]
                     return regression_rule
 
@@ -138,7 +138,7 @@ class CQRDDF(CQER.CQR):
                     def regression_rule(model, i):
                         return sum(model.gamma[i, k] * self.y[i][k] for k in model.K) \
                             == sum(model.beta[i, j] * self.x[i][j] for j in model.J) \
-                            - sum(model.lambda[m] * self.z[i][m] for m in model.M) \
+                            - sum(model.lamda[m] * self.z[i][m] for m in model.M) \
                             - model.epsilon_minus[i] + model.epsilon_plus[i]
                     return regression_rule
 
@@ -155,7 +155,7 @@ class CQRDDF(CQER.CQR):
                         return sum(model.gamma[i, k] * self.y[i][k] for k in model.K) \
                             == sum(model.beta[i, j] * self.x[i][j] for j in model.J) \
                             + sum(model.delta[i, l] * self.b[i][l] for l in model.L) \
-                            - sum(model.lambda[m] * self.z[i][m] for m in model.M) \
+                            - sum(model.lamda[m] * self.z[i][m] for m in model.M) \
                             - model.epsilon_minus[i] + model.epsilon_plus[i]
                     return regression_rule
 
@@ -246,7 +246,7 @@ class CQRDDF(CQER.CQR):
         else:
             gamma = pd.DataFrame(gamma)  # force transition from Series -> df
         # multi-index the columns
-        gamma.columns = map(lambda x: "gamma"+str(x) ,gamma.columns)
+        gamma.columns = map(lamda x: "gamma"+str(x) ,gamma.columns)
         return gamma
 
     def display_delta(self):
@@ -265,7 +265,7 @@ class CQRDDF(CQER.CQR):
         else:
             delta = pd.DataFrame(delta)  # force transition from Series -> df
         # multi-index the columns
-        delta.columns = map(lambda x: "delta"+str(x) ,delta.columns)
+        delta.columns = map(lamda x: "delta"+str(x) ,delta.columns)
         return delta
 
 
