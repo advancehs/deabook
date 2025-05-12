@@ -1,7 +1,7 @@
 from pyomo.environ import ConcreteModel, Set, Var, Objective, minimize, maximize, Constraint, Reals,PositiveReals
 import numpy as np
 import pandas as pd
-from .constant import LEFT, RIGHT, ORIENT_OO, RTS_VRS, RTS_CRS, OPT_DEFAULT, OPT_LOCAL
+from .constant import LEFT, RIGHT, RTS_VRS, RTS_CRS, OPT_DEFAULT, OPT_LOCAL
 from .utils import tools
 import ast
 

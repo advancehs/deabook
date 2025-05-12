@@ -6,7 +6,6 @@ import numpy as np
 from pyomo.opt import SolverFactory, SolverManagerFactory
 from ..constant import CET_ADDI, CET_MULT, CET_Model_Categories, OPT_LOCAL, OPT_DEFAULT, RTS_CRS
 __email_re = compile(r'([^@]+@[^@]+\.[a-zA-Z0-9]+)$')
-from deabook import CNLSSDFDDFweak
 from deabook.constant import FUN_PROD, OPT_LOCAL,RTS_VRS1, RTS_VRS2, CET_ADDI, CET_MULT
 
 def set_neos_email(address):

@@ -1,5 +1,5 @@
 # import dependencies
-from pyomo.environ import ConcreteModel, Set, Var, Objective, minimize, maximize, Constraint,summation,value
+from pyomo.environ import ConcreteModel, Set, Var, Objective, minimize, maximize, Constraint
 import numpy as np
 import pandas as pd
 from .constant import CET_ADDI, RTS_VRS1, RTS_VRS2, RTS_CRS, OPT_DEFAULT, OPT_LOCAL
