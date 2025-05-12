@@ -3,22 +3,24 @@
 __author__ = """advancehs"""
 __email__ = "1019753743@qq.com"
 __version__ = "0.0.4"
-from . import CNLS
-from . import CNLSSDFDDF
-from . import CNLSSDFDDFweak
-from . import CNLSDDFG
-from . import CNLSG
+# from . import CNLS
+# from . import CNLSSDFDDF
+# from . import CNLSSDFDDFweak
+# from . import CNLSDDFG
+# from . import CNLSG
 from . import constant
-from . import CQER
-from . import CQERDDF
-from . import CQERG
-from . import CSVR
+# from . import CQER
+# from . import CQERDDF
+# from . import CQERG
+# from . import CSVR
 from . import dataset
 from . import DEA
 from . import MQDEA
-from . import FDH
-from . import plot
-from . import StoNED
+from . import DEAweak
+from . import MQDEAweak
+# from . import FDH
+# from . import plot
+# from . import StoNED
 # from . import weakCNLS
 # from . import weakCNLSb
 # from . import weakCNLSbG
@@ -28,21 +30,24 @@ from . import StoNED
 # from . import weakCNLSx
 # from . import weakCNLSxG
 __all__ = [
-    'CNLS',
-    'CNLSSDFDDF',
-    'CNLSSDFDDFweak',
-    'CNLSDDFG',
-    'CNLSG',
+    # 'CNLS',
+    # 'CNLSSDFDDF',
+    # 'CNLSSDFDDFweak',
+    # 'CNLSDDFG',
+    # 'CNLSG',
     'constant',
-    'CQER',
-    'CQERDDF',
-    'CQERG',
-    'CSVR',
-    'dataset',
+    # 'CQER',
+    # 'CQERDDF',
+    # 'CQERG',
+    # 'CSVR',
+    # 'dataset',
     'DEA',
-    'FDH',
-    'plot',
-    'StoNED',
+    'MQDEA',
+    'DEAweak',  
+    'MQDEAweak',
+    # 'FDH',
+    # 'plot',
+    # 'StoNED',
     # 'weakCNLS',
     # 'weakCNLSb',
     # 'weakCNLSbG',
