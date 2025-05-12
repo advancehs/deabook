@@ -695,7 +695,7 @@ class DDF2(DEA2):
         self.reference_indices_range = range(len(self.yref)) # Range indices for internal numpy arrays
         self.num_inputs = len(self.x[0])
         self.num_outputs = len(self.y[0])
-        # print(self.gx,self.gy,")))))))))))))")
+        # print(self.gx,self.gy,"############")
 
 
 
