@@ -15,6 +15,7 @@ from . import CQERG
 from . import CSVR
 from . import dataset
 from . import DEA
+from . import MQDEA
 from . import FDH
 from . import plot
 from . import StoNED
