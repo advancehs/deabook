@@ -3,10 +3,31 @@ from re import compile
 import ast
 from os import environ
 import numpy as np
-from pyomo.opt import SolverFactory, SolverManagerFactory
+import pyomo.environ as pyo
+from pyomo.opt import SolverFactory, SolverManagerFactory, check_available_solvers
 from ..constant import CET_ADDI, CET_MULT, CET_Model_Categories, OPT_LOCAL, OPT_DEFAULT, RTS_CRS
 __email_re = compile(r'([^@]+@[^@]+\.[a-zA-Z0-9]+)$')
 from deabook.constant import FUN_PROD, OPT_LOCAL,RTS_VRS1, RTS_VRS2, CET_ADDI, CET_MULT
+
+def get_remote_solvers():
+    import pyomo.neos.kestrel
+    kestrel = pyomo.neos.kestrel.kestrelAMPL()
+    return list(
+        set(
+            [
+                name.split(":")[0].lower()
+                for name in kestrel.solvers()
+            ]
+        )
+    )
+
+def check_remote_solver(solver="mosek"):
+    solver_list = get_remote_solvers()
+    return bool(solver in solver_list)
+
+def check_local_solver(solver="mosek"):
+    return bool(check_available_solvers(solver))
+
 
 def set_neos_email(address):
     """pass email address to NEOS server
@@ -22,14 +43,14 @@ def set_neos_email(address):
     environ['NEOS_EMAIL'] = address
     return True
 
-# def optimize_model2(model, ind, solver=OPT_DEFAULT):
-#     if solver is not OPT_DEFAULT:
-#         assert_solver_available_locally(solver)
+def optimize_model4(model, ind, solver=OPT_DEFAULT):
+    if solver is not OPT_DEFAULT:
+        assert_solver_available_locally(solver)
 
-#     solver_instance = SolverFactory(solver)
-#     # print("Estimating dmu{} locally with {} solver.".format(
-#     #     ind, solver), flush=True)
-#     return str(solver_instance.solve(model, tee=False)), 1
+    solver_instance = SolverFactory(solver)
+    # print("Estimating dmu{} locally with {} solver.".format(
+    #     ind, solver), flush=True)
+    return str(solver_instance.solve(model, tee=False)), 1
 
 
 def optimize_model2(model, actual_index, use_neos, cet, solver=OPT_DEFAULT):
@@ -131,6 +152,60 @@ def optimize_model2(model, actual_index, use_neos, cet, solver=OPT_DEFAULT):
 
 
 
+
+def optimize_model(model, email, cet, solver=OPT_DEFAULT):
+    optimization_status = 0
+    if not set_neos_email(email):
+        if solver is not OPT_DEFAULT:
+            # assert_solver_available_locally(solver)
+            pass
+        elif cet == CET_ADDI:
+            solver = "mosek"
+        elif cet == CET_MULT:
+            raise ValueError(
+                "Please specify the solver for optimizing multiplicative model locally.")
+        try:    
+            solver_instance = SolverFactory(solver)
+            print("Estimating the {} locally with {} solver.".format(
+            CET_Model_Categories[cet], solver), flush=True)
+            return solver_instance.solve(model, tee=True), 1
+        except:
+            from amplpy import modules
+            solver_instance = SolverFactory(solver+"nl", executable=modules.find(solver), 
+                                                solve_io="nl",
+                                                options = {'soltype':1}
+                                                )
+            print("Estimating the {} locally with {} solver.".format(
+            CET_Model_Categories[cet], solver), flush=True)
+            return solver_instance.solve(model, tee=True), 1
+    else:
+        if solver is OPT_DEFAULT and cet is CET_ADDI:
+            solvers = ["mosek"]
+        elif solver is OPT_DEFAULT and cet == CET_MULT:
+            solvers = ["knitro"]
+        else:
+            solvers = [solver]
+        for solver in solvers:
+            model, optimization_status = __try_remote_solver(
+                model, cet, solver)
+            if optimization_status == 1:
+                return model, optimization_status
+        raise Exception("Remote solvers are temporarily not available.")
+
+def __try_remote_solver(model, cet, solver):
+    solver_instance = SolverManagerFactory('neos')
+    try:
+        print("Estimating the {} remotely with {} solver.".format(
+            CET_Model_Categories[cet], solver), flush=True)
+        return solver_instance.solve(model, tee=True, opt=solver), 1
+    except:
+        print("Remote {} solver is not available now.".format(solver))
+        return model, 0
+
+
+
+
+
 def optimize_model3(model, solver=OPT_DEFAULT):
     if solver is not OPT_DEFAULT:
         assert_solver_available_locally(solver)
@@ -140,28 +215,28 @@ def optimize_model3(model, solver=OPT_DEFAULT):
     #     ind, solver), flush=True)
     return str(solver_instance.solve(model, tee=False)), 1
 
-def optimize_model(model, email, cet, solver=OPT_DEFAULT):
-    if not set_neos_email(email):
-        if solver is not OPT_DEFAULT:
-            assert_solver_available_locally(solver)
-        elif cet == CET_ADDI:
-            solver = "mosek"
-        elif cet == CET_MULT:
-            raise ValueError(
-                "Please specify the solver for optimizing multiplicative model locally.")
-        solver_instance = SolverFactory(solver )
-        print("Estimating the {} locally with {} solver.".format(
-            CET_Model_Categories[cet], solver), flush=True)
-        return solver_instance.solve(model, tee=False ), 1
-    else:
-        if solver is OPT_DEFAULT and cet is CET_ADDI:
-            solver = "mosek"
-        elif solver is OPT_DEFAULT and cet == CET_MULT:
-            solver = "knitro"
-        solver_instance = SolverFactory(solver )
-        print("Estimating the {} remotely with {} solver.".format(
-            CET_Model_Categories[cet], solver), flush=True)
-        return solver_instance.solve(model, tee=False , opt=solver), 1
+# def optimize_model(model, email, cet, solver=OPT_DEFAULT):
+#     if not set_neos_email(email):
+#         if solver is not OPT_DEFAULT:
+#             assert_solver_available_locally(solver)
+#         elif cet == CET_ADDI:
+#             solver = "mosek"
+#         elif cet == CET_MULT:
+#             raise ValueError(
+#                 "Please specify the solver for optimizing multiplicative model locally.")
+#         solver_instance = SolverFactory(solver )
+#         print("Estimating the {} locally with {} solver.".format(
+#             CET_Model_Categories[cet], solver), flush=True)
+#         return solver_instance.solve(model, tee=False ), 1
+#     else:
+#         if solver is OPT_DEFAULT and cet is CET_ADDI:
+#             solver = "mosek"
+#         elif solver is OPT_DEFAULT and cet == CET_MULT:
+#             solver = "knitro"
+#         solver_instance = SolverFactory(solver )
+#         print("Estimating the {} remotely with {} solver.".format(
+#             CET_Model_Categories[cet], solver), flush=True)
+#         return solver_instance.solve(model, tee=False , opt=solver), 1
 
 
 def trans_list(li):
@@ -967,7 +1042,7 @@ def assert_CNLSSD1(y, x, z=None, gy=[1], gx=[1]):
 
     gy = to_1d_list(gy)
     gx = to_1d_list(gx)
-    print(gx,"#############")
+    # print(gx,"#############")
     if sum(gx)>=1 and sum(gy)>=1:
         raise ValueError(
             "gy and gx can not be bigger than 1 together.")
@@ -1000,7 +1075,7 @@ def assert_CNLSSD1(y, x, z=None, gy=[1], gx=[1]):
     elif sum(gy) >= 1:
         basexy = [sublist[i] for sublist in y for i in range(len(gy)) if gy[i] == 1]
 
-    print(basexy,"xxxxxxxx")
+    # print(basexy,"xxxxxxxx")
     x = [
         [
             sublist[i] / sublist[i] if gx[i] == 1 else sublist[i]  # 根据 gx 的值决定是否进行除法
@@ -2008,7 +2083,6 @@ def assert_CNLSDDF1(y, x, z=None, gy=[1], gx=[1]):
         y = [[elem - basexy[i]*gy[j] for j, elem in enumerate(sublist)] for i, sublist in enumerate(y)]
         x = [[elem + basexy[i]*gx[j] for j, elem in enumerate(sublist)] for i, sublist in enumerate(x)]
 
-        print(basexy)
         print(y,"#########")
         print(x,"#########")
     else:
@@ -2739,3 +2813,74 @@ def assert_valid_yxb_drf(sent,fenmu,fenzi):
 
     return outputvars, inputvars, unoutputvars, obj_coeflt, rule4_coeflt,neg_obj
 
+
+def split_MB(sent, sx, sy,level):
+    inputvars = sent.split('=')[0].strip(' ')
+    inputvars_np = inputvars.split('+')[0].strip(' ').split(' ')  ## 假设一定有不含污染的投入，为了简单点
+    inputvars_p = inputvars.split('+')[1].strip(' ').split(' ')  ## 一定有含污染的投入
+
+    outputvars = sent.split('=')[1].split(':')[0].strip(' ')
+    try:  ## 期望产出中，给了加号
+        outputvars_np = outputvars.split('+')[0].strip(' ').split(' ')
+        outputvars_p = outputvars.split('+')[1].strip(' ').split(' ')
+        if outputvars_np[0] == "":  ## 给了加号后，前面（含污染）是空的
+            outputvars_np = None
+        if outputvars_p[0] == "":  ## 给了加号后，后面（含污染）是空的
+            outputvars_p = None
+
+    except:  ## 期望产出中没有加号
+        outputvars_np = outputvars.strip(' ').split(' ')  ## 默认所有都是不含污染
+        if outputvars_np[0] == "":  ## 没有加号后，前面是空的，后面（含污染）是空的
+            outputvars_np = None
+
+
+        outputvars_p = None
+    unoutputvars = sent.split('=')[1].split(':')[1].strip(' ').split(' ')  ## 一定有非期望产出
+
+    if type(outputvars_np) == type(None):
+        if type(outputvars_p) == type(None):
+            n1, n2, n3, n4, n5 = len(inputvars_np), len(inputvars_p), 0, 0, len(unoutputvars)
+        elif type(outputvars_p) != type(None):
+            n1, n2, n3, n4, n5 = len(inputvars_np), len(inputvars_p), 0, len(outputvars_p), len(unoutputvars)
+
+    elif type(outputvars_np) != type(None):
+        if type(outputvars_p) == type(None):
+            n1, n2, n3, n4, n5 = len(inputvars_np), len(inputvars_p), len(outputvars_np), 0, len(unoutputvars)
+        elif type(outputvars_p) != type(None):
+            n1, n2, n3, n4, n5 = len(inputvars_np), len(inputvars_p), len(outputvars_np), len(outputvars_p), len(
+                unoutputvars)
+    # print(np.array(sx).shape[0])
+
+    if np.array(sx).shape[0] != n5:
+        raise ValueError(
+            "Number of lists in sx must be the same in length of b")
+    # print(n1,np.array(sx)[0,0:n1],np.array(sx)[0,0:n1].all(0))
+
+    if not np.array(sx)[0, n1:n1 + n2].any(0):
+        raise ValueError(
+            "Number of polluted input must be the same in the position of sx")
+
+    if type(outputvars_np) != type(None):
+        if type(outputvars_p) != type(None):
+           if level >5:
+               raise ValueError(
+                   "There are input_np, input_p, output_np, output_p in your statement of sent, \n"
+                   "so you can state at most 5 level in this model")
+
+        elif type(outputvars_p) == type(None):
+            if level > 4:
+                raise ValueError(
+                    "There are input_np, input_p, output_np in your statement of sent, \n"
+                    "so you can state at most 4 level in this model")
+    elif type(outputvars_np) == type(None):
+        if type(outputvars_p) != type(None):
+            if level > 4:
+                raise ValueError(
+                    "There are input_np, input_p, output_p in your statement of sent, \n"
+                    "so you can state at most 4 level in this model")
+        elif type(outputvars_p) == type(None):
+            if level > 3:
+                raise ValueError(
+                    "There are input_np, input_p, output_p in your statement of sent, \n"
+                    "so you can state at most 3 level in this model")
+    return inputvars_np, inputvars_p, outputvars_np, outputvars_p, unoutputvars, sx, sy,level
