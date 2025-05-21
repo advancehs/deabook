@@ -10,5 +10,5 @@ amplpy
 ipykernel 
 tabulate
 glpk
-cyipopt
+# cyipopt
 pyscipopt
