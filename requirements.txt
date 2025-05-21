@@ -1,8 +1,12 @@
 pyomo>=6.9.2
 mosek>=11.0.19
 pandas>=2.2.3
+openpyxl
 numpy>=2.0.0
 scipy>=1.13.0
 matplotlib>=3.9.0
-amplpy
-# ampl-module-knitro
+ipykernel 
+tabulate
+# glpk
+# cyipopt
+pyscipopt
