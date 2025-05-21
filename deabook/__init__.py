@@ -2,7 +2,7 @@
 
 __author__ = """advancehs"""
 __email__ = "1019753743@qq.com"
-__version__ = "0.0.5"
+__version__ = "0.0.6"
 # from . import CNLS
 # from . import CNLSSDFDDF
 # from . import CNLSSDFDDFweak
@@ -18,6 +18,7 @@ from . import DEA
 from . import MQDEA
 from . import DEAweak
 from . import MQDEAweak
+from . import MB
 # from . import FDH
 # from . import plot
 # from . import StoNED
@@ -31,8 +32,8 @@ from . import MQDEAweak
 # from . import weakCNLSxG
 __all__ = [
     # 'CNLS',
-    # 'CNLSSDFDDF',
-    # 'CNLSSDFDDFweak',
+    'CNLSSDFDDF',
+    'CNLSSDFDDFweak',
     # 'CNLSDDFG',
     # 'CNLSG',
     'constant',
@@ -45,6 +46,7 @@ __all__ = [
     'MQDEA',
     'DEAweak',  
     'MQDEAweak',
+    'MB',
     # 'FDH',
     # 'plot',
     # 'StoNED',
