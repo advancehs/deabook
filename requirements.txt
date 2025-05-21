@@ -5,10 +5,8 @@ openpyxl
 numpy>=2.0.0
 scipy>=1.13.0
 matplotlib>=3.9.0
-amplpy
-# ampl-module-knitro
 ipykernel 
 tabulate
-glpk
+glpk>=4.0
 # cyipopt
 pyscipopt
