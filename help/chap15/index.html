@@ -12,29 +12,27 @@
         <meta name="author" content="advancehs">
       
       
-        <link rel="canonical" href="https://advancehs.github.io/deabook/">
+        <link rel="canonical" href="https://advancehs.github.io/deabook/help/chap15/">
       
       
-      
-        <link rel="next" href="installation/">
       
       
         
       
       
-      <link rel="icon" href="assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>deabook</title>
+        <title>第十五章：DEA 调试与排错 - deabook</title>
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -53,11 +51,11 @@
       
     
     
-      <link rel="stylesheet" href="css/timeago.css">
+      <link rel="stylesheet" href="../../css/timeago.css">
     
-      <link rel="stylesheet" href="assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -82,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#welcome-to-deabook" class="md-skip">
+        <a href="#dea" class="md-skip">
           Skip to content
         </a>
       
@@ -98,7 +96,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="." title="deabook" class="md-header__button md-logo" aria-label="deabook" data-md-component="logo">
+    <a href="../.." title="deabook" class="md-header__button md-logo" aria-label="deabook" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -118,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Home
+              第十五章：DEA 调试与排错
             
           </span>
         </div>
@@ -239,7 +237,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="." title="deabook" class="md-nav__button md-logo" aria-label="deabook" data-md-component="logo">
+    <a href="../.." title="deabook" class="md-nav__button md-logo" aria-label="deabook" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -266,37 +264,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Home
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="." class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -312,48 +283,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#features" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Features
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        中文帮助文档
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -365,7 +294,7 @@
   
   
     <li class="md-nav__item">
-      <a href="installation/" class="md-nav__link">
+      <a href="../../installation/" class="md-nav__link">
         
   
   
@@ -392,7 +321,7 @@
   
   
     <li class="md-nav__item">
-      <a href="usage/" class="md-nav__link">
+      <a href="../../usage/" class="md-nav__link">
         
   
   
@@ -419,7 +348,7 @@
   
   
     <li class="md-nav__item">
-      <a href="contributing/" class="md-nav__link">
+      <a href="../../contributing/" class="md-nav__link">
         
   
   
@@ -446,7 +375,7 @@
   
   
     <li class="md-nav__item">
-      <a href="faq/" class="md-nav__link">
+      <a href="../../faq/" class="md-nav__link">
         
   
   
@@ -473,7 +402,7 @@
   
   
     <li class="md-nav__item">
-      <a href="changelog/" class="md-nav__link">
+      <a href="../../changelog/" class="md-nav__link">
         
   
   
@@ -574,7 +503,7 @@
   
   
     <li class="md-nav__item">
-      <a href="examples/intro/" class="md-nav__link">
+      <a href="../../examples/intro/" class="md-nav__link">
         
   
   
@@ -656,7 +585,7 @@
   
   
     <li class="md-nav__item">
-      <a href="deabook/" class="md-nav__link">
+      <a href="../../deabook/" class="md-nav__link">
         
   
   
@@ -684,7 +613,7 @@
   
   
     <li class="md-nav__item">
-      <a href="common/" class="md-nav__link">
+      <a href="../../common/" class="md-nav__link">
         
   
   
@@ -739,10 +668,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#features" class="md-nav__link">
+  <a href="#_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Features
+        导入
       
     </span>
   </a>
@@ -750,10 +679,182 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_1" class="md-nav__link">
+  <a href="#1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        中文帮助文档
+        调试场景 1：变量名错误
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="调试场景 1：变量名错误">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug 描述
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        错误现象
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        诊断方法
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        调试场景 2：缺失参数导致约束缺失
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="调试场景 2：缺失参数导致约束缺失">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bug 描述
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        错误现象
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        诊断方法
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        调试工具和技术
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="调试工具和技术">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-modelpprint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. model.pprint()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-print" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. print 语句检查数据
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-glpk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 使用 glpk 求解器调试
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. 逐步构建
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        常见错误类型
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dea8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        dea8 正确实现要点
       
     </span>
   </a>
@@ -783,22 +884,146 @@
   
 
 
-<h1 id="welcome-to-deabook">Welcome to deabook<a class="headerlink" href="#welcome-to-deabook" title="Permanent link">&para;</a></h1>
-<p><a href="https://pypi.python.org/pypi/deabook"><img alt="image" src="https://img.shields.io/pypi/v/deabook.svg" /></a></p>
-<p><strong>dea</strong></p>
+<h1 id="dea">第十五章：DEA 调试与排错<a class="headerlink" href="#dea" title="Permanent link">&para;</a></h1>
+<p><strong>主题</strong>：通过在 dea8 函数中故意引入 bug，学习 DEA 模型的调试技术。</p>
+<p><strong>数据文件</strong>：
+- <code>Ex3.dta</code></p>
+<p><strong>说明</strong>：本章不使用 deabook 包，使用第十二章开发的 <code>dea8</code> 函数及其变体。</p>
+<hr />
+<h2 id="_1">导入<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyomo.environ</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConcreteModel</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Var</span><span class="p">,</span> <span class="n">Objective</span><span class="p">,</span> <span class="n">Constraint</span>
+</code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="1">调试场景 1：变量名错误<a class="headerlink" href="#1" title="Permanent link">&para;</a></h2>
+<h3 id="bug">Bug 描述<a class="headerlink" href="#bug" title="Permanent link">&para;</a></h3>
+<p>在 LP 约束中使用了错误的循环变量名：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># 正确代码</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">I</span><span class="p">:</span>
+    <span class="o">...</span>
+
+<span class="c1"># Bug 代码</span>
+<span class="k">for</span> <span class="n">i2</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">I</span><span class="p">:</span>
+    <span class="o">...</span>  <span class="c1"># 但后续使用 i（未定义）</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="_2">错误现象<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>NameError: name &#39;i&#39; is not defined
+</code></pre></div></td></tr></table></div>
+<h3 id="_3">诊断方法<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<ol>
+<li>检查约束函数内的变量名是否与循环变量一致</li>
+<li>确认 Pyomo 约束的 rule 函数签名正确</li>
+</ol>
+<hr />
+<h2 id="2">调试场景 2：缺失参数导致约束缺失<a class="headerlink" href="#2" title="Permanent link">&para;</a></h2>
+<h3 id="bug_1">Bug 描述<a class="headerlink" href="#bug_1" title="Permanent link">&para;</a></h3>
+<p><code>dea8</code> 的 <code>orient</code> 参数缺失，导致没有匹配的 if/elif 分支：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># dea8 缺少 orient 参数</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">dea8</span><span class="p">(</span><span class="n">formula</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">rts</span><span class="o">=</span><span class="s2">&quot;crs&quot;</span><span class="p">):</span>
+    <span class="c1"># 没有 orient 参数 → 无产出/投入导向分支</span>
+    <span class="c1"># Constraint 函数返回 None</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="_4">错误现象<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Free software: MIT License</li>
-<li>Documentation: <a href="https://advancehs.github.io/deabook">https://advancehs.github.io/deabook</a></li>
+<li>约束未正确构建</li>
+<li>LP 模型可能无解或结果异常</li>
 </ul>
-<h2 id="features">Features<a class="headerlink" href="#features" title="Permanent link">&para;</a></h2>
+<h3 id="_5">诊断方法<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<ol>
+<li>使用 <code>model.pprint()</code> 查看 LP 模型的完整结构</li>
+<li>检查约束是否被正确添加</li>
+<li>确认 <code>orient</code> 参数传递正确</li>
+</ol>
+<hr />
+<h2 id="_6">调试工具和技术<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<h3 id="1-modelpprint">1. model.pprint()<a class="headerlink" href="#1-modelpprint" title="Permanent link">&para;</a></h3>
+<p>打印完整的 LP 模型结构（变量、约束、目标函数）：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">pprint</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+<p>输出包括：
+- 所有变量及其 bounds
+- 所有约束及表达式
+- 目标函数</p>
+<h3 id="2-print">2. print 语句检查数据<a class="headerlink" href="#2-print" title="Permanent link">&para;</a></h3>
+<p>在构建约束前打印参考集数据：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="n">xref</span><span class="p">)</span>  <span class="c1"># 检查参考集投入数据</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">yref</span><span class="p">)</span>  <span class="c1"># 检查参考集产出数据</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="3-glpk">3. 使用 glpk 求解器调试<a class="headerlink" href="#3-glpk" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">res</span> <span class="o">=</span> <span class="n">dea8</span><span class="p">(</span><span class="s2">&quot;Y~K L&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">rts</span><span class="o">=</span><span class="s2">&quot;crs&quot;</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s2">&quot;oo&quot;</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="s2">&quot;glpk&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
 <ul>
-<li>TODO</li>
+<li><code>glpk</code> 是开源求解器，适合调试</li>
+<li>不依赖商业求解器许可证</li>
+<li>速度较慢但错误信息更详细</li>
 </ul>
-<h2 id="_1">中文帮助文档<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
-<ul>
-<li><a href="deabook文档/帮助文档_各章节Python代码导读.md">各章节代码导读（总览版）</a></li>
-<li><a href="deabook%E6%96%87%E6%A1%A3/%E5%B8%AE%E5%8A%A9%E6%96%87%E6%A1%A3_%E5%90%84%E7%AB%A0%E8%8A%82%E4%BB%A3%E7%A0%81%E5%AF%BC%E8%AF%BB/">各章节代码导读（分章版，一章一个文件）</a></li>
-</ul>
+<h3 id="4">4. 逐步构建<a class="headerlink" href="#4" title="Permanent link">&para;</a></h3>
+<p>从最简版本（dea1）开始，逐步增加功能：
+1. 先确保基础 CRS + 产出导向正确
+2. 添加 VRS 约束
+3. 添加投入导向
+4. 添加 evaquery/refquery</p>
+<hr />
+<h2 id="_7">常见错误类型<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>错误类型</th>
+<th>错误信息</th>
+<th>原因</th>
+<th>解决方案</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>变量名错误</td>
+<td><code>NameError: name 'i' is not defined</code></td>
+<td>循环变量与使用变量不一致</td>
+<td>检查所有变量名</td>
+</tr>
+<tr>
+<td>约束缺失</td>
+<td>结果异常或无解</td>
+<td>if/elif 分支不完整</td>
+<td>添加所有必要的分支</td>
+</tr>
+<tr>
+<td>索引越界</td>
+<td><code>IndexError</code></td>
+<td>方向向量长度与变量数不匹配</td>
+<td>检查 gx/gy 长度</td>
+</tr>
+<tr>
+<td>求解失败</td>
+<td><code>optimization_status != ok</code></td>
+<td>模型不可行或无界</td>
+<td>检查约束符号和 bounds</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="dea8">dea8 正确实现要点<a class="headerlink" href="#dea8" title="Permanent link">&para;</a></h2>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">dea8</span><span class="p">(</span><span class="n">formula</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">evaquery</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">refquery</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rts</span><span class="o">=</span><span class="s2">&quot;crs&quot;</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s2">&quot;oo&quot;</span><span class="p">):</span>
+</code></pre></div></td></tr></table></div>
+<p>关键检查点：
+1. <code>formula</code> 解析正确（<code>~</code> 分隔产出和投入）
+2. <code>orient</code> 为 <code>"oo"</code> 或 <code>"io"</code>
+3. <code>rts</code> 为 <code>"crs"</code> 或 <code>"vrs"</code>
+4. 产出导向：目标函数为 maximize，约束符号正确
+5. 投入导向：目标函数为 minimize，约束符号正确
+6. VRS：添加 <code>sum(lamda) == 1</code> 约束
+7. evaquery/refquery 正确筛选 DMU</p>
 
 
 
@@ -831,7 +1056,7 @@
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="May 7, 2025 16:57:08 UTC"><span class="timeago" datetime="2025-05-07T16:57:08+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="May 7, 2025 16:57:08 UTC">2025-05-07</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="April 28, 2026 14:08:16 UTC"><span class="timeago" datetime="2026-04-28T14:08:16+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="April 28, 2026 14:08:16 UTC">2026-04-28</span>
   </span>
 
     
@@ -891,14 +1116,14 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.instant", "navigation.tracking", "navigation.top", "search.highlight", "search.share"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.top", "search.highlight", "search.share"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
-        <script src="js/timeago.min.js"></script>
+        <script src="../../js/timeago.min.js"></script>
       
-        <script src="js/timeago_mkdocs_material.js"></script>
+        <script src="../../js/timeago_mkdocs_material.js"></script>
       
     
   </body>
