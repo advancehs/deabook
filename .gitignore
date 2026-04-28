@@ -105,3 +105,20 @@ ENV/
 
 # IDE settings
 .vscode/
+# Local book manuscript files
+/docs/.codex
+/docs/deabook文档/01_绪论.docx
+/docs/deabook文档/02_Python基础知识.md
+/docs/deabook文档/03_数据包络分析的经典模型.md
+/docs/deabook文档/04_传统生产率测度方法.md
+/docs/deabook文档/05_能源效率与能源生产率测度方法.md
+/docs/deabook文档/06_环境绩效测度方法（物质平衡）.md
+/docs/deabook文档/06_环境绩效测度方法（非期望产出）.md
+/docs/deabook文档/07_包含非期望产出的生产率.md
+/docs/deabook文档/08_随机非参数数据包络分析.md
+/docs/deabook文档/09_DEA模型编程的基本思路.md
+/docs/deabook文档/10_DEA程序的实战演练.md
+/docs/deabook文档/11_基于DEA对偶问题的影子价格估计.md
+/docs/deabook文档/outline.txt
+/docs/deabook文档/帮助文档_各章节Python代码导读.md
+/docs/deabook文档/附录_Python程序和错误排查.md
