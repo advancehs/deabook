@@ -122,3 +122,6 @@ ENV/
 /docs/deabook文档/outline.txt
 /docs/deabook文档/帮助文档_各章节Python代码导读.md
 /docs/deabook文档/附录_Python程序和错误排查.md
+
+# oh-my-claudecode state
+.omc/
