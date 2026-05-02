@@ -25,7 +25,7 @@
     
     
       
-        <title>第十三章：SBM、DDF、NDDF、MPI 从零实现 - deabook</title>
+        <title>第十三章：影子价格与对偶模型 - deabook</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#sbmddfnddfmpi" class="md-skip">
+        <a href="#_1" class="md-skip">
           Skip to content
         </a>
       
@@ -116,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              第十三章：SBM、DDF、NDDF、MPI 从零实现
+              第十三章：影子价格与对偶模型
             
           </span>
         </div>
@@ -668,21 +668,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        导入
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        公式语法
+        安装与导入
       
     </span>
   </a>
@@ -690,36 +679,53 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#1sbm-sbm" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        函数 1：sbm — SBM 模型（无非期望产出）
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="函数 1：sbm — SBM 模型（无非期望产出）">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#_3" class="md-nav__link">
     <span class="md-ellipsis">
       
-        示例
+        对偶模型概念
       
     </span>
   </a>
   
-</li>
+    <nav class="md-nav" aria-label="对偶模型概念">
+      <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#_4" class="md-nav__link">
     <span class="md-ellipsis">
       
-        参数
+        参数详解
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="参数详解">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sbm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SBM 对偶系列
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nddf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NDDF 对偶系列
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -732,349 +738,126 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="返回值">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sbm_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SBM 对偶
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nddf_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NDDF 对偶
+      
+    </span>
+  </a>
+  
 </li>
         
       </ul>
     </nav>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#2sbm2-sbm" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        函数 2：sbm2 — SBM 模型（含非期望产出）
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="函数 2：sbm2 — SBM 模型（含非期望产出）">
-      <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#_6" class="md-nav__link">
     <span class="md-ellipsis">
       
-        示例
+        影子价格解释
       
     </span>
   </a>
   
 </li>
         
-          <li class="md-nav__item">
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sbm-vs-nddf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SBM 对偶 vs NDDF 对偶
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1sbmdual" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        模型 1：sbmdual — 基于列名
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2sbmdual2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        模型 2：sbmdual2 — 支持筛选
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3sbmdual3-formula" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        模型 3：sbmdual3 — formula 语法
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4nddfdual" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        模型 4：nddfdual — 基于列名
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5nddfdual2-formula" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        模型 5：nddfdual2 — formula + 方向向量
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#_7" class="md-nav__link">
     <span class="md-ellipsis">
       
-        参数
+        函数速查表
       
     </span>
   </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_8" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        返回值
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#sbm-vs-sbm2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        sbm vs sbm2
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#3ddf" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        函数 3：ddf — 方向距离函数
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="函数 3：ddf — 方向距离函数">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#_9" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        示例
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_10" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        参数
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_11" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        返回值
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#4nddf" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        函数 4：nddf — 非径向方向距离函数
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="函数 4：nddf — 非径向方向距离函数">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#_12" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        示例
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_13" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        参数
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#nddf-vs-ddf" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        nddf vs ddf 区别
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#5dea8-dea" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        函数 5：dea8 — DEA 完整版
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#6mpi-malmquist" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        函数 6：mpi — Malmquist 指数
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="函数 6：mpi — Malmquist 指数">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#_14" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        示例
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_15" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        参数
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_16" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        返回值
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#7mpi2-malmquist" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        函数 7：mpi2 — 增强版 Malmquist（多种技术选项）
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="函数 7：mpi2 — 增强版 Malmquist（多种技术选项）">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#tech" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        tech 参数
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#8mpi3-malmquist-global" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        函数 8：mpi3 — 增强版 Malmquist（增加 global 技术）
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="函数 8：mpi3 — 增强版 Malmquist（增加 global 技术）">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#tech_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        tech 参数
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#9mlpi-malmquist-luenberger" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        函数 9：mlpi — Malmquist-Luenberger 指数
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="函数 9：mlpi — Malmquist-Luenberger 指数">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#_17" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        示例
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_18" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        参数
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#mlpi-vs-mpi" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        mlpi vs mpi 区别
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_19" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        返回值
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -1101,445 +884,365 @@
   
 
 
-<h1 id="sbmddfnddfmpi">第十三章：SBM、DDF、NDDF、MPI 从零实现<a class="headerlink" href="#sbmddfnddfmpi" title="Permanent link">&para;</a></h1>
-<p><strong>主题</strong>：使用 Pyomo 从零实现 SBM、DDF、NDDF、Malmquist 指数和 Malmquist-Luenberger 指数。</p>
+<h1 id="_1">第十三章：影子价格与对偶模型<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<p><strong>主题</strong>：使用 Pyomo 构建 SBM 和 NDDF 的对偶模型，估计投入、产出和非期望产出的影子价格。</p>
 <p><strong>数据文件</strong>：
-- <code>Ex4.dta</code>（K, L, Y, CO2）
-- <code>Ex5.dta</code>（labor, capital, energy, gdp, co2）</p>
-<p><strong>说明</strong>：本章不使用 deabook 包，所有函数为 notebook 内自定义实现。</p>
+- <code>Ex4.dta</code>（30个中国省份，3期，含 K,L,Y,CO2）
+- <code>Ex5.dta</code>（含 labor,capital,energy,gdp,co2）</p>
+<p><strong>变量含义</strong>：
+- <code>K</code>：资本, <code>L</code>：劳动, <code>Y</code>：产出(GDP), <code>CO2</code>：碳排放（非期望产出）
+- <code>labor</code>：劳动, <code>capital</code>：资本, <code>energy</code>：能源, <code>gdp</code>：GDP, <code>co2</code>：CO2</p>
 <hr />
-<h2 id="_1">导入<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<h2 id="_2">安装与导入<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>本章所有模型使用 Pyomo 从零构建对偶模型，不依赖 deabook 包。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>pyomo<span class="w"> </span>mosek
+</code></pre></div></td></tr></table></div>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pyomo.environ</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyomo.environ</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConcreteModel</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Var</span><span class="p">,</span> <span class="n">Objective</span><span class="p">,</span> <span class="n">Constraint</span><span class="p">,</span> <span class="n">Reals</span><span class="p">,</span> <span class="n">minimize</span><span class="p">,</span> <span class="n">maximize</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
 <hr />
-<h2 id="_2">公式语法<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
-<p>与 dea8 相同，使用 <code>"Y~K L"</code> 格式，扩展支持非期望产出：</p>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>&quot;Y~K L&quot;           # 无非期望产出
-&quot;Y:CO2~K L&quot;       # 含非期望产出（: 分隔）
-</code></pre></div></td></tr></table></div>
-<ul>
-<li><code>~</code> 左边 <code>:</code> 前：期望产出（Y）</li>
-<li><code>~</code> 左边 <code>:</code> 后：非期望产出（CO2）</li>
-<li><code>~</code> 右边：投入（K, L，空格分隔）</li>
-</ul>
-<hr />
-<h2 id="1sbm-sbm">函数 1：sbm — SBM 模型（无非期望产出）<a class="headerlink" href="#1sbm-sbm" title="Permanent link">&para;</a></h2>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">sbm</span><span class="p">(</span><span class="n">formula</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">,</span> <span class="n">evaquery</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">refquery</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="o">...</span>
-</code></pre></div></td></tr></table></div>
-<h3 id="_3">示例<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">res</span> <span class="o">=</span> <span class="n">sbm</span><span class="p">(</span><span class="s2">&quot;Y~K L&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-<h3 id="_4">参数<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<h2 id="_3">对偶模型概念<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<p>对偶模型（影子价格模型）是 SBM/NDDF 原始模型的对偶问题，通过求解对偶问题获得各变量的边际价值（影子价格）：</p>
 <table>
 <thead>
 <tr>
-<th>参数</th>
-<th>含义</th>
+<th>模型</th>
+<th>原始问题</th>
+<th>对偶问题</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>formula</code></td>
-<td><code>"Y~K L"</code></td>
+<td>SBM</td>
+<td>最小化效率损失</td>
+<td>最大化 pomega</td>
 </tr>
+<tr>
+<td>NDDF</td>
+<td>最大化方向距离</td>
+<td>最小化总成本</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="_4">参数详解<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<h4 id="sbm">SBM 对偶系列<a class="headerlink" href="#sbm" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>类型</th>
+<th>可选值</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
 <tr>
 <td><code>dataframe</code></td>
 <td>DataFrame</td>
+<td>—</td>
+<td>DMU 数据（sbmdual / sbmdual2）</td>
+</tr>
+<tr>
+<td><code>varname</code></td>
+<td>list</td>
+<td><code>["K","L","Y","CO2"]</code></td>
+<td>变量名列表</td>
+</tr>
+<tr>
+<td><code>P</code></td>
+<td>int</td>
+<td><code>2</code></td>
+<td>投入变量个数</td>
+</tr>
+<tr>
+<td><code>Q</code></td>
+<td>int</td>
+<td><code>1</code></td>
+<td>期望产出变量个数</td>
+</tr>
+<tr>
+<td><code>formula</code></td>
+<td>str</td>
+<td><code>"Y:CO2=K L"</code></td>
+<td>公式语法（仅 sbmdual3）</td>
 </tr>
 <tr>
 <td><code>evaquery</code></td>
+<td>str</td>
+<td><code>"t==[1,2]"</code></td>
 <td>评价 DMU 筛选</td>
 </tr>
 <tr>
 <td><code>refquery</code></td>
-<td>参考 DMU 筛选</td>
+<td>str</td>
+<td><code>"t==[1,2,3]"</code></td>
+<td>参考集 DMU 筛选</td>
 </tr>
 </tbody>
 </table>
-<h3 id="_5">返回值<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
-<p>DataFrame，包含效率值。</p>
-<hr />
-<h2 id="2sbm2-sbm">函数 2：sbm2 — SBM 模型（含非期望产出）<a class="headerlink" href="#2sbm2-sbm" title="Permanent link">&para;</a></h2>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">sbm2</span><span class="p">(</span><span class="n">formula</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">,</span> <span class="n">evaquery</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">refquery</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="o">...</span>
-</code></pre></div></td></tr></table></div>
-<h3 id="_6">示例<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">res</span> <span class="o">=</span> <span class="n">sbm2</span><span class="p">(</span><span class="s2">&quot;Y:CO2~K L&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-<h3 id="_7">参数<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
+<h4 id="nddf">NDDF 对偶系列<a class="headerlink" href="#nddf" title="Permanent link">&para;</a></h4>
 <table>
 <thead>
 <tr>
 <th>参数</th>
+<th>类型</th>
+<th>可选值</th>
 <th>含义</th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td><code>formula</code></td>
-<td><code>"Y:CO2~K L"</code>（含非期望产出）</td>
-</tr>
 <tr>
 <td><code>dataframe</code></td>
 <td>DataFrame</td>
+<td>—</td>
+<td>DMU 数据（nddfdual）</td>
 </tr>
 <tr>
-<td><code>evaquery</code></td>
-<td>评价 DMU 筛选</td>
+<td><code>varname</code></td>
+<td>list</td>
+<td><code>["labor","capital","energy","gdp","co2"]</code></td>
+<td>变量名列表</td>
 </tr>
 <tr>
-<td><code>refquery</code></td>
-<td>参考 DMU 筛选</td>
-</tr>
-</tbody>
-</table>
-<h3 id="_8">返回值<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
-<p>DataFrame，包含效率值。</p>
-<h3 id="sbm-vs-sbm2">sbm vs sbm2<a class="headerlink" href="#sbm-vs-sbm2" title="Permanent link">&para;</a></h3>
-<table>
-<thead>
-<tr>
-<th>特征</th>
-<th>sbm</th>
-<th>sbm2</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>非期望产出</td>
-<td>不支持</td>
-<td>支持</td>
+<td><code>P</code></td>
+<td>int</td>
+<td><code>3</code></td>
+<td>投入变量个数</td>
 </tr>
 <tr>
-<td>formula</td>
-<td><code>"Y~K L"</code></td>
-<td><code>"Y:CO2~K L"</code></td>
+<td><code>Q</code></td>
+<td>int</td>
+<td><code>1</code></td>
+<td>期望产出变量个数</td>
 </tr>
-<tr>
-<td>松弛变量</td>
-<td>仅投入/产出</td>
-<td>额外包含非期望产出松弛</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<h2 id="3ddf">函数 3：ddf — 方向距离函数<a class="headerlink" href="#3ddf" title="Permanent link">&para;</a></h2>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">ddf</span><span class="p">(</span><span class="n">formula</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">,</span> <span class="n">gx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gb</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">evaquery</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">refquery</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="o">...</span>
-</code></pre></div></td></tr></table></div>
-<h3 id="_9">示例<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h3>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">res</span> <span class="o">=</span> <span class="n">ddf</span><span class="p">(</span><span class="s2">&quot;Y:CO2~K L&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">gb</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-</code></pre></div></td></tr></table></div>
-<h3 id="_10">参数<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h3>
-<table>
-<thead>
-<tr>
-<th>参数</th>
-<th>含义</th>
-</tr>
-</thead>
-<tbody>
 <tr>
 <td><code>formula</code></td>
-<td><code>"Y:CO2~K L"</code></td>
+<td>str</td>
+<td><code>"gdp:co2=labor capital energy"</code></td>
+<td>公式语法（仅 nddfdual2）</td>
 </tr>
 <tr>
 <td><code>gx</code></td>
-<td>投入方向向量（如 <code>[1,1]</code>）</td>
-</tr>
-<tr>
-<td><code>gy</code></td>
-<td>期望产出方向向量（如 <code>[1]</code>）</td>
-</tr>
-<tr>
-<td><code>gb</code></td>
-<td>非期望产出方向向量（如 <code>[1]</code>）</td>
-</tr>
-<tr>
-<td><code>evaquery</code></td>
-<td>评价 DMU 筛选</td>
-</tr>
-<tr>
-<td><code>refquery</code></td>
-<td>参考 DMU 筛选</td>
-</tr>
-</tbody>
-</table>
-<h3 id="_11">返回值<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h3>
-<p>DataFrame，包含方向距离函数值。</p>
-<hr />
-<h2 id="4nddf">函数 4：nddf — 非径向方向距离函数<a class="headerlink" href="#4nddf" title="Permanent link">&para;</a></h2>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">nddf</span><span class="p">(</span><span class="n">formula</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">,</span> <span class="n">gx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gb</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">evaquery</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">refquery</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="o">...</span>
-</code></pre></div></td></tr></table></div>
-<h3 id="_12">示例<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h3>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">res</span> <span class="o">=</span> <span class="n">nddf</span><span class="p">(</span><span class="s2">&quot;Y:CO2~K L&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">gb</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">weight</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="o">/</span><span class="mi">5</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">5</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">5</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">5</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="mi">5</span><span class="p">])</span>
-</code></pre></div></td></tr></table></div>
-<h3 id="_13">参数<a class="headerlink" href="#_13" title="Permanent link">&para;</a></h3>
-<table>
-<thead>
-<tr>
-<th>参数</th>
-<th>含义</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>formula</code></td>
-<td><code>"Y:CO2~K L"</code></td>
-</tr>
-<tr>
-<td><code>gx</code></td>
+<td>list</td>
+<td><code>[-1,-1,-1]</code></td>
 <td>投入方向向量</td>
 </tr>
 <tr>
 <td><code>gy</code></td>
+<td>list</td>
+<td><code>[1]</code></td>
 <td>期望产出方向向量</td>
 </tr>
 <tr>
 <td><code>gb</code></td>
+<td>list</td>
+<td><code>[-1]</code></td>
 <td>非期望产出方向向量</td>
 </tr>
 <tr>
 <td><code>weight</code></td>
-<td>各变量权重向量（长度 = 投入数 + 产出数 + 非期望产出数）</td>
+<td>list</td>
+<td><code>None</code></td>
+<td>权重矩阵</td>
 </tr>
 <tr>
 <td><code>evaquery</code></td>
+<td>str</td>
+<td><code>None</code></td>
 <td>评价 DMU 筛选</td>
 </tr>
 <tr>
 <td><code>refquery</code></td>
-<td>参考 DMU 筛选</td>
+<td>str</td>
+<td><code>None</code></td>
+<td>参考集 DMU 筛选</td>
 </tr>
 </tbody>
 </table>
-<h3 id="nddf-vs-ddf">nddf vs ddf 区别<a class="headerlink" href="#nddf-vs-ddf" title="Permanent link">&para;</a></h3>
+<hr />
+<h3 id="_5">返回值<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<h4 id="sbm_1">SBM 对偶<a class="headerlink" href="#sbm_1" title="Permanent link">&para;</a></h4>
 <table>
 <thead>
 <tr>
-<th>特征</th>
-<th>ddf</th>
-<th>nddf</th>
+<th>返回列</th>
+<th>含义</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>类型</td>
-<td>径向 DDF</td>
-<td>非径向 DDF</td>
+<td><code>obj</code></td>
+<td>目标函数值</td>
 </tr>
 <tr>
-<td>效率度量</td>
-<td>单一 theta</td>
-<td>逐变量独立 rho</td>
+<td><code>shadow price K</code>, <code>shadow price L</code> 等</td>
+<td>投入影子价格</td>
+</tr>
+<tr>
+<td><code>shadow price Y</code> 等</td>
+<td>期望产出影子价格</td>
+</tr>
+<tr>
+<td><code>shadow price CO2</code> 等</td>
+<td>非期望产出影子价格</td>
+</tr>
+</tbody>
+</table>
+<h4 id="nddf_1">NDDF 对偶<a class="headerlink" href="#nddf_1" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>返回列</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>obj</code></td>
+<td>目标函数值</td>
+</tr>
+<tr>
+<td><code>shadow price labor</code>, <code>shadow price capital</code> 等</td>
+<td>投入影子价格</td>
+</tr>
+<tr>
+<td><code>shadow price gdp</code> 等</td>
+<td>期望产出影子价格</td>
+</tr>
+<tr>
+<td><code>shadow price co2</code> 等</td>
+<td>非期望产出影子价格</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_6">影子价格解释<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>影子价格</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>px</code>（投入）</td>
+<td>增加一单位投入的边际成本</td>
+</tr>
+<tr>
+<td><code>py</code>（期望产出）</td>
+<td>增加一单位期望产出的边际收益</td>
+</tr>
+<tr>
+<td><code>pb</code>（非期望产出）</td>
+<td>减少一单位非期望产出的边际成本（即排放成本）</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="sbm-vs-nddf">SBM 对偶 vs NDDF 对偶<a class="headerlink" href="#sbm-vs-nddf" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>特征</th>
+<th>SBM 对偶</th>
+<th>NDDF 对偶</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>目标函数</td>
+<td>maximize pomega</td>
+<td>minimize sum(px<em>x) - sum(py</em>y) + sum(pb*b) + pomega</td>
 </tr>
 <tr>
 <td>权重</td>
 <td>无</td>
-<td><code>weight</code> 参数</td>
+<td>使用 weight 参数</td>
 </tr>
 <tr>
-<td>返回粒度</td>
-<td>整体效率</td>
-<td>每个变量的独立效率</td>
+<td>方向向量</td>
+<td>无</td>
+<td>使用 gx/gy/gb</td>
+</tr>
+<tr>
+<td>约束数</td>
+<td>5 类</td>
+<td>4 类</td>
 </tr>
 </tbody>
 </table>
 <hr />
-<h2 id="5dea8-dea">函数 5：dea8 — DEA 完整版<a class="headerlink" href="#5dea8-dea" title="Permanent link">&para;</a></h2>
-<p>同第十二章的 <code>dea8</code>，此处作为 MPI 计算的底层模型。</p>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">res</span> <span class="o">=</span> <span class="n">dea8</span><span class="p">(</span><span class="s2">&quot;Y~K L&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">rts</span><span class="o">=</span><span class="s2">&quot;crs&quot;</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s2">&quot;oo&quot;</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-<hr />
-<h2 id="6mpi-malmquist">函数 6：mpi — Malmquist 指数<a class="headerlink" href="#6mpi-malmquist" title="Permanent link">&para;</a></h2>
+<h2 id="1sbmdual">模型 1：sbmdual — 基于列名<a class="headerlink" href="#1sbmdual" title="Permanent link">&para;</a></h2>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">mpi</span><span class="p">(</span><span class="n">formula</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
-    <span class="o">...</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">ex4</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_stata</span><span class="p">(</span><span class="s2">&quot;Ex4.dta&quot;</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">sbmdual</span><span class="p">(</span><span class="n">ex4</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;K&quot;</span><span class="p">,</span><span class="s2">&quot;L&quot;</span><span class="p">,</span><span class="s2">&quot;Y&quot;</span><span class="p">,</span><span class="s2">&quot;CO2&quot;</span><span class="p">],</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-<h3 id="_14">示例<a class="headerlink" href="#_14" title="Permanent link">&para;</a></h3>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">res</span> <span class="o">=</span> <span class="n">mpi</span><span class="p">(</span><span class="s2">&quot;Y~K L&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;province&quot;</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="s2">&quot;year&quot;</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-<h3 id="_15">参数<a class="headerlink" href="#_15" title="Permanent link">&para;</a></h3>
-<table>
-<thead>
-<tr>
-<th>参数</th>
-<th>含义</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>formula</code></td>
-<td><code>"Y~K L"</code></td>
-</tr>
-<tr>
-<td><code>data</code></td>
-<td>面板数据 DataFrame</td>
-</tr>
-<tr>
-<td><code>id</code></td>
-<td>DMU 标识列名</td>
-</tr>
-<tr>
-<td><code>t</code></td>
-<td>时间列名</td>
-</tr>
-</tbody>
-</table>
-<h3 id="_16">返回值<a class="headerlink" href="#_16" title="Permanent link">&para;</a></h3>
-<p>DataFrame，包含：
-- <code>D11</code>：当期效率
-- <code>MQ</code>：Malmquist 指数
-- <code>MEFFCH</code>：效率变化
-- <code>MTECHCH</code>：技术变化</p>
 <hr />
-<h2 id="7mpi2-malmquist">函数 7：mpi2 — 增强版 Malmquist（多种技术选项）<a class="headerlink" href="#7mpi2-malmquist" title="Permanent link">&para;</a></h2>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">mpi2</span><span class="p">(</span><span class="n">formula</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">tech</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="o">...</span>
+<h2 id="2sbmdual2">模型 2：sbmdual2 — 支持筛选<a class="headerlink" href="#2sbmdual2" title="Permanent link">&para;</a></h2>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">data</span> <span class="o">=</span> <span class="n">sbmdual2</span><span class="p">(</span><span class="n">ex4</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;K&quot;</span><span class="p">,</span><span class="s2">&quot;L&quot;</span><span class="p">,</span><span class="s2">&quot;Y&quot;</span><span class="p">,</span><span class="s2">&quot;CO2&quot;</span><span class="p">],</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;t==[1,2]&quot;</span><span class="p">,</span> <span class="s2">&quot;t==[1,2,3]&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-<h3 id="tech">tech 参数<a class="headerlink" href="#tech" title="Permanent link">&para;</a></h3>
-<table>
-<thead>
-<tr>
-<th>值</th>
-<th>含义</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>None</code></td>
-<td>默认技术</td>
-</tr>
-<tr>
-<td><code>"com"</code></td>
-<td>当期技术（Contemporary）</td>
-</tr>
-<tr>
-<td><code>"seq"</code></td>
-<td>顺序技术（Sequential）</td>
-</tr>
-<tr>
-<td><code>"window N"</code></td>
-<td>窗口技术，N 为窗口大小，如 <code>"window 3"</code></td>
-</tr>
-</tbody>
-</table>
 <hr />
-<h2 id="8mpi3-malmquist-global">函数 8：mpi3 — 增强版 Malmquist（增加 global 技术）<a class="headerlink" href="#8mpi3-malmquist-global" title="Permanent link">&para;</a></h2>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">mpi3</span><span class="p">(</span><span class="n">formula</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">tech</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="o">...</span>
+<h2 id="3sbmdual3-formula">模型 3：sbmdual3 — formula 语法<a class="headerlink" href="#3sbmdual3-formula" title="Permanent link">&para;</a></h2>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">data</span> <span class="o">=</span> <span class="n">sbmdual3</span><span class="p">(</span><span class="s2">&quot;Y:CO2=K L&quot;</span><span class="p">,</span> <span class="n">ex4</span><span class="p">,</span> <span class="s2">&quot;t==[1,2]&quot;</span><span class="p">,</span> <span class="s2">&quot;t==[1,2,3]&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-<h3 id="tech_1">tech 参数<a class="headerlink" href="#tech_1" title="Permanent link">&para;</a></h3>
-<p>在 mpi2 基础上增加：</p>
-<table>
-<thead>
-<tr>
-<th>值</th>
-<th>含义</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>"global"</code></td>
-<td>全局技术（所有期 DMU 构成统一参考集）</td>
-</tr>
-<tr>
-<td>其余同 mpi2</td>
-<td><code>"com"</code>, <code>"seq"</code>, <code>"window N"</code></td>
-</tr>
-</tbody>
-</table>
 <hr />
-<h2 id="9mlpi-malmquist-luenberger">函数 9：mlpi — Malmquist-Luenberger 指数<a class="headerlink" href="#9mlpi-malmquist-luenberger" title="Permanent link">&para;</a></h2>
+<h2 id="4nddfdual">模型 4：nddfdual — 基于列名<a class="headerlink" href="#4nddfdual" title="Permanent link">&para;</a></h2>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">mlpi</span><span class="p">(</span><span class="n">formula</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">tech</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="o">...</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">ex5</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_stata</span><span class="p">(</span><span class="s2">&quot;Ex5.dta&quot;</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">nddfdual</span><span class="p">(</span><span class="n">ex5</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;labor&quot;</span><span class="p">,</span><span class="s2">&quot;capital&quot;</span><span class="p">,</span><span class="s2">&quot;energy&quot;</span><span class="p">,</span><span class="s2">&quot;gdp&quot;</span><span class="p">,</span><span class="s2">&quot;co2&quot;</span><span class="p">],</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-<h3 id="_17">示例<a class="headerlink" href="#_17" title="Permanent link">&para;</a></h3>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">res</span> <span class="o">=</span> <span class="n">mlpi</span><span class="p">(</span><span class="s2">&quot;Y:CO2~K L&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;province&quot;</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="s2">&quot;year&quot;</span><span class="p">)</span>
+<hr />
+<h2 id="5nddfdual2-formula">模型 5：nddfdual2 — formula + 方向向量<a class="headerlink" href="#5nddfdual2-formula" title="Permanent link">&para;</a></h2>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">data</span> <span class="o">=</span> <span class="n">nddfdual2</span><span class="p">(</span><span class="s2">&quot;gdp:co2=labor capital energy&quot;</span><span class="p">,</span> <span class="n">ex5</span><span class="p">,</span> <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">gb</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 </code></pre></div></td></tr></table></div>
-<h3 id="_18">参数<a class="headerlink" href="#_18" title="Permanent link">&para;</a></h3>
+<hr />
+<h2 id="_7">函数速查表<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
-<th>参数</th>
-<th>含义</th>
+<th>函数</th>
+<th>输入格式</th>
+<th>特点</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>formula</code></td>
-<td><code>"Y:CO2~K L"</code>（含非期望产出）</td>
+<td><code>sbmdual</code></td>
+<td>varname 列表 + P, Q</td>
+<td>SBM 对偶，全样本</td>
 </tr>
 <tr>
-<td><code>data</code></td>
-<td>面板数据</td>
+<td><code>sbmdual2</code></td>
+<td>varname 列表 + P, Q + evaquery/refquery</td>
+<td>SBM 对偶，支持筛选</td>
 </tr>
 <tr>
-<td><code>id</code></td>
-<td>DMU 标识列名</td>
+<td><code>sbmdual3</code></td>
+<td>formula 字符串</td>
+<td>SBM 对偶，公式语法</td>
 </tr>
 <tr>
-<td><code>t</code></td>
-<td>时间列名</td>
+<td><code>nddfdual</code></td>
+<td>varname 列表 + P, Q</td>
+<td>NDDF 对偶，全样本</td>
 </tr>
 <tr>
-<td><code>tech</code></td>
-<td>技术选项（同 mpi2）</td>
+<td><code>nddfdual2</code></td>
+<td>formula + gx/gy/gb/weight</td>
+<td>NDDF 对偶，完整参数</td>
 </tr>
 </tbody>
 </table>
-<h3 id="mlpi-vs-mpi">mlpi vs mpi 区别<a class="headerlink" href="#mlpi-vs-mpi" title="Permanent link">&para;</a></h3>
-<table>
-<thead>
-<tr>
-<th>特征</th>
-<th>mpi</th>
-<th>mlpi</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>底层模型</td>
-<td>dea8（DEA）</td>
-<td>ddf（方向距离函数）</td>
-</tr>
-<tr>
-<td>非期望产出</td>
-<td>不支持</td>
-<td>支持</td>
-</tr>
-<tr>
-<td>formula</td>
-<td><code>"Y~K L"</code></td>
-<td><code>"Y:CO2~K L"</code></td>
-</tr>
-<tr>
-<td>效率距离</td>
-<td>DEA 径向</td>
-<td>DDF 方向距离</td>
-</tr>
-</tbody>
-</table>
-<h3 id="_19">返回值<a class="headerlink" href="#_19" title="Permanent link">&para;</a></h3>
-<p>DataFrame，包含：
-- <code>D11</code>：当期距离函数值
-- <code>MLPI</code>：Malmquist-Luenberger 指数
-- <code>MEFFCH</code>：效率变化
-- <code>MTECHCH</code>：技术变化</p>
 
 
 
@@ -1562,7 +1265,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="April 28, 2026 14:08:16 UTC"><span class="timeago" datetime="2026-04-28T14:08:16+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="April 28, 2026 14:08:16 UTC">2026-04-28</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="May 2, 2026 14:15:47 UTC"><span class="timeago" datetime="2026-05-02T14:15:47+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="May 2, 2026 14:15:47 UTC">2026-05-02</span>
   </span>
 
     

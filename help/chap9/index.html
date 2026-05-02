@@ -12,7 +12,7 @@
         <meta name="author" content="advancehs">
       
       
-        <link rel="canonical" href="https://advancehs.github.io/deabook/help/chap15/">
+        <link rel="canonical" href="https://advancehs.github.io/deabook/help/chap9/">
       
       
       
@@ -25,7 +25,7 @@
     
     
       
-        <title>第十五章：DEA 调试与排错 - deabook</title>
+        <title>第九章：基于物质平衡的环境绩效测度方法 - deabook</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#dea" class="md-skip">
+        <a href="#_1" class="md-skip">
           Skip to content
         </a>
       
@@ -116,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              第十五章：DEA 调试与排错
+              第九章：基于物质平衡的环境绩效测度方法
             
           </span>
         </div>
@@ -668,44 +668,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#_1" class="md-nav__link">
+  <a href="#deabook" class="md-nav__link">
     <span class="md-ellipsis">
       
-        导入
+        deabook 包介绍与安装
       
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        调试场景 1：变量名错误
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="调试场景 1：变量名错误">
+    <nav class="md-nav" aria-label="deabook 包介绍与安装">
       <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#bug" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Bug 描述
-      
-    </span>
-  </a>
-  
-</li>
         
           <li class="md-nav__item">
   <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        错误现象
+        安装
       
     </span>
   </a>
@@ -716,35 +694,7 @@
   <a href="#_3" class="md-nav__link">
     <span class="md-ellipsis">
       
-        诊断方法
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        调试场景 2：缺失参数导致约束缺失
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="调试场景 2：缺失参数导致约束缺失">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#bug_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Bug 描述
+        本章需要的导入
       
     </span>
   </a>
@@ -755,7 +705,7 @@
   <a href="#_4" class="md-nav__link">
     <span class="md-ellipsis">
       
-        错误现象
+        参数详解
       
     </span>
   </a>
@@ -766,35 +716,19 @@
   <a href="#_5" class="md-nav__link">
     <span class="md-ellipsis">
       
-        诊断方法
+        返回值
       
     </span>
   </a>
   
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_6" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        调试工具和技术
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="调试工具和技术">
+    <nav class="md-nav" aria-label="返回值">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-modelpprint" class="md-nav__link">
+  <a href="#data3dataframe" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. model.pprint()
+        data3（DataFrame）
       
     </span>
   </a>
@@ -802,32 +736,26 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-print" class="md-nav__link">
+  <a href="#infostr" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. print 语句检查数据
+        info（打印/str）
       
     </span>
   </a>
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#3-glpk" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. 使用 glpk 求解器调试
-      
-    </span>
-  </a>
+      </ul>
+    </nav>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#4" class="md-nav__link">
+  <a href="#_6" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. 逐步构建
+        后处理：污染物分解指标
       
     </span>
   </a>
@@ -840,21 +768,71 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_7" class="md-nav__link">
+  <a href="#1mb-level-1-4" class="md-nav__link">
     <span class="md-ellipsis">
       
-        常见错误类型
+        模型 1：MB — Level 1-4
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="模型 1：MB — Level 1-4">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#level-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Level 1
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#dea8" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#level-2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        dea8 正确实现要点
+        Level 2
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#level-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Level 3
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#level-4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Level 4
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#baseindex-refindex" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        baseindex / refindex 筛选语法
       
     </span>
   </a>
@@ -884,146 +862,296 @@
   
 
 
-<h1 id="dea">第十五章：DEA 调试与排错<a class="headerlink" href="#dea" title="Permanent link">&para;</a></h1>
-<p><strong>主题</strong>：通过在 dea8 函数中故意引入 bug，学习 DEA 模型的调试技术。</p>
-<p><strong>数据文件</strong>：
-- <code>Ex3.dta</code></p>
-<p><strong>说明</strong>：本章不使用 deabook 包，使用第十二章开发的 <code>dea8</code> 函数及其变体。</p>
+<h1 id="_1">第九章：基于物质平衡的环境绩效测度方法<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<p><strong>主题</strong>：使用物质平衡约束的 DEA 模型分解污染物排放（OE、TE、PIAE、NPIAE、NPOAE）。</p>
+<p><strong>数据文件</strong>：</p>
+<ul>
+<li><code>power plant data.xlsx</code>（30个省份，2015-2017）</li>
+</ul>
+<p><strong>变量含义</strong>：</p>
+<ul>
+<li><code>K</code>：资本, <code>L</code>：劳动, <code>F</code>：燃料（污染投入）, <code>E</code>：电力（期望产出）, <code>CO2</code>：碳排放（非期望产出）</li>
+</ul>
 <hr />
-<h2 id="_1">导入<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyomo.environ</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConcreteModel</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Var</span><span class="p">,</span> <span class="n">Objective</span><span class="p">,</span> <span class="n">Constraint</span>
+<h2 id="deabook">deabook 包介绍与安装<a class="headerlink" href="#deabook" title="Permanent link">&para;</a></h2>
+<p>deabook 是一个用于数据包络分析（DEA）的 Python 包，提供径向 DEA、方向距离函数（DDF）、Malmquist 指数、弱可处置性模型、物质平衡分解、CNLS 随机前沿等功能。</p>
+<h3 id="_2">安装<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>deabook
 </code></pre></div></td></tr></table></div>
-<hr />
-<h2 id="1">调试场景 1：变量名错误<a class="headerlink" href="#1" title="Permanent link">&para;</a></h2>
-<h3 id="bug">Bug 描述<a class="headerlink" href="#bug" title="Permanent link">&para;</a></h3>
-<p>在 LP 约束中使用了错误的循环变量名：</p>
+<h3 id="_3">本章需要的导入<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># 正确代码</span>
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">I</span><span class="p">:</span>
-    <span class="o">...</span>
-
-<span class="c1"># Bug 代码</span>
-<span class="k">for</span> <span class="n">i2</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">I</span><span class="p">:</span>
-    <span class="o">...</span>  <span class="c1"># 但后续使用 i（未定义）</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">deabook</span><span class="w"> </span><span class="kn">import</span> <span class="n">MB</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">deabook.constant</span><span class="w"> </span><span class="kn">import</span> <span class="n">RTS_CRS</span><span class="p">,</span> <span class="n">RTS_VRS1</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 </code></pre></div></td></tr></table></div>
-<h3 id="_2">错误现象<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>NameError: name &#39;i&#39; is not defined
-</code></pre></div></td></tr></table></div>
-<h3 id="_3">诊断方法<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
-<ol>
-<li>检查约束函数内的变量名是否与循环变量一致</li>
-<li>确认 Pyomo 约束的 rule 函数签名正确</li>
-</ol>
+<blockquote>
+<p>各常量的含义与可选值见下方<a href="#参数详解">参数详解</a>表。</p>
+</blockquote>
 <hr />
-<h2 id="2">调试场景 2：缺失参数导致约束缺失<a class="headerlink" href="#2" title="Permanent link">&para;</a></h2>
-<h3 id="bug_1">Bug 描述<a class="headerlink" href="#bug_1" title="Permanent link">&para;</a></h3>
-<p><code>dea8</code> 的 <code>orient</code> 参数缺失，导致没有匹配的 if/elif 分支：</p>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># dea8 缺少 orient 参数</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">dea8</span><span class="p">(</span><span class="n">formula</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">rts</span><span class="o">=</span><span class="s2">&quot;crs&quot;</span><span class="p">):</span>
-    <span class="c1"># 没有 orient 参数 → 无产出/投入导向分支</span>
-    <span class="c1"># Constraint 函数返回 None</span>
-</code></pre></div></td></tr></table></div>
-<h3 id="_4">错误现象<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
-<ul>
-<li>约束未正确构建</li>
-<li>LP 模型可能无解或结果异常</li>
-</ul>
-<h3 id="_5">诊断方法<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
-<ol>
-<li>使用 <code>model.pprint()</code> 查看 LP 模型的完整结构</li>
-<li>检查约束是否被正确添加</li>
-<li>确认 <code>orient</code> 参数传递正确</li>
-</ol>
-<hr />
-<h2 id="_6">调试工具和技术<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
-<h3 id="1-modelpprint">1. model.pprint()<a class="headerlink" href="#1-modelpprint" title="Permanent link">&para;</a></h3>
-<p>打印完整的 LP 模型结构（变量、约束、目标函数）：</p>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">model</span><span class="o">.</span><span class="n">pprint</span><span class="p">()</span>
-</code></pre></div></td></tr></table></div>
-<p>输出包括：
-- 所有变量及其 bounds
-- 所有约束及表达式
-- 目标函数</p>
-<h3 id="2-print">2. print 语句检查数据<a class="headerlink" href="#2-print" title="Permanent link">&para;</a></h3>
-<p>在构建约束前打印参考集数据：</p>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="n">xref</span><span class="p">)</span>  <span class="c1"># 检查参考集投入数据</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">yref</span><span class="p">)</span>  <span class="c1"># 检查参考集产出数据</span>
-</code></pre></div></td></tr></table></div>
-<h3 id="3-glpk">3. 使用 glpk 求解器调试<a class="headerlink" href="#3-glpk" title="Permanent link">&para;</a></h3>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">res</span> <span class="o">=</span> <span class="n">dea8</span><span class="p">(</span><span class="s2">&quot;Y~K L&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">rts</span><span class="o">=</span><span class="s2">&quot;crs&quot;</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s2">&quot;oo&quot;</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="s2">&quot;glpk&quot;</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-<ul>
-<li><code>glpk</code> 是开源求解器，适合调试</li>
-<li>不依赖商业求解器许可证</li>
-<li>速度较慢但错误信息更详细</li>
-</ul>
-<h3 id="4">4. 逐步构建<a class="headerlink" href="#4" title="Permanent link">&para;</a></h3>
-<p>从最简版本（dea1）开始，逐步增加功能：
-1. 先确保基础 CRS + 产出导向正确
-2. 添加 VRS 约束
-3. 添加投入导向
-4. 添加 evaquery/refquery</p>
-<hr />
-<h2 id="_7">常见错误类型<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<h3 id="_4">参数详解<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
-<th>错误类型</th>
-<th>错误信息</th>
-<th>原因</th>
-<th>解决方案</th>
+<th>参数</th>
+<th>类型</th>
+<th>可选值</th>
+<th>含义</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>变量名错误</td>
-<td><code>NameError: name 'i' is not defined</code></td>
-<td>循环变量与使用变量不一致</td>
-<td>检查所有变量名</td>
+<td><code>data</code></td>
+<td>DataFrame</td>
+<td>—</td>
+<td>包含 K, L, F, E, CO2 列的数据</td>
 </tr>
 <tr>
-<td>约束缺失</td>
-<td>结果异常或无解</td>
-<td>if/elif 分支不完整</td>
-<td>添加所有必要的分支</td>
+<td><code>sent</code></td>
+<td>str</td>
+<td><code>"K L+F=E:CO2"</code></td>
+<td><code>=</code> 左边 <code>+</code> 前：非污染投入（K, L）<br><code>=</code> 左边 <code>+</code> 后：污染投入（F）<br><code>=</code> 右边 <code>:</code> 前：期望产出（E）<br><code>:</code> 后：非期望产出（CO2）</td>
 </tr>
 <tr>
-<td>索引越界</td>
-<td><code>IndexError</code></td>
-<td>方向向量长度与变量数不匹配</td>
-<td>检查 gx/gy 长度</td>
+<td></td>
+<td>str</td>
+<td><code>"K L+F=E+Y2:CO2"</code></td>
+<td>含污染产出 Y2 的情况</td>
 </tr>
 <tr>
-<td>求解失败</td>
-<td><code>optimization_status != ok</code></td>
-<td>模型不可行或无界</td>
-<td>检查约束符号和 bounds</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>sx</code></td>
+<td>list[list]</td>
+<td><code>[[0, 0, sx]]</code></td>
+<td>投入端污染系数（per 非期望产出），长度等于总投入个数<br><code>0</code>：非污染投入（K, L）的系数<br><code>sx</code>：污染投入（F）的系数，<code>sx = CO2.sum() / F.sum()</code></td>
+</tr>
+<tr>
+<td><code>sy</code></td>
+<td>list[list]</td>
+<td><code>[[0]]</code></td>
+<td>产出端污染系数（per 非期望产出），长度等于总产出个数<br><code>0</code>：期望产出（E）的系数为 0，表示该期望产出（E）不含污染物质</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>rts</code></td>
+<td>str</td>
+<td><code>RTS_CRS</code></td>
+<td>不变规模报酬</td>
+</tr>
+<tr>
+<td></td>
+<td>str</td>
+<td><code>RTS_VRS1</code></td>
+<td>可变规模报酬</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>level</code></td>
+<td>int</td>
+<td><code>1</code></td>
+<td>仅调整 b（非期望产出）→ B1</td>
+</tr>
+<tr>
+<td></td>
+<td>int</td>
+<td><code>2</code></td>
+<td>+ x_p（污染投入）→ B2</td>
+</tr>
+<tr>
+<td></td>
+<td>int</td>
+<td><code>3</code></td>
+<td>+ x_np（非污染投入）→ B3</td>
+</tr>
+<tr>
+<td></td>
+<td>int</td>
+<td><code>4</code></td>
+<td>+ y（产出）→ B4</td>
+</tr>
+<tr>
+<td></td>
+<td>int</td>
+<td><code>5</code></td>
+<td>+ y_np（非污染产出），完整分解</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>baseindex</code></td>
+<td>str</td>
+<td><code>None</code></td>
+<td>被评价 DMU 筛选条件</td>
+</tr>
+<tr>
+<td></td>
+<td>str</td>
+<td><code>"year=[2017]"</code></td>
+<td>仅评价 2017 年 DMU</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>refindex</code></td>
+<td>str</td>
+<td><code>None</code></td>
+<td>参考 DMU 筛选条件</td>
+</tr>
+<tr>
+<td></td>
+<td>str</td>
+<td><code>"year=[2017]"</code></td>
+<td>仅用 2017 年 DMU 做参考</td>
 </tr>
 </tbody>
 </table>
-<hr />
-<h2 id="dea8">dea8 正确实现要点<a class="headerlink" href="#dea8" title="Permanent link">&para;</a></h2>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">dea8</span><span class="p">(</span><span class="n">formula</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">evaquery</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">refquery</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rts</span><span class="o">=</span><span class="s2">&quot;crs&quot;</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s2">&quot;oo&quot;</span><span class="p">):</span>
+<h3 id="_5">返回值<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<p><code>optimize()</code> 返回<strong>元组</strong> <code>(data3, info)</code>（注意：与其他模块不同，返回元组而非单独 DataFrame）：</p>
+<h4 id="data3dataframe">data3（DataFrame）<a class="headerlink" href="#data3dataframe" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>返回列</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>optimization_status</code></td>
+<td>求解状态</td>
+</tr>
+<tr>
+<td><code>obj</code></td>
+<td>目标函数值</td>
+</tr>
+<tr>
+<td><code>best of Undesirable</code></td>
+<td>最优非期望产出值（对应 level 的 B 值）</td>
+</tr>
+</tbody>
+</table>
+<h4 id="infostr">info（打印/str）<a class="headerlink" href="#infostr" title="Permanent link">&para;</a></h4>
+<p>指定 DMU 的 LP 模型详细信息。</p>
+<h3 id="_6">后处理：污染物分解指标<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
+<p>将 Level 1-4 的 B 值合并后计算分解指标。<strong>注意</strong>：本案例数据不含"不包含污染物质的期望产出"（Y_NP），因此 Level 5 的结果 $B_5 = B_4$，OE 和 NPOAE 直接用 $B_4$ 计算。若数据中存在非污染产出，则应运行 Level 5 并用 $B_5$ 计算 OE 和 NPOAE（见公式 9.20、9.25）。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;OE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;B4&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="nb">abs</span><span class="p">(</span><span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;CO2&#39;</span><span class="p">])</span>
+<span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;TE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;B1&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="nb">abs</span><span class="p">(</span><span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;CO2&#39;</span><span class="p">])</span>
+<span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;PIAE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;B2&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="nb">abs</span><span class="p">(</span><span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;B1&#39;</span><span class="p">])</span>
+<span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;NPIAE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;B3&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;B2&#39;</span><span class="p">]</span>
+<span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;NPOAE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;B4&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;B3&#39;</span><span class="p">]</span>
 </code></pre></div></td></tr></table></div>
-<p>关键检查点：
-1. <code>formula</code> 解析正确（<code>~</code> 分隔产出和投入）
-2. <code>orient</code> 为 <code>"oo"</code> 或 <code>"io"</code>
-3. <code>rts</code> 为 <code>"crs"</code> 或 <code>"vrs"</code>
-4. 产出导向：目标函数为 maximize，约束符号正确
-5. 投入导向：目标函数为 minimize，约束符号正确
-6. VRS：添加 <code>sum(lamda) == 1</code> 约束
-7. evaquery/refquery 正确筛选 DMU</p>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>公式（本案例）</th>
+<th>理论公式（含 Y_NP）</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>OE</code></td>
+<td><code>|B4| / |CO2|</code></td>
+<td><code>|B5| / |CO2|</code></td>
+<td>总体排放效率</td>
+</tr>
+<tr>
+<td><code>TE</code></td>
+<td><code>|B1| / |CO2|</code></td>
+<td><code>|B1| / |CO2|</code></td>
+<td>技术效率</td>
+</tr>
+<tr>
+<td><code>PIAE</code></td>
+<td><code>|B2| / |B1|</code></td>
+<td><code>|B2| / |B1|</code></td>
+<td>污染投入配置效率</td>
+</tr>
+<tr>
+<td><code>NPIAE</code></td>
+<td><code>B3 / B2</code></td>
+<td><code>B3 / B2</code></td>
+<td>非污染投入配置效率</td>
+</tr>
+<tr>
+<td><code>NPOAE</code></td>
+<td><code>B4 / B3</code></td>
+<td><code>B5 / B4</code></td>
+<td>非污染产出配置效率</td>
+</tr>
+</tbody>
+</table>
+<p>B 值层次关系：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>CO2 → B1(技术效率) → B2(+污染投入) → B3(+非污染投入) → B4(+产出)
+      TE              PIAE             NPIAE               NPOAE
+</code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="1mb-level-1-4">模型 1：MB — Level 1-4<a class="headerlink" href="#1mb-level-1-4" title="Permanent link">&para;</a></h2>
+<h3 id="level-1">Level 1<a class="headerlink" href="#level-1" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">MB</span><span class="o">.</span><span class="n">MB</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L+F=E:CO2&quot;</span><span class="p">,</span> <span class="n">sx</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">sx</span><span class="p">]],</span> <span class="n">sy</span><span class="o">=</span><span class="p">[[</span><span class="n">sy</span><span class="p">]],</span>
+              <span class="n">rts</span><span class="o">=</span><span class="n">RTS_VRS1</span><span class="p">,</span> <span class="n">baseindex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">refindex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">res</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="s2">&quot;mosek&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="level-2">Level 2<a class="headerlink" href="#level-2" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">MB</span><span class="o">.</span><span class="n">MB</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L+F=E:CO2&quot;</span><span class="p">,</span> <span class="n">sx</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">sx</span><span class="p">]],</span> <span class="n">sy</span><span class="o">=</span><span class="p">[[</span><span class="n">sy</span><span class="p">]],</span>
+              <span class="n">rts</span><span class="o">=</span><span class="n">RTS_CRS</span><span class="p">,</span> <span class="n">baseindex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">refindex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">res</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="s2">&quot;mosek&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="level-3">Level 3<a class="headerlink" href="#level-3" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">MB</span><span class="o">.</span><span class="n">MB</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L+F=E:CO2&quot;</span><span class="p">,</span> <span class="n">sx</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">sx</span><span class="p">]],</span> <span class="n">sy</span><span class="o">=</span><span class="p">[[</span><span class="n">sy</span><span class="p">]],</span>
+              <span class="n">rts</span><span class="o">=</span><span class="n">RTS_CRS</span><span class="p">,</span> <span class="n">baseindex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">refindex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">res</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="s2">&quot;mosek&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="level-4">Level 4<a class="headerlink" href="#level-4" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">MB</span><span class="o">.</span><span class="n">MB</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L+F=E:CO2&quot;</span><span class="p">,</span> <span class="n">sx</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">sx</span><span class="p">]],</span> <span class="n">sy</span><span class="o">=</span><span class="p">[[</span><span class="n">sy</span><span class="p">]],</span>
+              <span class="n">rts</span><span class="o">=</span><span class="n">RTS_CRS</span><span class="p">,</span> <span class="n">baseindex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">refindex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">res</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="s2">&quot;mosek&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p>| <code>info(dmu)</code> | dmu: DMU 索引（默认 "all"） | 打印 | 显示 LP 模型详细信息 |</p>
+<hr />
+<h2 id="baseindex-refindex">baseindex / refindex 筛选语法<a class="headerlink" href="#baseindex-refindex" title="Permanent link">&para;</a></h2>
+<p>使用 DataFrame.query() 兼容的语法：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">baseindex</span> <span class="o">=</span> <span class="s2">&quot;year=[2017]&quot;</span>      <span class="c1"># 只评价 2017 年的 DMU</span>
+<span class="n">refindex</span> <span class="o">=</span> <span class="s2">&quot;year=[2015,2016]&quot;</span>  <span class="c1"># 使用 2015 和 2016 年的 DMU 做参考</span>
+</code></pre></div></td></tr></table></div>
 
 
 
@@ -1046,7 +1174,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="April 28, 2026 14:08:16 UTC"><span class="timeago" datetime="2026-04-28T14:08:16+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="April 28, 2026 14:08:16 UTC">2026-04-28</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="May 2, 2026 14:15:47 UTC"><span class="timeago" datetime="2026-05-02T14:15:47+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="May 2, 2026 14:15:47 UTC">2026-05-02</span>
   </span>
 
     
@@ -1056,7 +1184,7 @@
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="April 28, 2026 14:08:16 UTC"><span class="timeago" datetime="2026-04-28T14:08:16+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="April 28, 2026 14:08:16 UTC">2026-04-28</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="May 2, 2026 14:15:47 UTC"><span class="timeago" datetime="2026-05-02T14:15:47+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="May 2, 2026 14:15:47 UTC">2026-05-02</span>
   </span>
 
     

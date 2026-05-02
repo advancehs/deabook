@@ -1,0 +1,3892 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="dea">
+      
+      
+        <meta name="author" content="advancehs">
+      
+      
+        <link rel="canonical" href="https://advancehs.github.io/deabook/deabook%E6%96%87%E6%A1%A3/08_%E5%9F%BA%E4%BA%8E%E6%9D%BE%E5%BC%9B%E6%B5%8B%E5%BA%A6%E7%9A%84%E6%95%88%E7%8E%87%E6%A8%A1%E5%9E%8B/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>08 基于松弛测度的效率模型 - deabook</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans:300,300i,400,400i,700,700i%7CRegular:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Google Sans";--md-code-font:"Regular"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../css/timeago.css">
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#8" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="deabook" class="md-header__button md-logo" aria-label="deabook" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            deabook
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              08 基于松弛测度的效率模型
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6m0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4M7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/advancehs/deabook" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="deabook" class="md-nav__button md-logo" aria-label="deabook" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    deabook
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/advancehs/deabook" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../faq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FAQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/advancehs/deabook/issues" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Report Issues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/intro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Intro
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../deabook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    deabook module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../common/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    common module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#81" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 径向效率测度中的松弛问题
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#82" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2 生产技术与符号设定
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#83-sbm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3 不含非期望产出的 SBM 模型
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.3 不含非期望产出的 SBM 模型">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#831-sbm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3.1 投入导向 SBM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#832-sbm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3.2 产出导向 SBM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#833-sbm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3.3 非导向 SBM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#834-sbm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3.4 非导向 SBM 的线性化
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#84-sbm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.4 含非期望产出的 SBM 模型
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.4 含非期望产出的 SBM 模型">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#841-sbm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.4.1 含非期望产出的综合非导向 SBM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#842" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.4.2 含非期望产出的线性化
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#843-sbm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.4.3 投入导向环境 SBM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#844-sbm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.4.4 期望产出导向环境 SBM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#845-sbm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.4.5 非期望产出导向 SBM
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#85-sbm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.5 不同 SBM 方向的选择
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#86-deabook-sbm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.6 deabook 中的 SBM 调用代码
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.6 deabook 中的 SBM 调用代码">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#861" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.6.1 导入
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#862" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.6.2 参数说明
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#863" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.6.3 返回值
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.6.3 返回值">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        通用列
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#input_oriented-sbm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        input_oriented（投入导向 SBM）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#output_oriented-sbm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        output_oriented（期望产出导向 SBM）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unoutput_oriented-sbm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        unoutput_oriented（非期望产出导向 SBM）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hyper_orientedyx-sbm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        hyper_orientedyx（投入 + 期望产出综合 SBM）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hyper_orientedyb-sbm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        hyper_orientedyb（期望产出 + 非期望产出综合 SBM）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hyper_orientedxb-sbm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        hyper_orientedxb（投入 + 非期望产出综合 SBM）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hyper_orientedyxb-sbm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        hyper_orientedyxb（全方向综合 SBM）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7 种方向模式汇总
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#865" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.6.5 模型调用示例
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#87" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.7 案例应用
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8.7 案例应用">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#871-oecd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.7.1 OECD国家环境效率评估
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#872-sbm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.7.2 非期望产出导向SBM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#873-sbm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.7.3 投入导向SBM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#874" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.7.4 六种模型的汇总比较
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#875-sbm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.7.5 能源投入与非期望产出联合方向SBM
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#88" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.8 本章小结
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        参考文献
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+
+
+
+                  
+
+
+  
+  
+
+
+<div class="toc">
+<ul>
+<li><a href="#8">8. 基于松弛测度的效率模型</a><ul>
+<li><a href="#81">8.1 径向效率测度中的松弛问题</a></li>
+<li><a href="#82">8.2 生产技术与符号设定</a></li>
+<li><a href="#83-sbm">8.3 不含非期望产出的 SBM 模型</a><ul>
+<li><a href="#831-sbm">8.3.1 投入导向 SBM</a></li>
+<li><a href="#832-sbm">8.3.2 产出导向 SBM</a></li>
+<li><a href="#833-sbm">8.3.3 非导向 SBM</a></li>
+<li><a href="#834-sbm">8.3.4 非导向 SBM 的线性化</a></li>
+</ul>
+</li>
+<li><a href="#84-sbm">8.4 含非期望产出的 SBM 模型</a><ul>
+<li><a href="#841-sbm">8.4.1 含非期望产出的综合非导向 SBM</a></li>
+<li><a href="#842">8.4.2 含非期望产出的线性化</a></li>
+<li><a href="#843-sbm">8.4.3 投入导向环境 SBM</a></li>
+<li><a href="#844-sbm">8.4.4 期望产出导向环境 SBM</a></li>
+<li><a href="#845-sbm">8.4.5 非期望产出导向 SBM</a></li>
+</ul>
+</li>
+<li><a href="#85-sbm">8.5 不同 SBM 方向的选择</a></li>
+<li><a href="#86-deabook-sbm">8.6 deabook 中的 SBM 调用代码</a><ul>
+<li><a href="#861">8.6.1 导入</a></li>
+<li><a href="#862">8.6.2 参数说明</a></li>
+<li><a href="#863">8.6.3 返回值</a><ul>
+<li><a href="#_1">通用列</a></li>
+<li><a href="#input_oriented-sbm">input_oriented（投入导向 SBM）</a></li>
+<li><a href="#output_oriented-sbm">output_oriented（期望产出导向 SBM）</a></li>
+<li><a href="#unoutput_oriented-sbm">unoutput_oriented（非期望产出导向 SBM）</a></li>
+<li><a href="#hyper_orientedyx-sbm">hyper_orientedyx（投入 + 期望产出综合 SBM）</a></li>
+<li><a href="#hyper_orientedyb-sbm">hyper_orientedyb（期望产出 + 非期望产出综合 SBM）</a></li>
+<li><a href="#hyper_orientedxb-sbm">hyper_orientedxb（投入 + 非期望产出综合 SBM）</a></li>
+<li><a href="#hyper_orientedyxb-sbm">hyper_orientedyxb（全方向综合 SBM）</a></li>
+<li><a href="#7">7 种方向模式汇总</a></li>
+</ul>
+</li>
+<li><a href="#865">8.6.5 模型调用示例</a></li>
+</ul>
+</li>
+<li><a href="#87">8.7 案例应用</a><ul>
+<li><a href="#871-oecd">8.7.1 OECD国家环境效率评估</a></li>
+<li><a href="#872-sbm">8.7.2 非期望产出导向SBM</a></li>
+<li><a href="#873-sbm">8.7.3 投入导向SBM</a></li>
+<li><a href="#874">8.7.4 六种模型的汇总比较</a></li>
+<li><a href="#875-sbm">8.7.5 能源投入与非期望产出联合方向SBM</a></li>
+</ul>
+</li>
+<li><a href="#88">8.8 本章小结</a></li>
+<li><a href="#_2">参考文献</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h1 id="8">8. 基于松弛测度的效率模型<a class="headerlink" href="#8" title="Permanent link">&para;</a></h1>
+<p>前面章节介绍的投入距离函数、产出距离函数、双曲距离函数和方向距离函数，大多属于径向（radial）效率测度。径向模型的核心思想是：把一组投入或产出按同一个比例同时收缩或扩张。这个处理方式直观、便于解释，但也带来一个重要问题：如果某个决策单元在完成径向调整后仍然存在投入冗余或产出不足，径向效率值本身并不能完整反映这些非比例性改进空间。</p>
+<p>Tone（2001）提出的基于松弛测度的效率模型（Slacks-Based Measure, SBM）正是为了解决这一问题。SBM 直接把投入松弛、期望产出松弛以及非期望产出松弛放入效率指标，因此属于非径向、非角度（non-radial and non-oriented 或按指定方向非径向调整）的 DEA 模型。本章按照其他模型的写法，将 SBM 分为不同方向分别说明：</p>
+<ol>
+<li>不含非期望产出的 SBM：投入导向、产出导向和非导向 SBM；</li>
+<li>含非期望产出的 SBM：投入导向、期望产出导向、非期望产出导向和综合非导向 SBM；</li>
+<li>规模报酬不变（CRS）与规模报酬可变（VRS）的处理；</li>
+<li><code>deabook</code> 包中对应的调用代码。</li>
+</ol>
+<h2 id="81">8.1 径向效率测度中的松弛问题<a class="headerlink" href="#81" title="Permanent link">&para;</a></h2>
+<p>设有 $N$ 个决策单元，每个决策单元使用 $P$ 种投入 $x=(x_1,\ldots,x_P)$ 生产 $Q$ 种期望产出 $y=(y_1,\ldots,y_Q)$。以产出导向 DEA 为例，CRS 下的径向模型为：</p>
+<p>$$
+\begin{aligned}
+\max_{\theta,\lambda} \quad &amp; \theta \
+\text{s.t.}\quad
+&amp; \sum_{n=1}^{N}\lambda_n x_{np}\le x_{0p},\quad p=1,\ldots,P,\
+&amp; \sum_{n=1}^{N}\lambda_n y_{nq}\ge \theta y_{0q},\quad q=1,\ldots,Q,\
+&amp; \lambda_n\ge 0.
+\end{aligned}
+$$</p>
+<p>令最优解为 $\theta^<em>,\lambda^</em>$。即使 $\theta^*=1$，仍可能存在</p>
+<p>$$
+s_p^- = x_{0p}-\sum_{n=1}^{N}\lambda_n^<em>x_{np}&gt;0,
+\qquad
+s_q^+ = \sum_{n=1}^{N}\lambda_n^</em>y_{nq}-\theta^*y_{0q}&gt;0.
+$$</p>
+<p>其中 $s_p^-$ 表示投入冗余，$s_q^+$ 表示产出不足。如果一个 DMU 在径向意义上有效，但仍有非零松弛，那么径向模型会高估该 DMU 的效率。SBM 的基本思想是：不用单一比例因子作为效率值，而是用所有相关松弛的平均相对大小构造效率值。</p>
+<h2 id="82">8.2 生产技术与符号设定<a class="headerlink" href="#82" title="Permanent link">&para;</a></h2>
+<p>不含非期望产出时，DEA 生产技术可以写为：</p>
+<p>$$
+T={(x,y): x \text{ 能够生产 } y}.
+$$</p>
+<p>在样本数据下，CRS 技术集合为：</p>
+<p>$$
+\begin{aligned}
+T_{CRS}={(x,y):\;&amp; x_p\ge \sum_{n=1}^{N}\lambda_n x_{np},\quad p=1,\ldots,P,\
+&amp; y_q\le \sum_{n=1}^{N}\lambda_n y_{nq},\quad q=1,\ldots,Q,\
+&amp; \lambda_n\ge 0,\quad n=1,\ldots,N}.
+\end{aligned}
+$$</p>
+<p>VRS 技术集合在 CRS 的基础上增加凸性约束：</p>
+<p>$$
+\sum_{n=1}^{N}\lambda_n=1.
+$$</p>
+<p>下文用 $0$ 表示被评价的决策单元，用 $\lambda_n$ 表示参考前沿上第 $n$ 个 DMU 的强度变量。</p>
+<h2 id="83-sbm">8.3 不含非期望产出的 SBM 模型<a class="headerlink" href="#83-sbm" title="Permanent link">&para;</a></h2>
+<h3 id="831-sbm">8.3.1 投入导向 SBM<a class="headerlink" href="#831-sbm" title="Permanent link">&para;</a></h3>
+<p>投入导向 SBM 关注在期望产出至少不减少的条件下，各类投入可以分别减少多少。模型为：</p>
+<p>$$
+\begin{aligned}
+\min_{\rho^I,\lambda,s^-}\quad
+&amp; \rho^I = 1-\frac{1}{P}\sum_{p=1}^{P}\frac{s_p^-}{x_{0p}}\
+\text{s.t.}\quad
+&amp; x_{0p}=\sum_{n=1}^{N}\lambda_nx_{np}+s_p^-,\quad p=1,\ldots,P,\
+&amp; y_{0q}\le \sum_{n=1}^{N}\lambda_ny_{nq},\quad q=1,\ldots,Q,\
+&amp; \lambda_n\ge 0,\quad s_p^-\ge 0.
+\end{aligned}
+$$</p>
+<p>投入导向 SBM 的效率值满足 $0&lt;\rho^I\le 1$。如果 $s_p^-=0$ 对所有投入都成立，则 $\rho^I=1$，说明在保持产出不下降的前提下不存在投入冗余。若某些投入存在冗余，则 $\rho^I&lt;1$。该模型的目标函数本身是线性的，不需要 Charnes-Cooper 转换。</p>
+<p>VRS 情形下增加：</p>
+<p>$$
+\sum_{n=1}^{N}\lambda_n=1.
+$$</p>
+<h3 id="832-sbm">8.3.2 产出导向 SBM<a class="headerlink" href="#832-sbm" title="Permanent link">&para;</a></h3>
+<p>产出导向 SBM 关注在投入不增加的条件下，各类期望产出可以分别增加多少。模型可写为：</p>
+<p>$$
+\begin{aligned}
+\max_{\phi^O,\lambda,s^+}\quad
+&amp; \phi^O = 1+\frac{1}{Q}\sum_{q=1}^{Q}\frac{s_q^+}{y_{0q}}\
+\text{s.t.}\quad
+&amp; x_{0p}\ge \sum_{n=1}^{N}\lambda_nx_{np},\quad p=1,\ldots,P,\
+&amp; y_{0q}=\sum_{n=1}^{N}\lambda_ny_{nq}-s_q^+,\quad q=1,\ldots,Q,\
+&amp; \lambda_n\ge 0,\quad s_q^+\ge 0.
+\end{aligned}
+$$</p>
+<p>$\phi^O\ge 1$ 表示平均产出扩张因子。为了使不同方向下效率值都落在 $(0,1]$ 内，通常报告：</p>
+<p>$$
+\rho^O=\frac{1}{\phi^O}.
+$$</p>
+<p>若所有产出松弛均为 0，则 $\phi^O=1$ 且 $\rho^O=1$；若存在产出不足，则 $\phi^O&gt;1$ 且 $\rho^O&lt;1$。VRS 情形同样增加 $\sum_n\lambda_n=1$。</p>
+<h3 id="833-sbm">8.3.3 非导向 SBM<a class="headerlink" href="#833-sbm" title="Permanent link">&para;</a></h3>
+<p>非导向 SBM 同时考虑投入冗余和产出不足，是 Tone（2001）最常用的 SBM 形式：</p>
+<p>$$
+\begin{aligned}
+\min_{\rho,\lambda,s^-,s^+}\quad
+&amp; \rho =
+\frac{1-\frac{1}{P}\sum_{p=1}^{P}s_p^-/x_{0p}}
+{1+\frac{1}{Q}\sum_{q=1}^{Q}s_q^+/y_{0q}}\
+\text{s.t.}\quad
+&amp; x_{0p}=\sum_{n=1}^{N}\lambda_nx_{np}+s_p^-,\quad p=1,\ldots,P,\
+&amp; y_{0q}=\sum_{n=1}^{N}\lambda_ny_{nq}-s_q^+,\quad q=1,\ldots,Q,\
+&amp; \lambda_n\ge0,\quad s_p^-\ge0,\quad s_q^+\ge0.
+\end{aligned}
+\tag{8.1}
+$$</p>
+<p>分子刻画平均投入利用程度，分母刻画平均产出不足程度。只要任何投入或产出存在松弛，效率值都会下降。因此非导向 SBM 比单纯径向模型更严格。</p>
+<h3 id="834-sbm">8.3.4 非导向 SBM 的线性化<a class="headerlink" href="#834-sbm" title="Permanent link">&para;</a></h3>
+<p>式（8.1）的目标函数是分式规划。令</p>
+<p>$$
+t=\left(1+\frac{1}{Q}\sum_{q=1}^{Q}\frac{s_q^+}{y_{0q}}\right)^{-1},\quad
+S_p^-=ts_p^-,\quad S_q^+=ts_q^+,
+\quad \Lambda_n=t\lambda_n.
+$$</p>
+<p>则可转化为线性规划：</p>
+<p>$$
+\begin{aligned}
+\min_{t,\Lambda,S^-,S^+}\quad
+&amp; \tau=t-\frac{1}{P}\sum_{p=1}^{P}\frac{S_p^-}{x_{0p}}\
+\text{s.t.}\quad
+&amp; 1=t+\frac{1}{Q}\sum_{q=1}^{Q}\frac{S_q^+}{y_{0q}},\
+&amp; tx_{0p}=\sum_{n=1}^{N}\Lambda_nx_{np}+S_p^-,\quad p=1,\ldots,P,\
+&amp; ty_{0q}=\sum_{n=1}^{N}\Lambda_ny_{nq}-S_q^+,\quad q=1,\ldots,Q,\
+&amp; \Lambda_n\ge0,\quad S_p^-\ge0,\quad S_q^+\ge0,\quad t&gt;0.
+\end{aligned}
+\tag{8.2}
+$$</p>
+<p>求解后有 $\rho=\tau^*$，原始松弛由</p>
+<p>$$
+s_p^- = S_p^{-<em>}/t^</em>,\qquad s_q^+=S_q^{+<em>}/t^</em>
+$$</p>
+<p>恢复。VRS 约束 $\sum_n\lambda_n=1$ 在线性化后变为：</p>
+<p>$$
+\sum_{n=1}^{N}\Lambda_n=t.
+$$</p>
+<h2 id="84-sbm">8.4 含非期望产出的 SBM 模型<a class="headerlink" href="#84-sbm" title="Permanent link">&para;</a></h2>
+<p>许多生产过程会同时产生期望产出和非期望产出。例如，企业生产增加值或电力的同时会排放二氧化碳、二氧化硫等污染物。设非期望产出为 $b=(b_1,\ldots,b_R)$。在 SBM 框架下，非期望产出的松弛表示污染物过剩或可削减空间。</p>
+<h3 id="841-sbm">8.4.1 含非期望产出的综合非导向 SBM<a class="headerlink" href="#841-sbm" title="Permanent link">&para;</a></h3>
+<p>Tone（2004）的含非期望产出 SBM 为：</p>
+<p>$$
+\begin{aligned}
+\min_{\rho,\lambda,s^x,s^y,s^b}\quad
+&amp; \rho =
+\frac{1-\frac{1}{P}\sum_{p=1}^{P}s_p^x/x_{0p}}
+{1+\frac{1}{Q+R}\left(\sum_{q=1}^{Q}s_q^y/y_{0q}+\sum_{r=1}^{R}s_r^b/b_{0r}\right)}\
+\text{s.t.}\quad
+&amp; x_{0p}=\sum_{n=1}^{N}\lambda_nx_{np}+s_p^x,\quad p=1,\ldots,P,\
+&amp; y_{0q}=\sum_{n=1}^{N}\lambda_ny_{nq}-s_q^y,\quad q=1,\ldots,Q,\
+&amp; b_{0r}=\sum_{n=1}^{N}\lambda_nb_{nr}+s_r^b,\quad r=1,\ldots,R,\
+&amp; \lambda_n\ge0,\quad s_p^x\ge0,\quad s_q^y\ge0,\quad s_r^b\ge0.
+\end{aligned}
+\tag{8.3}
+$$</p>
+<p>其中：</p>
+<ul>
+<li>$s_p^x$：投入冗余；</li>
+<li>$s_q^y$：期望产出不足；</li>
+<li>$s_r^b$：非期望产出过剩，即在保持生产可行的前提下可削减的污染物数量。</li>
+</ul>
+<p>式（8.3）的分母同时惩罚期望产出不足和非期望产出过剩。若某个 DMU 的投入、期望产出和非期望产出都不存在松弛，则 $\rho=1$。</p>
+<h3 id="842">8.4.2 含非期望产出的线性化<a class="headerlink" href="#842" title="Permanent link">&para;</a></h3>
+<p>令</p>
+<p>$$
+t=\left[1+\frac{1}{Q+R}\left(\sum_{q=1}^{Q}\frac{s_q^y}{y_{0q}}+\sum_{r=1}^{R}\frac{s_r^b}{b_{0r}}\right)\right]^{-1},
+$$</p>
+<p>并令 $S_p^x=ts_p^x$、$S_q^y=ts_q^y$、$S_r^b=ts_r^b$、$\Lambda_n=t\lambda_n$，则有：</p>
+<p>$$
+\begin{aligned}
+\min_{t,\Lambda,S^x,S^y,S^b}\quad
+&amp; \tau=t-\frac{1}{P}\sum_{p=1}^{P}\frac{S_p^x}{x_{0p}}\
+\text{s.t.}\quad
+&amp; 1=t+\frac{1}{Q+R}\left(\sum_{q=1}^{Q}\frac{S_q^y}{y_{0q}}+\sum_{r=1}^{R}\frac{S_r^b}{b_{0r}}\right),\
+&amp; tx_{0p}=\sum_{n=1}^{N}\Lambda_nx_{np}+S_p^x,\quad p=1,\ldots,P,\
+&amp; ty_{0q}=\sum_{n=1}^{N}\Lambda_ny_{nq}-S_q^y,\quad q=1,\ldots,Q,\
+&amp; tb_{0r}=\sum_{n=1}^{N}\Lambda_nb_{nr}+S_r^b,\quad r=1,\ldots,R,\
+&amp; \Lambda_n\ge0,\quad S_p^x\ge0,\quad S_q^y\ge0,\quad S_r^b\ge0,\quad t&gt;0.
+\end{aligned}
+\tag{8.4}
+$$</p>
+<p>VRS 情形增加 $\sum_n\Lambda_n=t$。</p>
+<h3 id="843-sbm">8.4.3 投入导向环境 SBM<a class="headerlink" href="#843-sbm" title="Permanent link">&para;</a></h3>
+<p>投入导向环境 SBM 在期望产出不下降、非期望产出不增加的条件下，衡量投入冗余：</p>
+<p>$$
+\begin{aligned}
+\min\quad
+&amp; \rho^{I,b}=1-\frac{1}{P}\sum_{p=1}^{P}\frac{s_p^x}{x_{0p}}\
+\text{s.t.}\quad
+&amp; x_{0p}=\sum_{n=1}^{N}\lambda_nx_{np}+s_p^x,\quad p=1,\ldots,P,\
+&amp; y_{0q}\le\sum_{n=1}^{N}\lambda_ny_{nq},\quad q=1,\ldots,Q,\
+&amp; b_{0r}\ge\sum_{n=1}^{N}\lambda_nb_{nr},\quad r=1,\ldots,R,\
+&amp; \lambda_n\ge0,\quad s_p^x\ge0.
+\end{aligned}
+$$</p>
+<p>该模型适用于“在不降低产出、且不增加污染排放的前提下，投入可以减少多少”的问题。</p>
+<h3 id="844-sbm">8.4.4 期望产出导向环境 SBM<a class="headerlink" href="#844-sbm" title="Permanent link">&para;</a></h3>
+<p>期望产出导向环境 SBM 在投入不增加、非期望产出不增加的条件下，衡量期望产出不足：</p>
+<p>$$
+\begin{aligned}
+\max\quad
+&amp; \phi^{Y,b}=1+\frac{1}{Q}\sum_{q=1}^{Q}\frac{s_q^y}{y_{0q}}\
+\text{s.t.}\quad
+&amp; x_{0p}\ge\sum_{n=1}^{N}\lambda_nx_{np},\quad p=1,\ldots,P,\
+&amp; y_{0q}=\sum_{n=1}^{N}\lambda_ny_{nq}-s_q^y,\quad q=1,\ldots,Q,\
+&amp; b_{0r}\ge\sum_{n=1}^{N}\lambda_nb_{nr},\quad r=1,\ldots,R,\
+&amp; \lambda_n\ge0,\quad s_q^y\ge0.
+\end{aligned}
+$$</p>
+<p>通常报告 $\rho^{Y,b}=1/\phi^{Y,b}$，因此效率值仍位于 $(0,1]$。</p>
+<h3 id="845-sbm">8.4.5 非期望产出导向 SBM<a class="headerlink" href="#845-sbm" title="Permanent link">&para;</a></h3>
+<p>非期望产出导向 SBM 在投入不增加、期望产出不下降的条件下，衡量污染物可削减空间：</p>
+<p>$$
+\begin{aligned}
+\min\quad
+&amp; \rho^{B}=1-\frac{1}{R}\sum_{r=1}^{R}\frac{s_r^b}{b_{0r}}\
+\text{s.t.}\quad
+&amp; x_{0p}\ge\sum_{n=1}^{N}\lambda_nx_{np},\quad p=1,\ldots,P,\
+&amp; y_{0q}\le\sum_{n=1}^{N}\lambda_ny_{nq},\quad q=1,\ldots,Q,\
+&amp; b_{0r}=\sum_{n=1}^{N}\lambda_nb_{nr}+s_r^b,\quad r=1,\ldots,R,\
+&amp; \lambda_n\ge0,\quad s_r^b\ge0.
+\end{aligned}
+$$</p>
+<p>若 $\rho^B=1$，表示在给定投入和期望产出的约束下不存在污染物削减空间；若 $\rho^B&lt;1$，说明非期望产出存在过剩。</p>
+<h2 id="85-sbm">8.5 不同 SBM 方向的选择<a class="headerlink" href="#85-sbm" title="Permanent link">&para;</a></h2>
+<p>为了与 <code>DDFweak2</code> 的调用方式保持一致，<code>deabook</code> 中的 SBM 不再使用额外的方向常量，而是直接使用 <code>DDFweak2</code> 中相同的方向向量：</p>
+<ul>
+<li><code>gx</code>：投入方向向量。某个投入对应位置为 1，表示该投入允许向下调整并进入 SBM 松弛目标。</li>
+<li><code>gy</code>：期望产出方向向量。某个期望产出对应位置为 1，表示该产出允许向上调整并进入 SBM 松弛目标。</li>
+<li><code>gb</code>：非期望产出方向向量。某个非期望产出对应位置为 1，表示该污染物允许向下调整并进入 SBM 松弛目标。</li>
+</ul>
+<p>程序内部按照 <code>DDFweak2</code> 的方向命名识别模型：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>DDFweak2</code> 方向命名</th>
+<th style="text-align: left;">方向向量条件</th>
+<th style="text-align: left;">SBM 含义</th>
+<th style="text-align: left;">被直接纳入目标函数的松弛</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>input_oriented</code></td>
+<td style="text-align: left;"><code>gx≥1, gy=0, gb=0</code></td>
+<td style="text-align: left;">投入导向 SBM</td>
+<td style="text-align: left;">投入冗余 $s^x$</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>output_oriented</code></td>
+<td style="text-align: left;"><code>gy≥1, gx=0, gb=0</code></td>
+<td style="text-align: left;">期望产出导向 SBM</td>
+<td style="text-align: left;">期望产出不足 $s^y$</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>unoutput_oriented</code></td>
+<td style="text-align: left;"><code>gb≥1, gx=0, gy=0</code></td>
+<td style="text-align: left;">非期望产出导向 SBM</td>
+<td style="text-align: left;">非期望产出过剩 $s^b$</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>hyper_orientedyx</code></td>
+<td style="text-align: left;"><code>gx≥1, gy≥1, gb=0</code></td>
+<td style="text-align: left;">投入与期望产出综合 SBM</td>
+<td style="text-align: left;">$s^x,s^y$</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>hyper_orientedyb</code></td>
+<td style="text-align: left;"><code>gy≥1, gb≥1, gx=0</code></td>
+<td style="text-align: left;">期望产出与非期望产出综合 SBM</td>
+<td style="text-align: left;">$s^y,s^b$</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>hyper_orientedxb</code></td>
+<td style="text-align: left;"><code>gx≥1, gb≥1, gy=0</code></td>
+<td style="text-align: left;">投入与非期望产出综合 SBM</td>
+<td style="text-align: left;">$s^x,s^b$</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>hyper_orientedyxb</code></td>
+<td style="text-align: left;"><code>gx≥1, gy≥1, gb≥1</code></td>
+<td style="text-align: left;">投入、期望产出、非期望产出综合 SBM</td>
+<td style="text-align: left;">$s^x,s^y,s^b$</td>
+</tr>
+</tbody>
+</table>
+<p>如果研究目标没有明确偏向某个维度，可以令所有需要改进的维度对应方向向量为 1。例如，不含非期望产出的综合 SBM 可设 <code>gx=[1,1]</code>、<code>gy=[1]</code>，对应 <code>hyper_orientedyx</code>；含非期望产出的综合环境 SBM 可设 <code>gx=[1,1,1]</code>、<code>gy=[1]</code>、<code>gb=[1]</code>，对应 <code>hyper_orientedyxb</code>。</p>
+<h2 id="86-deabook-sbm">8.6 <code>deabook</code> 中的 SBM 调用代码<a class="headerlink" href="#86-deabook-sbm" title="Permanent link">&para;</a></h2>
+<p>本章案例涉及的 SBM 模型通过 <code>deabook.SBM</code> 模块实现。本节介绍必要的导入、参数含义及各模型的基本调用方式。</p>
+<h3 id="861">8.6.1 导入<a class="headerlink" href="#861" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">deabook.SBM</span><span class="w"> </span><span class="kn">import</span> <span class="n">SBM</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">deabook.constant</span><span class="w"> </span><span class="kn">import</span> <span class="n">RTS_CRS</span><span class="p">,</span> <span class="n">RTS_VRS1</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="862">8.6.2 参数说明<a class="headerlink" href="#862" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>类型</th>
+<th>可选值</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>data</code></td>
+<td>DataFrame</td>
+<td>—</td>
+<td>包含 <code>sent</code> 中指定列的数据</td>
+</tr>
+<tr>
+<td><code>sent</code></td>
+<td>str</td>
+<td><code>"K L=Y"</code></td>
+<td>不含非期望产出：<code>=</code> 左边为投入，<code>=</code> 右边为期望产出</td>
+</tr>
+<tr>
+<td></td>
+<td>str</td>
+<td><code>"K L E=Y:CO2"</code></td>
+<td>含非期望产出：<code>:</code> 后为非期望产出</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>gy</code></td>
+<td>list[int]</td>
+<td><code>[0]</code></td>
+<td>不调整期望产出</td>
+</tr>
+<tr>
+<td></td>
+<td>list[int]</td>
+<td><code>[1]</code></td>
+<td>沿期望产出方向扩大（松弛进入目标函数）</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>gx</code></td>
+<td>list[int]</td>
+<td><code>[0,0]</code></td>
+<td>不调整投入</td>
+</tr>
+<tr>
+<td></td>
+<td>list[int]</td>
+<td><code>[1,0]</code></td>
+<td>仅第一个投入允许松弛</td>
+</tr>
+<tr>
+<td></td>
+<td>list[int]</td>
+<td><code>[1,1]</code></td>
+<td>所有投入允许松弛（长度需与投入变量个数一致）</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>gb</code></td>
+<td>list[int]</td>
+<td><code>[0]</code></td>
+<td>不调整非期望产出</td>
+</tr>
+<tr>
+<td></td>
+<td>list[int]</td>
+<td><code>[1]</code></td>
+<td>沿非期望产出方向缩减（松弛进入目标函数）</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>rts</code></td>
+<td>str</td>
+<td><code>RTS_CRS</code></td>
+<td>不变规模报酬</td>
+</tr>
+<tr>
+<td></td>
+<td>str</td>
+<td><code>RTS_VRS1</code></td>
+<td>可变规模报酬</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>email</code></td>
+<td>str</td>
+<td><code>OPT_LOCAL</code></td>
+<td>本地求解</td>
+</tr>
+<tr>
+<td></td>
+<td>str</td>
+<td>邮箱地址</td>
+<td>远程求解完成后发送通知</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>baseindex</code></td>
+<td>str</td>
+<td><code>None</code></td>
+<td>被评价 DMU 筛选条件，如 <code>"t=[1,2,3]"</code></td>
+</tr>
+<tr>
+<td><code>refindex</code></td>
+<td>str</td>
+<td><code>None</code></td>
+<td>参考 DMU 筛选条件，如 <code>"t=[1,2,3]"</code></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>solver</code></td>
+<td>str</td>
+<td><code>"mosek"</code></td>
+<td>商业求解器</td>
+</tr>
+<tr>
+<td></td>
+<td>str</td>
+<td><code>"glpk"</code></td>
+<td>开源求解器</td>
+</tr>
+</tbody>
+</table>
+<p><strong><code>gy</code>/<code>gx</code>/<code>gb</code> 组合判定规则</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>条件</th>
+<th>方向模式</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>gx≥1, gy==0, gb==0</code></td>
+<td><code>input_oriented</code></td>
+<td>投入导向 SBM</td>
+</tr>
+<tr>
+<td><code>gy≥1, gx==0, gb==0</code></td>
+<td><code>output_oriented</code></td>
+<td>期望产出导向 SBM</td>
+</tr>
+<tr>
+<td><code>gb≥1, gx==0, gy==0</code></td>
+<td><code>unoutput_oriented</code></td>
+<td>非期望产出导向 SBM</td>
+</tr>
+<tr>
+<td><code>gx≥1, gy≥1, gb==0</code></td>
+<td><code>hyper_orientedyx</code></td>
+<td>投入+期望产出综合 SBM</td>
+</tr>
+<tr>
+<td><code>gb≥1, gy≥1, gx==0</code></td>
+<td><code>hyper_orientedyb</code></td>
+<td>期望产出+非期望产出综合 SBM</td>
+</tr>
+<tr>
+<td><code>gx≥1, gb≥1, gy==0</code></td>
+<td><code>hyper_orientedxb</code></td>
+<td>投入+非期望产出综合 SBM</td>
+</tr>
+<tr>
+<td><code>gx≥1, gy≥1, gb≥1</code></td>
+<td><code>hyper_orientedyxb</code></td>
+<td>全方向综合 SBM</td>
+</tr>
+</tbody>
+</table>
+<h3 id="863">8.6.3 返回值<a class="headerlink" href="#863" title="Permanent link">&para;</a></h3>
+<p><code>optimize()</code> 返回 DataFrame。SBM 共有 7 种方向模式，每种模式有独立的返回列组合。以下按方向模式对称列出。</p>
+<h4 id="_1">通用列<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h4>
+<p>所有方向模式均包含以下列：</p>
+<table>
+<thead>
+<tr>
+<th>通用列</th>
+<th>类型</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>optimization_status</code></td>
+<td>str</td>
+<td>求解状态（<code>"optimal"</code> 表示成功）</td>
+</tr>
+<tr>
+<td><code>direction</code></td>
+<td>str</td>
+<td>方向模式名称（7 种之一）</td>
+</tr>
+<tr>
+<td><code>objective_value</code></td>
+<td>float</td>
+<td>原始目标函数值</td>
+</tr>
+<tr>
+<td><code>rho</code></td>
+<td>float</td>
+<td>SBM 效率值（0-1，越接近 1 越好）</td>
+</tr>
+</tbody>
+</table>
+<h4 id="input_oriented-sbm">input_oriented（投入导向 SBM）<a class="headerlink" href="#input_oriented-sbm" title="Permanent link">&para;</a></h4>
+<p>数学模型：<code>input_only</code>，直接最小化投入松弛比，无需 Charnes-Cooper 变换。</p>
+<table>
+<thead>
+<tr>
+<th>返回列</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>slack_x_*</code></td>
+<td>各投入变量的松弛量（原始值）</td>
+</tr>
+<tr>
+<td><code>slack_y_*</code></td>
+<td>各期望产出的松弛量（均为 0，未调整产出）</td>
+</tr>
+<tr>
+<td><code>slack_b_*</code></td>
+<td>各非期望产出的松弛量（均为 0，未调整非期望产出）</td>
+</tr>
+</tbody>
+</table>
+<p>效率公式：$\rho = 1 - \frac{1}{m}\sum_{j} \frac{s_j^-}{x_{j0}}$，其中 $m$ 为活跃投入个数。</p>
+<h4 id="output_oriented-sbm">output_oriented（期望产出导向 SBM）<a class="headerlink" href="#output_oriented-sbm" title="Permanent link">&para;</a></h4>
+<p>数学模型：<code>output_bad_only</code>，最大化产出扩张因子 $\varphi$，$\rho = 1/\varphi$。</p>
+<table>
+<thead>
+<tr>
+<th>返回列</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>phi</code></td>
+<td>产出扩张因子，$\varphi = 1 + \frac{1}{n}\sum_{k} \frac{s_k^+}{y_{k0}}$，其中 $n$ 为活跃期望产出个数</td>
+</tr>
+<tr>
+<td><code>slack_x_*</code></td>
+<td>各投入变量的松弛量（均为 0，未调整投入）</td>
+</tr>
+<tr>
+<td><code>slack_y_*</code></td>
+<td>各期望产出的松弛量（原始值）</td>
+</tr>
+<tr>
+<td><code>slack_b_*</code></td>
+<td>各非期望产出的松弛量（均为 0，未调整非期望产出）</td>
+</tr>
+</tbody>
+</table>
+<h4 id="unoutput_oriented-sbm">unoutput_oriented（非期望产出导向 SBM）<a class="headerlink" href="#unoutput_oriented-sbm" title="Permanent link">&para;</a></h4>
+<p>数学模型：<code>output_bad_only</code>，最大化非期望产出缩减因子 $\varphi$，$\rho = 1/\varphi$。</p>
+<table>
+<thead>
+<tr>
+<th>返回列</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>phi</code></td>
+<td>非期望产出缩减因子，$\varphi = 1 + \frac{1}{q}\sum_{h} \frac{s_h^+}{b_{h0}}$，其中 $q$ 为活跃非期望产出个数</td>
+</tr>
+<tr>
+<td><code>slack_x_*</code></td>
+<td>各投入变量的松弛量（均为 0，未调整投入）</td>
+</tr>
+<tr>
+<td><code>slack_y_*</code></td>
+<td>各期望产出的松弛量（均为 0，未调整期望产出）</td>
+</tr>
+<tr>
+<td><code>slack_b_*</code></td>
+<td>各非期望产出的松弛量（原始值）</td>
+</tr>
+</tbody>
+</table>
+<h4 id="hyper_orientedyx-sbm">hyper_orientedyx（投入 + 期望产出综合 SBM）<a class="headerlink" href="#hyper_orientedyx-sbm" title="Permanent link">&para;</a></h4>
+<p>数学模型：<code>ratio</code>，采用 Charnes-Cooper 变换将分式规划转化为线性规划。</p>
+<table>
+<thead>
+<tr>
+<th>返回列</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>t</code></td>
+<td>Charnes-Cooper 变换变量</td>
+</tr>
+<tr>
+<td><code>slack_x_*</code></td>
+<td>各投入变量的松弛量（标准化值，原始松弛量 ÷ $t$）</td>
+</tr>
+<tr>
+<td><code>slack_y_*</code></td>
+<td>各期望产出的松弛量（标准化值，原始松弛量 ÷ $t$）</td>
+</tr>
+<tr>
+<td><code>slack_b_*</code></td>
+<td>各非期望产出的松弛量（均为 0，未调整非期望产出）</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><code>ratio</code> 模型中所有松弛量均为标准化值（除以 $t$），与 <code>input_only</code>/<code>output_bad_only</code> 中的原始松弛量不可直接比较。</p>
+</blockquote>
+<h4 id="hyper_orientedyb-sbm">hyper_orientedyb（期望产出 + 非期望产出综合 SBM）<a class="headerlink" href="#hyper_orientedyb-sbm" title="Permanent link">&para;</a></h4>
+<p>数学模型：<code>ratio</code>，采用 Charnes-Cooper 变换。</p>
+<table>
+<thead>
+<tr>
+<th>返回列</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>t</code></td>
+<td>Charnes-Cooper 变换变量</td>
+</tr>
+<tr>
+<td><code>slack_x_*</code></td>
+<td>各投入变量的松弛量（均为 0，未调整投入）</td>
+</tr>
+<tr>
+<td><code>slack_y_*</code></td>
+<td>各期望产出的松弛量（标准化值，原始松弛量 ÷ $t$）</td>
+</tr>
+<tr>
+<td><code>slack_b_*</code></td>
+<td>各非期望产出的松弛量（标准化值，原始松弛量 ÷ $t$）</td>
+</tr>
+</tbody>
+</table>
+<h4 id="hyper_orientedxb-sbm">hyper_orientedxb（投入 + 非期望产出综合 SBM）<a class="headerlink" href="#hyper_orientedxb-sbm" title="Permanent link">&para;</a></h4>
+<p>数学模型：<code>ratio</code>，采用 Charnes-Cooper 变换。</p>
+<table>
+<thead>
+<tr>
+<th>返回列</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>t</code></td>
+<td>Charnes-Cooper 变换变量</td>
+</tr>
+<tr>
+<td><code>slack_x_*</code></td>
+<td>各投入变量的松弛量（标准化值，原始松弛量 ÷ $t$）</td>
+</tr>
+<tr>
+<td><code>slack_y_*</code></td>
+<td>各期望产出的松弛量（均为 0，未调整期望产出）</td>
+</tr>
+<tr>
+<td><code>slack_b_*</code></td>
+<td>各非期望产出的松弛量（标准化值，原始松弛量 ÷ $t$）</td>
+</tr>
+</tbody>
+</table>
+<h4 id="hyper_orientedyxb-sbm">hyper_orientedyxb（全方向综合 SBM）<a class="headerlink" href="#hyper_orientedyxb-sbm" title="Permanent link">&para;</a></h4>
+<p>数学模型：<code>ratio</code>，采用 Charnes-Cooper 变换。</p>
+<table>
+<thead>
+<tr>
+<th>返回列</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>t</code></td>
+<td>Charnes-Cooper 变换变量</td>
+</tr>
+<tr>
+<td><code>slack_x_*</code></td>
+<td>各投入变量的松弛量（标准化值，原始松弛量 ÷ $t$）</td>
+</tr>
+<tr>
+<td><code>slack_y_*</code></td>
+<td>各期望产出的松弛量（标准化值，原始松弛量 ÷ $t$）</td>
+</tr>
+<tr>
+<td><code>slack_b_*</code></td>
+<td>各非期望产出的松弛量（标准化值，原始松弛量 ÷ $t$）</td>
+</tr>
+</tbody>
+</table>
+<h4 id="7">7 种方向模式汇总<a class="headerlink" href="#7" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>方向模式</th>
+<th>条件</th>
+<th>数学模型</th>
+<th>专属列</th>
+<th>活跃松弛列</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>input_oriented</code></td>
+<td>仅 <code>gx≥1</code></td>
+<td><code>input_only</code></td>
+<td>无</td>
+<td><code>slack_x_*</code></td>
+</tr>
+<tr>
+<td><code>output_oriented</code></td>
+<td>仅 <code>gy≥1</code></td>
+<td><code>output_bad_only</code></td>
+<td><code>phi</code></td>
+<td><code>slack_y_*</code></td>
+</tr>
+<tr>
+<td><code>unoutput_oriented</code></td>
+<td>仅 <code>gb≥1</code></td>
+<td><code>output_bad_only</code></td>
+<td><code>phi</code></td>
+<td><code>slack_b_*</code></td>
+</tr>
+<tr>
+<td><code>hyper_orientedyx</code></td>
+<td><code>gx≥1</code> 且 <code>gy≥1</code></td>
+<td><code>ratio</code></td>
+<td><code>t</code></td>
+<td><code>slack_x_*</code>, <code>slack_y_*</code></td>
+</tr>
+<tr>
+<td><code>hyper_orientedyb</code></td>
+<td><code>gy≥1</code> 且 <code>gb≥1</code></td>
+<td><code>ratio</code></td>
+<td><code>t</code></td>
+<td><code>slack_y_*</code>, <code>slack_b_*</code></td>
+</tr>
+<tr>
+<td><code>hyper_orientedxb</code></td>
+<td><code>gx≥1</code> 且 <code>gb≥1</code></td>
+<td><code>ratio</code></td>
+<td><code>t</code></td>
+<td><code>slack_x_*</code>, <code>slack_b_*</code></td>
+</tr>
+<tr>
+<td><code>hyper_orientedyxb</code></td>
+<td><code>gx≥1</code>、<code>gy≥1</code>、<code>gb≥1</code></td>
+<td><code>ratio</code></td>
+<td><code>t</code></td>
+<td><code>slack_x_*</code>, <code>slack_y_*</code>, <code>slack_b_*</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>不活跃方向的松弛列仍会返回，但值均为 0。<code>input_only</code> 模型的松弛为原始值；<code>output_bad_only</code> 模型的松弛为原始值；<code>ratio</code> 模型的松弛为标准化值（÷ $t$）。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>特征</th>
+<th>径向 DEA / DDF</th>
+<th>SBM</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>调整方式</td>
+<td>按统一比例因子同时收缩/扩张</td>
+<td>每个变量独立松弛</td>
+</tr>
+<tr>
+<td>松弛处理</td>
+<td>松弛不影响效率值</td>
+<td>松弛直接进入效率值</td>
+</tr>
+<tr>
+<td>效率值范围</td>
+<td>投入导向 0-1</td>
+<td>0-1（更严格，通常 ≤ 径向效率）</td>
+</tr>
+<tr>
+<td>适用场景</td>
+<td>比例性改进</td>
+<td>存在非比例性冗余/不足时</td>
+</tr>
+</tbody>
+</table>
+<h3 id="865">8.6.5 模型调用示例<a class="headerlink" href="#865" title="Permanent link">&para;</a></h3>
+<p><strong>不含非期望产出的 SBM</strong>：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># 投入与期望产出综合 SBM（hyper_orientedyx）</span>
+<span class="n">model_yx</span> <span class="o">=</span> <span class="n">SBM</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">ex4</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L=Y&quot;</span><span class="p">,</span> <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">rts</span><span class="o">=</span><span class="n">RTS_VRS1</span><span class="p">,</span>
+    <span class="n">baseindex</span><span class="o">=</span><span class="s2">&quot;t=[1,2,3]&quot;</span><span class="p">,</span> <span class="n">refindex</span><span class="o">=</span><span class="s2">&quot;t=[1,2,3]&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">result_yx</span> <span class="o">=</span> <span class="n">model_yx</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;mosek&quot;</span><span class="p">)</span>
+
+<span class="c1"># 投入导向 SBM（input_oriented）</span>
+<span class="n">model_i</span> <span class="o">=</span> <span class="n">SBM</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">ex4</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L=Y&quot;</span><span class="p">,</span> <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">rts</span><span class="o">=</span><span class="n">RTS_VRS1</span><span class="p">,</span>
+    <span class="n">baseindex</span><span class="o">=</span><span class="s2">&quot;t=[1,2,3]&quot;</span><span class="p">,</span> <span class="n">refindex</span><span class="o">=</span><span class="s2">&quot;t=[1,2,3]&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">result_i</span> <span class="o">=</span> <span class="n">model_i</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;mosek&quot;</span><span class="p">)</span>
+
+<span class="c1"># 期望产出导向 SBM（output_oriented）</span>
+<span class="n">model_o</span> <span class="o">=</span> <span class="n">SBM</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">ex4</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L=Y&quot;</span><span class="p">,</span> <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">rts</span><span class="o">=</span><span class="n">RTS_VRS1</span><span class="p">,</span>
+    <span class="n">baseindex</span><span class="o">=</span><span class="s2">&quot;t=[1,2,3]&quot;</span><span class="p">,</span> <span class="n">refindex</span><span class="o">=</span><span class="s2">&quot;t=[1,2,3]&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">result_o</span> <span class="o">=</span> <span class="n">model_o</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;mosek&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>含非期望产出的 SBM</strong>：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># 综合环境 SBM（hyper_orientedyxb）</span>
+<span class="n">model_env_yxb</span> <span class="o">=</span> <span class="n">SBM</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">ex4</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L E=Y:CO2&quot;</span><span class="p">,</span> <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">gb</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">rts</span><span class="o">=</span><span class="n">RTS_VRS1</span><span class="p">,</span>
+    <span class="n">baseindex</span><span class="o">=</span><span class="s2">&quot;t=[1,2,3]&quot;</span><span class="p">,</span> <span class="n">refindex</span><span class="o">=</span><span class="s2">&quot;t=[1,2,3]&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">result_env_yxb</span> <span class="o">=</span> <span class="n">model_env_yxb</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;mosek&quot;</span><span class="p">)</span>
+
+<span class="c1"># 非期望产出导向 SBM（unoutput_oriented）</span>
+<span class="n">result_env_b</span> <span class="o">=</span> <span class="n">SBM</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">ex4</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L E=Y:CO2&quot;</span><span class="p">,</span> <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">gb</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">rts</span><span class="o">=</span><span class="n">RTS_VRS1</span><span class="p">,</span>
+    <span class="n">baseindex</span><span class="o">=</span><span class="s2">&quot;t=[1,2,3]&quot;</span><span class="p">,</span> <span class="n">refindex</span><span class="o">=</span><span class="s2">&quot;t=[1,2,3]&quot;</span><span class="p">,</span>
+<span class="p">)</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;mosek&quot;</span><span class="p">)</span>
+
+<span class="c1"># 投入导向环境 SBM（input_oriented）</span>
+<span class="n">result_env_i</span> <span class="o">=</span> <span class="n">SBM</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">ex4</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L E=Y:CO2&quot;</span><span class="p">,</span> <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">gb</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">rts</span><span class="o">=</span><span class="n">RTS_VRS1</span><span class="p">,</span>
+    <span class="n">baseindex</span><span class="o">=</span><span class="s2">&quot;t=[1,2,3]&quot;</span><span class="p">,</span> <span class="n">refindex</span><span class="o">=</span><span class="s2">&quot;t=[1,2,3]&quot;</span><span class="p">,</span>
+<span class="p">)</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;mosek&quot;</span><span class="p">)</span>
+
+<span class="c1"># 期望产出与非期望产出综合方向（hyper_orientedyb）</span>
+<span class="n">result_env_yb</span> <span class="o">=</span> <span class="n">SBM</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">ex4</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L E=Y:CO2&quot;</span><span class="p">,</span> <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">gb</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">rts</span><span class="o">=</span><span class="n">RTS_VRS1</span><span class="p">,</span>
+    <span class="n">baseindex</span><span class="o">=</span><span class="s2">&quot;t=[1,2,3]&quot;</span><span class="p">,</span> <span class="n">refindex</span><span class="o">=</span><span class="s2">&quot;t=[1,2,3]&quot;</span><span class="p">,</span>
+<span class="p">)</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;mosek&quot;</span><span class="p">)</span>
+
+<span class="c1"># 投入与非期望产出综合方向（hyper_orientedxb）</span>
+<span class="n">result_env_xb</span> <span class="o">=</span> <span class="n">SBM</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">ex4</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L E=Y:CO2&quot;</span><span class="p">,</span> <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">gb</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">rts</span><span class="o">=</span><span class="n">RTS_VRS1</span><span class="p">,</span>
+    <span class="n">baseindex</span><span class="o">=</span><span class="s2">&quot;t=[1,2,3]&quot;</span><span class="p">,</span> <span class="n">refindex</span><span class="o">=</span><span class="s2">&quot;t=[1,2,3]&quot;</span><span class="p">,</span>
+<span class="p">)</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;mosek&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>CRS 与 VRS 的设定</strong>：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># CRS</span>
+<span class="n">res_crs</span> <span class="o">=</span> <span class="n">SBM</span><span class="p">(</span><span class="n">ex4</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L=Y&quot;</span><span class="p">,</span> <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">rts</span><span class="o">=</span><span class="n">RTS_CRS</span><span class="p">)</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;mosek&quot;</span><span class="p">)</span>
+
+<span class="c1"># VRS</span>
+<span class="n">res_vrs</span> <span class="o">=</span> <span class="n">SBM</span><span class="p">(</span><span class="n">ex4</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L=Y&quot;</span><span class="p">,</span> <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">rts</span><span class="o">=</span><span class="n">RTS_VRS1</span><span class="p">)</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;mosek&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<h2 id="87">8.7 案例应用<a class="headerlink" href="#87" title="Permanent link">&para;</a></h2>
+<h3 id="871-oecd">8.7.1 OECD国家环境效率评估<a class="headerlink" href="#871-oecd" title="Permanent link">&para;</a></h3>
+<p>本节应用8.4节中含非期望产出的SBM模型，评估2016–2019年33个OECD国家的环境效率。具体而言，本节分别计算三种SBM方向下的效率值：（1）纯非期望产出导向SBM，即在投入和期望产出不变的条件下衡量CO2的削减空间；（2）纯投入导向SBM，即在期望产出和非期望产出不变的条件下衡量全部投入的冗余；（3）能源投入与非期望产出联合方向SBM，即在资本和劳动力不变的前提下，同时衡量能源投入冗余和CO2过剩。通过比较不同方向和不同规模报酬假设下的结果，可以揭示各国的效率差异及其来源。</p>
+<p>本节案例中，投入变量为劳动力（L）、资本（K）和能源消费（E）；期望产出为国内生产总值（Y）；非期望产出为二氧化碳排放量（CO2）。相应数据来自Penn World Table 10.01、U.S. Energy Information Administration、Global Carbon Atlas。表8.1给出了各变量的描述性统计。</p>
+<p><strong>表8.1 描述性统计</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">变量</th>
+<th style="text-align: right;">样本量</th>
+<th style="text-align: right;">均值</th>
+<th style="text-align: right;">标准差</th>
+<th style="text-align: right;">最小值</th>
+<th style="text-align: right;">最大值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">K</td>
+<td style="text-align: right;">132</td>
+<td style="text-align: right;">7.84×10⁹</td>
+<td style="text-align: right;">1.21×10¹⁰</td>
+<td style="text-align: right;">1.89×10⁸</td>
+<td style="text-align: right;">6.71×10¹⁰</td>
+</tr>
+<tr>
+<td style="text-align: left;">L</td>
+<td style="text-align: right;">132</td>
+<td style="text-align: right;">18.35</td>
+<td style="text-align: right;">29.28</td>
+<td style="text-align: right;">0.41</td>
+<td style="text-align: right;">158.30</td>
+</tr>
+<tr>
+<td style="text-align: left;">E</td>
+<td style="text-align: right;">132</td>
+<td style="text-align: right;">7.29</td>
+<td style="text-align: right;">17.01</td>
+<td style="text-align: right;">0.09</td>
+<td style="text-align: right;">101.23</td>
+</tr>
+<tr>
+<td style="text-align: left;">Y</td>
+<td style="text-align: right;">132</td>
+<td style="text-align: right;">1.70×10⁹</td>
+<td style="text-align: right;">3.35×10⁹</td>
+<td style="text-align: right;">3.59×10⁷</td>
+<td style="text-align: right;">2.00×10¹⁰</td>
+</tr>
+<tr>
+<td style="text-align: left;">CO2</td>
+<td style="text-align: right;">132</td>
+<td style="text-align: right;">377.73</td>
+<td style="text-align: right;">907.43</td>
+<td style="text-align: right;">9.09</td>
+<td style="text-align: right;">5375.49</td>
+</tr>
+</tbody>
+</table>
+<p>首先，导入SBM模块并加载数据。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># 导入SBM模型和规模报酬常量</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">deabook.SBM</span><span class="w"> </span><span class="kn">import</span> <span class="n">SBM</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">deabook.constant</span><span class="w"> </span><span class="kn">import</span> <span class="n">RTS_CRS</span><span class="p">,</span> <span class="n">RTS_VRS1</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="c1"># 设置分析类型</span>
+<span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;country&quot;</span>  <span class="c1"># 可选 &quot;province&quot;（省份）或 &quot;country&quot;（国家）</span>
+
+<span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;province&quot;</span><span class="p">:</span>
+    <span class="n">dmuname</span> <span class="o">=</span> <span class="s1">&#39;省份&#39;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;../../data\china data.xlsx&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;year&gt;2015&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">region</span> <span class="o">=</span> <span class="n">data</span><span class="p">[[</span><span class="s2">&quot;省份&quot;</span><span class="p">,</span><span class="s2">&quot;group&quot;</span><span class="p">]]</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">dmuname</span> <span class="o">=</span> <span class="s1">&#39;国家&#39;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;../../data\oecd data.xlsx&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;year&gt;2015&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">yearid</span> <span class="o">=</span> <span class="n">data</span><span class="p">[[</span><span class="s1">&#39;year&#39;</span><span class="p">,</span> <span class="n">dmuname</span><span class="p">]]</span>
+<span class="n">yearid</span><span class="p">[</span><span class="n">dmuname</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="872-sbm">8.7.2 非期望产出导向SBM<a class="headerlink" href="#872-sbm" title="Permanent link">&para;</a></h3>
+<p>本小节计算8.4.5节中的非期望产出导向SBM效率值。设定 <code>gx=[0,0,0]</code>、<code>gy=[0]</code>、<code>gb=[1]</code>，即不调整投入和期望产出，仅衡量CO2的可削减空间。分别在CRS和VRS假设下求解，结果见表8.2和表8.3。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># 非期望产出导向 SBM（CRS / VRS）</span>
+<span class="n">res_bad_crs</span> <span class="o">=</span> <span class="n">SBM</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L E=Y:CO2&quot;</span><span class="p">,</span> <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">gb</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">rts</span><span class="o">=</span><span class="n">RTS_CRS</span><span class="p">)</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;mosek&quot;</span><span class="p">)</span>
+<span class="n">res_bad_vrs</span> <span class="o">=</span> <span class="n">SBM</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L E=Y:CO2&quot;</span><span class="p">,</span> <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">gb</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">rts</span><span class="o">=</span><span class="n">RTS_VRS1</span><span class="p">)</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;mosek&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p>表$8.2$ CRS假设下的非期望产出导向SBM效率。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">国家</th>
+<th style="text-align: right;">2016</th>
+<th style="text-align: right;">2017</th>
+<th style="text-align: right;">2018</th>
+<th style="text-align: right;">2019</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">丹麦</td>
+<td style="text-align: right;">0.630148</td>
+<td style="text-align: right;">0.646186</td>
+<td style="text-align: right;">0.650721</td>
+<td style="text-align: right;">0.682434</td>
+</tr>
+<tr>
+<td style="text-align: left;">以色列</td>
+<td style="text-align: right;">0.679291</td>
+<td style="text-align: right;">0.698162</td>
+<td style="text-align: right;">0.697001</td>
+<td style="text-align: right;">0.699788</td>
+</tr>
+<tr>
+<td style="text-align: left;">加拿大</td>
+<td style="text-align: right;">0.551829</td>
+<td style="text-align: right;">0.553549</td>
+<td style="text-align: right;">0.554236</td>
+<td style="text-align: right;">0.554816</td>
+</tr>
+<tr>
+<td style="text-align: left;">匈牙利</td>
+<td style="text-align: right;">0.578916</td>
+<td style="text-align: right;">0.578273</td>
+<td style="text-align: right;">0.583295</td>
+<td style="text-align: right;">0.588469</td>
+</tr>
+<tr>
+<td style="text-align: left;">卢森</td>
+<td style="text-align: right;">0.592109</td>
+<td style="text-align: right;">0.591311</td>
+<td style="text-align: right;">0.593698</td>
+<td style="text-align: right;">0.594720</td>
+</tr>
+<tr>
+<td style="text-align: left;">土耳其</td>
+<td style="text-align: right;">0.624967</td>
+<td style="text-align: right;">0.629028</td>
+<td style="text-align: right;">0.628628</td>
+<td style="text-align: right;">0.629602</td>
+</tr>
+<tr>
+<td style="text-align: left;">墨西哥</td>
+<td style="text-align: right;">0.602592</td>
+<td style="text-align: right;">0.612251</td>
+<td style="text-align: right;">0.617545</td>
+<td style="text-align: right;">0.619424</td>
+</tr>
+<tr>
+<td style="text-align: left;">奥地利</td>
+<td style="text-align: right;">0.605576</td>
+<td style="text-align: right;">0.604164</td>
+<td style="text-align: right;">0.613435</td>
+<td style="text-align: right;">0.612510</td>
+</tr>
+<tr>
+<td style="text-align: left;">希腊</td>
+<td style="text-align: right;">0.558410</td>
+<td style="text-align: right;">0.556181</td>
+<td style="text-align: right;">0.559873</td>
+<td style="text-align: right;">0.567528</td>
+</tr>
+<tr>
+<td style="text-align: left;">德国</td>
+<td style="text-align: right;">0.581146</td>
+<td style="text-align: right;">0.588656</td>
+<td style="text-align: right;">0.594621</td>
+<td style="text-align: right;">0.600362</td>
+</tr>
+<tr>
+<td style="text-align: left;">意大利</td>
+<td style="text-align: right;">0.607523</td>
+<td style="text-align: right;">0.611692</td>
+<td style="text-align: right;">0.614509</td>
+<td style="text-align: right;">0.618865</td>
+</tr>
+<tr>
+<td style="text-align: left;">挪威</td>
+<td style="text-align: right;">0.688730</td>
+<td style="text-align: right;">0.697568</td>
+<td style="text-align: right;">0.695797</td>
+<td style="text-align: right;">0.702723</td>
+</tr>
+<tr>
+<td style="text-align: left;">捷克</td>
+<td style="text-align: right;">0.546950</td>
+<td style="text-align: right;">0.549147</td>
+<td style="text-align: right;">0.551653</td>
+<td style="text-align: right;">0.556097</td>
+</tr>
+<tr>
+<td style="text-align: left;">斯洛伐克</td>
+<td style="text-align: right;">0.560161</td>
+<td style="text-align: right;">0.559948</td>
+<td style="text-align: right;">0.562491</td>
+<td style="text-align: right;">0.568999</td>
+</tr>
+<tr>
+<td style="text-align: left;">斯洛文尼亚</td>
+<td style="text-align: right;">0.564476</td>
+<td style="text-align: right;">0.567106</td>
+<td style="text-align: right;">0.571009</td>
+<td style="text-align: right;">0.576558</td>
+</tr>
+<tr>
+<td style="text-align: left;">新西兰</td>
+<td style="text-align: right;">0.765498</td>
+<td style="text-align: right;">0.782815</td>
+<td style="text-align: right;">0.798236</td>
+<td style="text-align: right;">0.780308</td>
+</tr>
+<tr>
+<td style="text-align: left;">日本</td>
+<td style="text-align: right;">0.558027</td>
+<td style="text-align: right;">0.560309</td>
+<td style="text-align: right;">0.563191</td>
+<td style="text-align: right;">0.566116</td>
+</tr>
+<tr>
+<td style="text-align: left;">智利</td>
+<td style="text-align: right;">0.587449</td>
+<td style="text-align: right;">0.585273</td>
+<td style="text-align: right;">0.589781</td>
+<td style="text-align: right;">0.584209</td>
+</tr>
+<tr>
+<td style="text-align: left;">比利时</td>
+<td style="text-align: right;">0.575958</td>
+<td style="text-align: right;">0.577749</td>
+<td style="text-align: right;">0.578668</td>
+<td style="text-align: right;">0.580710</td>
+</tr>
+<tr>
+<td style="text-align: left;">法国</td>
+<td style="text-align: right;">0.644511</td>
+<td style="text-align: right;">0.646856</td>
+<td style="text-align: right;">0.659269</td>
+<td style="text-align: right;">0.666870</td>
+</tr>
+<tr>
+<td style="text-align: left;">波兰</td>
+<td style="text-align: right;">0.823280</td>
+<td style="text-align: right;">0.845662</td>
+<td style="text-align: right;">0.902494</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td style="text-align: left;">澳大利亚</td>
+<td style="text-align: right;">0.562201</td>
+<td style="text-align: right;">0.565308</td>
+<td style="text-align: right;">0.566821</td>
+<td style="text-align: right;">0.564310</td>
+</tr>
+<tr>
+<td style="text-align: left;">爱尔兰</td>
+<td style="text-align: right;">0.802061</td>
+<td style="text-align: right;">0.887509</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td style="text-align: left;">爱沙尼亚</td>
+<td style="text-align: right;">0.529733</td>
+<td style="text-align: right;">0.529306</td>
+<td style="text-align: right;">0.532195</td>
+<td style="text-align: right;">0.552493</td>
+</tr>
+<tr>
+<td style="text-align: left;">瑞典</td>
+<td style="text-align: right;">0.726089</td>
+<td style="text-align: right;">0.740068</td>
+<td style="text-align: right;">0.751458</td>
+<td style="text-align: right;">0.767384</td>
+</tr>
+<tr>
+<td style="text-align: left;">瑞士</td>
+<td style="text-align: right;">0.897878</td>
+<td style="text-align: right;">0.929475</td>
+<td style="text-align: right;">0.992587</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td style="text-align: left;">美国</td>
+<td style="text-align: right;">0.650457</td>
+<td style="text-align: right;">0.664070</td>
+<td style="text-align: right;">0.675831</td>
+<td style="text-align: right;">0.692560</td>
+</tr>
+<tr>
+<td style="text-align: left;">芬兰</td>
+<td style="text-align: right;">0.576178</td>
+<td style="text-align: right;">0.584396</td>
+<td style="text-align: right;">0.583281</td>
+<td style="text-align: right;">0.592156</td>
+</tr>
+<tr>
+<td style="text-align: left;">英国</td>
+<td style="text-align: right;">0.647050</td>
+<td style="text-align: right;">0.656375</td>
+<td style="text-align: right;">0.662085</td>
+<td style="text-align: right;">0.672539</td>
+</tr>
+<tr>
+<td style="text-align: left;">荷兰</td>
+<td style="text-align: right;">0.584139</td>
+<td style="text-align: right;">0.588472</td>
+<td style="text-align: right;">0.594072</td>
+<td style="text-align: right;">0.600792</td>
+</tr>
+<tr>
+<td style="text-align: left;">葡萄牙</td>
+<td style="text-align: right;">0.592695</td>
+<td style="text-align: right;">0.586780</td>
+<td style="text-align: right;">0.597477</td>
+<td style="text-align: right;">0.609998</td>
+</tr>
+<tr>
+<td style="text-align: left;">西班牙</td>
+<td style="text-align: right;">0.609212</td>
+<td style="text-align: right;">0.606256</td>
+<td style="text-align: right;">0.611849</td>
+<td style="text-align: right;">0.624897</td>
+</tr>
+<tr>
+<td style="text-align: left;">韩国</td>
+<td style="text-align: right;">0.545418</td>
+<td style="text-align: right;">0.545698</td>
+<td style="text-align: right;">0.545935</td>
+<td style="text-align: right;">0.548837</td>
+</tr>
+</tbody>
+</table>
+<p>表$8.3$ VRS假设下的非期望产出导向SBM效率。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">国家</th>
+<th style="text-align: right;">2016</th>
+<th style="text-align: right;">2017</th>
+<th style="text-align: right;">2018</th>
+<th style="text-align: right;">2019</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">丹麦</td>
+<td style="text-align: right;">0.675859</td>
+<td style="text-align: right;">0.696619</td>
+<td style="text-align: right;">0.701107</td>
+<td style="text-align: right;">0.743963</td>
+</tr>
+<tr>
+<td style="text-align: left;">以色列</td>
+<td style="text-align: right;">0.721270</td>
+<td style="text-align: right;">0.741701</td>
+<td style="text-align: right;">0.736179</td>
+<td style="text-align: right;">0.735590</td>
+</tr>
+<tr>
+<td style="text-align: left;">加拿大</td>
+<td style="text-align: right;">0.610617</td>
+<td style="text-align: right;">0.617299</td>
+<td style="text-align: right;">0.620383</td>
+<td style="text-align: right;">0.622286</td>
+</tr>
+<tr>
+<td style="text-align: left;">匈牙利</td>
+<td style="text-align: right;">0.612250</td>
+<td style="text-align: right;">0.609072</td>
+<td style="text-align: right;">0.613653</td>
+<td style="text-align: right;">0.618666</td>
+</tr>
+<tr>
+<td style="text-align: left;">卢森</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.986434</td>
+<td style="text-align: right;">0.967702</td>
+<td style="text-align: right;">0.957516</td>
+</tr>
+<tr>
+<td style="text-align: left;">土耳其</td>
+<td style="text-align: right;">0.913301</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.905338</td>
+</tr>
+<tr>
+<td style="text-align: left;">墨西哥</td>
+<td style="text-align: right;">0.796323</td>
+<td style="text-align: right;">0.837656</td>
+<td style="text-align: right;">0.863924</td>
+<td style="text-align: right;">0.864251</td>
+</tr>
+<tr>
+<td style="text-align: left;">奥地利</td>
+<td style="text-align: right;">0.619323</td>
+<td style="text-align: right;">0.616797</td>
+<td style="text-align: right;">0.626394</td>
+<td style="text-align: right;">0.624786</td>
+</tr>
+<tr>
+<td style="text-align: left;">希腊</td>
+<td style="text-align: right;">0.576630</td>
+<td style="text-align: right;">0.573231</td>
+<td style="text-align: right;">0.577708</td>
+<td style="text-align: right;">0.587338</td>
+</tr>
+<tr>
+<td style="text-align: left;">德国</td>
+<td style="text-align: right;">0.736591</td>
+<td style="text-align: right;">0.765173</td>
+<td style="text-align: right;">0.795181</td>
+<td style="text-align: right;">0.830861</td>
+</tr>
+<tr>
+<td style="text-align: left;">意大利</td>
+<td style="text-align: right;">0.740703</td>
+<td style="text-align: right;">0.753337</td>
+<td style="text-align: right;">0.761930</td>
+<td style="text-align: right;">0.774662</td>
+</tr>
+<tr>
+<td style="text-align: left;">挪威</td>
+<td style="text-align: right;">0.713858</td>
+<td style="text-align: right;">0.722361</td>
+<td style="text-align: right;">0.720603</td>
+<td style="text-align: right;">0.729641</td>
+</tr>
+<tr>
+<td style="text-align: left;">捷克</td>
+<td style="text-align: right;">0.556687</td>
+<td style="text-align: right;">0.558370</td>
+<td style="text-align: right;">0.560756</td>
+<td style="text-align: right;">0.565572</td>
+</tr>
+<tr>
+<td style="text-align: left;">斯洛伐克</td>
+<td style="text-align: right;">0.613575</td>
+<td style="text-align: right;">0.610982</td>
+<td style="text-align: right;">0.613451</td>
+<td style="text-align: right;">0.624633</td>
+</tr>
+<tr>
+<td style="text-align: left;">斯洛文尼亚</td>
+<td style="text-align: right;">0.745026</td>
+<td style="text-align: right;">0.745755</td>
+<td style="text-align: right;">0.753048</td>
+<td style="text-align: right;">0.770499</td>
+</tr>
+<tr>
+<td style="text-align: left;">新西兰</td>
+<td style="text-align: right;">0.973265</td>
+<td style="text-align: right;">0.988339</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.959034</td>
+</tr>
+<tr>
+<td style="text-align: left;">日本</td>
+<td style="text-align: right;">0.704121</td>
+<td style="text-align: right;">0.720478</td>
+<td style="text-align: right;">0.735206</td>
+<td style="text-align: right;">0.751855</td>
+</tr>
+<tr>
+<td style="text-align: left;">智利</td>
+<td style="text-align: right;">0.596504</td>
+<td style="text-align: right;">0.594762</td>
+<td style="text-align: right;">0.598440</td>
+<td style="text-align: right;">0.593151</td>
+</tr>
+<tr>
+<td style="text-align: left;">比利时</td>
+<td style="text-align: right;">0.582426</td>
+<td style="text-align: right;">0.584017</td>
+<td style="text-align: right;">0.584599</td>
+<td style="text-align: right;">0.586409</td>
+</tr>
+<tr>
+<td style="text-align: left;">法国</td>
+<td style="text-align: right;">0.867116</td>
+<td style="text-align: right;">0.877435</td>
+<td style="text-align: right;">0.924104</td>
+<td style="text-align: right;">0.954908</td>
+</tr>
+<tr>
+<td style="text-align: left;">波兰</td>
+<td style="text-align: right;">0.829613</td>
+<td style="text-align: right;">0.848877</td>
+<td style="text-align: right;">0.902542</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td style="text-align: left;">澳大利亚</td>
+<td style="text-align: right;">0.633373</td>
+<td style="text-align: right;">0.644205</td>
+<td style="text-align: right;">0.649636</td>
+<td style="text-align: right;">0.639033</td>
+</tr>
+<tr>
+<td style="text-align: left;">爱尔兰</td>
+<td style="text-align: right;">0.826476</td>
+<td style="text-align: right;">0.903878</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td style="text-align: left;">爱沙尼亚</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td style="text-align: left;">瑞典</td>
+<td style="text-align: right;">0.748898</td>
+<td style="text-align: right;">0.762409</td>
+<td style="text-align: right;">0.773364</td>
+<td style="text-align: right;">0.789905</td>
+</tr>
+<tr>
+<td style="text-align: left;">瑞士</td>
+<td style="text-align: right;">0.905588</td>
+<td style="text-align: right;">0.935617</td>
+<td style="text-align: right;">0.993996</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td style="text-align: left;">美国</td>
+<td style="text-align: right;">0.926980</td>
+<td style="text-align: right;">0.955044</td>
+<td style="text-align: right;">0.956470</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td style="text-align: left;">芬兰</td>
+<td style="text-align: right;">0.609574</td>
+<td style="text-align: right;">0.620237</td>
+<td style="text-align: right;">0.617692</td>
+<td style="text-align: right;">0.630329</td>
+</tr>
+<tr>
+<td style="text-align: left;">英国</td>
+<td style="text-align: right;">0.904149</td>
+<td style="text-align: right;">0.946342</td>
+<td style="text-align: right;">0.962554</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td style="text-align: left;">荷兰</td>
+<td style="text-align: right;">0.611606</td>
+<td style="text-align: right;">0.620608</td>
+<td style="text-align: right;">0.637748</td>
+<td style="text-align: right;">0.651492</td>
+</tr>
+<tr>
+<td style="text-align: left;">葡萄牙</td>
+<td style="text-align: right;">0.621003</td>
+<td style="text-align: right;">0.611319</td>
+<td style="text-align: right;">0.624220</td>
+<td style="text-align: right;">0.639676</td>
+</tr>
+<tr>
+<td style="text-align: left;">西班牙</td>
+<td style="text-align: right;">0.721906</td>
+<td style="text-align: right;">0.717227</td>
+<td style="text-align: right;">0.732975</td>
+<td style="text-align: right;">0.768277</td>
+</tr>
+<tr>
+<td style="text-align: left;">韩国</td>
+<td style="text-align: right;">0.590215</td>
+<td style="text-align: right;">0.589382</td>
+<td style="text-align: right;">0.589353</td>
+<td style="text-align: right;">0.595504</td>
+</tr>
+</tbody>
+</table>
+<h3 id="873-sbm">8.7.3 投入导向SBM<a class="headerlink" href="#873-sbm" title="Permanent link">&para;</a></h3>
+<p>本小节计算8.4.3节中的投入导向环境SBM效率值。设定 <code>gx=[1,1,1]</code>、<code>gy=[0]</code>、<code>gb=[0]</code>，即不调整期望产出和CO2排放，仅衡量全部投入（资本、劳动力和能源）的冗余程度。结果见表8.4和表8.5。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># 投入导向 SBM（CRS / VRS）</span>
+<span class="n">res_input_crs</span> <span class="o">=</span> <span class="n">SBM</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L E=Y:CO2&quot;</span><span class="p">,</span> <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">gb</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">rts</span><span class="o">=</span><span class="n">RTS_CRS</span><span class="p">)</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;mosek&quot;</span><span class="p">)</span>
+<span class="n">res_input_vrs</span> <span class="o">=</span> <span class="n">SBM</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L E=Y:CO2&quot;</span><span class="p">,</span> <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">gb</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">rts</span><span class="o">=</span><span class="n">RTS_VRS1</span><span class="p">)</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;mosek&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p>表$8.4$ CRS假设下的投入导向SBM效率。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">国家</th>
+<th style="text-align: right;">2016</th>
+<th style="text-align: right;">2017</th>
+<th style="text-align: right;">2018</th>
+<th style="text-align: right;">2019</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">丹麦</td>
+<td style="text-align: right;">0.589967</td>
+<td style="text-align: right;">0.600560</td>
+<td style="text-align: right;">0.609808</td>
+<td style="text-align: right;">0.623568</td>
+</tr>
+<tr>
+<td style="text-align: left;">以色列</td>
+<td style="text-align: right;">0.645703</td>
+<td style="text-align: right;">0.650815</td>
+<td style="text-align: right;">0.666009</td>
+<td style="text-align: right;">0.681304</td>
+</tr>
+<tr>
+<td style="text-align: left;">加拿大</td>
+<td style="text-align: right;">0.477707</td>
+<td style="text-align: right;">0.482436</td>
+<td style="text-align: right;">0.486656</td>
+<td style="text-align: right;">0.487377</td>
+</tr>
+<tr>
+<td style="text-align: left;">匈牙利</td>
+<td style="text-align: right;">0.441567</td>
+<td style="text-align: right;">0.448944</td>
+<td style="text-align: right;">0.462453</td>
+<td style="text-align: right;">0.474470</td>
+</tr>
+<tr>
+<td style="text-align: left;">卢森</td>
+<td style="text-align: right;">0.605678</td>
+<td style="text-align: right;">0.598844</td>
+<td style="text-align: right;">0.599063</td>
+<td style="text-align: right;">0.599044</td>
+</tr>
+<tr>
+<td style="text-align: left;">土耳其</td>
+<td style="text-align: right;">0.614039</td>
+<td style="text-align: right;">0.622436</td>
+<td style="text-align: right;">0.623598</td>
+<td style="text-align: right;">0.615478</td>
+</tr>
+<tr>
+<td style="text-align: left;">墨西哥</td>
+<td style="text-align: right;">0.511787</td>
+<td style="text-align: right;">0.516624</td>
+<td style="text-align: right;">0.524146</td>
+<td style="text-align: right;">0.515490</td>
+</tr>
+<tr>
+<td style="text-align: left;">奥地利</td>
+<td style="text-align: right;">0.515830</td>
+<td style="text-align: right;">0.519441</td>
+<td style="text-align: right;">0.530020</td>
+<td style="text-align: right;">0.526128</td>
+</tr>
+<tr>
+<td style="text-align: left;">希腊</td>
+<td style="text-align: right;">0.366039</td>
+<td style="text-align: right;">0.365265</td>
+<td style="text-align: right;">0.370826</td>
+<td style="text-align: right;">0.377519</td>
+</tr>
+<tr>
+<td style="text-align: left;">德国</td>
+<td style="text-align: right;">0.553567</td>
+<td style="text-align: right;">0.557635</td>
+<td style="text-align: right;">0.562993</td>
+<td style="text-align: right;">0.566519</td>
+</tr>
+<tr>
+<td style="text-align: left;">意大利</td>
+<td style="text-align: right;">0.486959</td>
+<td style="text-align: right;">0.491005</td>
+<td style="text-align: right;">0.492578</td>
+<td style="text-align: right;">0.495151</td>
+</tr>
+<tr>
+<td style="text-align: left;">挪威</td>
+<td style="text-align: right;">0.595668</td>
+<td style="text-align: right;">0.601589</td>
+<td style="text-align: right;">0.599227</td>
+<td style="text-align: right;">0.602732</td>
+</tr>
+<tr>
+<td style="text-align: left;">捷克</td>
+<td style="text-align: right;">0.399835</td>
+<td style="text-align: right;">0.411660</td>
+<td style="text-align: right;">0.422790</td>
+<td style="text-align: right;">0.432505</td>
+</tr>
+<tr>
+<td style="text-align: left;">斯洛伐克</td>
+<td style="text-align: right;">0.429539</td>
+<td style="text-align: right;">0.433665</td>
+<td style="text-align: right;">0.445159</td>
+<td style="text-align: right;">0.453182</td>
+</tr>
+<tr>
+<td style="text-align: left;">斯洛文尼亚</td>
+<td style="text-align: right;">0.372671</td>
+<td style="text-align: right;">0.384396</td>
+<td style="text-align: right;">0.394507</td>
+<td style="text-align: right;">0.408363</td>
+</tr>
+<tr>
+<td style="text-align: left;">新西兰</td>
+<td style="text-align: right;">0.637657</td>
+<td style="text-align: right;">0.655100</td>
+<td style="text-align: right;">0.664769</td>
+<td style="text-align: right;">0.666433</td>
+</tr>
+<tr>
+<td style="text-align: left;">日本</td>
+<td style="text-align: right;">0.470162</td>
+<td style="text-align: right;">0.480342</td>
+<td style="text-align: right;">0.479976</td>
+<td style="text-align: right;">0.483394</td>
+</tr>
+<tr>
+<td style="text-align: left;">智利</td>
+<td style="text-align: right;">0.484916</td>
+<td style="text-align: right;">0.478296</td>
+<td style="text-align: right;">0.484546</td>
+<td style="text-align: right;">0.478767</td>
+</tr>
+<tr>
+<td style="text-align: left;">比利时</td>
+<td style="text-align: right;">0.454004</td>
+<td style="text-align: right;">0.454604</td>
+<td style="text-align: right;">0.456500</td>
+<td style="text-align: right;">0.457832</td>
+</tr>
+<tr>
+<td style="text-align: left;">法国</td>
+<td style="text-align: right;">0.501740</td>
+<td style="text-align: right;">0.508969</td>
+<td style="text-align: right;">0.513864</td>
+<td style="text-align: right;">0.518702</td>
+</tr>
+<tr>
+<td style="text-align: left;">波兰</td>
+<td style="text-align: right;">0.876745</td>
+<td style="text-align: right;">0.902840</td>
+<td style="text-align: right;">0.953324</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td style="text-align: left;">澳大利亚</td>
+<td style="text-align: right;">0.580091</td>
+<td style="text-align: right;">0.583322</td>
+<td style="text-align: right;">0.586394</td>
+<td style="text-align: right;">0.576966</td>
+</tr>
+<tr>
+<td style="text-align: left;">爱尔兰</td>
+<td style="text-align: right;">0.912741</td>
+<td style="text-align: right;">0.957554</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td style="text-align: left;">爱沙尼亚</td>
+<td style="text-align: right;">0.537801</td>
+<td style="text-align: right;">0.551779</td>
+<td style="text-align: right;">0.559576</td>
+<td style="text-align: right;">0.565272</td>
+</tr>
+<tr>
+<td style="text-align: left;">瑞典</td>
+<td style="text-align: right;">0.522318</td>
+<td style="text-align: right;">0.527131</td>
+<td style="text-align: right;">0.538213</td>
+<td style="text-align: right;">0.559518</td>
+</tr>
+<tr>
+<td style="text-align: left;">瑞士</td>
+<td style="text-align: right;">0.909707</td>
+<td style="text-align: right;">0.942856</td>
+<td style="text-align: right;">0.993175</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td style="text-align: left;">美国</td>
+<td style="text-align: right;">0.744107</td>
+<td style="text-align: right;">0.761732</td>
+<td style="text-align: right;">0.786377</td>
+<td style="text-align: right;">0.803006</td>
+</tr>
+<tr>
+<td style="text-align: left;">芬兰</td>
+<td style="text-align: right;">0.484300</td>
+<td style="text-align: right;">0.495282</td>
+<td style="text-align: right;">0.492778</td>
+<td style="text-align: right;">0.494021</td>
+</tr>
+<tr>
+<td style="text-align: left;">英国</td>
+<td style="text-align: right;">0.621617</td>
+<td style="text-align: right;">0.627304</td>
+<td style="text-align: right;">0.629926</td>
+<td style="text-align: right;">0.637585</td>
+</tr>
+<tr>
+<td style="text-align: left;">荷兰</td>
+<td style="text-align: right;">0.520822</td>
+<td style="text-align: right;">0.528521</td>
+<td style="text-align: right;">0.536690</td>
+<td style="text-align: right;">0.539781</td>
+</tr>
+<tr>
+<td style="text-align: left;">葡萄牙</td>
+<td style="text-align: right;">0.368420</td>
+<td style="text-align: right;">0.378869</td>
+<td style="text-align: right;">0.387145</td>
+<td style="text-align: right;">0.396901</td>
+</tr>
+<tr>
+<td style="text-align: left;">西班牙</td>
+<td style="text-align: right;">0.497051</td>
+<td style="text-align: right;">0.505271</td>
+<td style="text-align: right;">0.509689</td>
+<td style="text-align: right;">0.516687</td>
+</tr>
+<tr>
+<td style="text-align: left;">韩国</td>
+<td style="text-align: right;">0.451694</td>
+<td style="text-align: right;">0.454721</td>
+<td style="text-align: right;">0.459136</td>
+<td style="text-align: right;">0.460841</td>
+</tr>
+</tbody>
+</table>
+<p>表$8.5$ VRS假设下的投入导向SBM效率。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">国家</th>
+<th style="text-align: right;">2016</th>
+<th style="text-align: right;">2017</th>
+<th style="text-align: right;">2018</th>
+<th style="text-align: right;">2019</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">丹麦</td>
+<td style="text-align: right;">0.621241</td>
+<td style="text-align: right;">0.630172</td>
+<td style="text-align: right;">0.638303</td>
+<td style="text-align: right;">0.650678</td>
+</tr>
+<tr>
+<td style="text-align: left;">以色列</td>
+<td style="text-align: right;">0.698611</td>
+<td style="text-align: right;">0.699761</td>
+<td style="text-align: right;">0.712155</td>
+<td style="text-align: right;">0.724598</td>
+</tr>
+<tr>
+<td style="text-align: left;">加拿大</td>
+<td style="text-align: right;">0.630097</td>
+<td style="text-align: right;">0.637743</td>
+<td style="text-align: right;">0.645484</td>
+<td style="text-align: right;">0.649113</td>
+</tr>
+<tr>
+<td style="text-align: left;">匈牙利</td>
+<td style="text-align: right;">0.471816</td>
+<td style="text-align: right;">0.476982</td>
+<td style="text-align: right;">0.487954</td>
+<td style="text-align: right;">0.497868</td>
+</tr>
+<tr>
+<td style="text-align: left;">卢森</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.979910</td>
+<td style="text-align: right;">0.965664</td>
+<td style="text-align: right;">0.957258</td>
+</tr>
+<tr>
+<td style="text-align: left;">土耳其</td>
+<td style="text-align: right;">0.970238</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.973265</td>
+</tr>
+<tr>
+<td style="text-align: left;">墨西哥</td>
+<td style="text-align: right;">0.771076</td>
+<td style="text-align: right;">0.780829</td>
+<td style="text-align: right;">0.794835</td>
+<td style="text-align: right;">0.777968</td>
+</tr>
+<tr>
+<td style="text-align: left;">奥地利</td>
+<td style="text-align: right;">0.516438</td>
+<td style="text-align: right;">0.519495</td>
+<td style="text-align: right;">0.530023</td>
+<td style="text-align: right;">0.526341</td>
+</tr>
+<tr>
+<td style="text-align: left;">希腊</td>
+<td style="text-align: right;">0.388755</td>
+<td style="text-align: right;">0.386617</td>
+<td style="text-align: right;">0.391548</td>
+<td style="text-align: right;">0.397493</td>
+</tr>
+<tr>
+<td style="text-align: left;">德国</td>
+<td style="text-align: right;">0.874820</td>
+<td style="text-align: right;">0.882725</td>
+<td style="text-align: right;">0.893712</td>
+<td style="text-align: right;">0.901865</td>
+</tr>
+<tr>
+<td style="text-align: left;">意大利</td>
+<td style="text-align: right;">0.757555</td>
+<td style="text-align: right;">0.764455</td>
+<td style="text-align: right;">0.767255</td>
+<td style="text-align: right;">0.771353</td>
+</tr>
+<tr>
+<td style="text-align: left;">挪威</td>
+<td style="text-align: right;">0.604923</td>
+<td style="text-align: right;">0.609712</td>
+<td style="text-align: right;">0.606652</td>
+<td style="text-align: right;">0.609697</td>
+</tr>
+<tr>
+<td style="text-align: left;">捷克</td>
+<td style="text-align: right;">0.410027</td>
+<td style="text-align: right;">0.419778</td>
+<td style="text-align: right;">0.429792</td>
+<td style="text-align: right;">0.438701</td>
+</tr>
+<tr>
+<td style="text-align: left;">斯洛伐克</td>
+<td style="text-align: right;">0.505462</td>
+<td style="text-align: right;">0.506706</td>
+<td style="text-align: right;">0.516523</td>
+<td style="text-align: right;">0.524179</td>
+</tr>
+<tr>
+<td style="text-align: left;">斯洛文尼亚</td>
+<td style="text-align: right;">0.583696</td>
+<td style="text-align: right;">0.589672</td>
+<td style="text-align: right;">0.594114</td>
+<td style="text-align: right;">0.609942</td>
+</tr>
+<tr>
+<td style="text-align: left;">新西兰</td>
+<td style="text-align: right;">0.909769</td>
+<td style="text-align: right;">0.949590</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.902444</td>
+</tr>
+<tr>
+<td style="text-align: left;">日本</td>
+<td style="text-align: right;">0.741136</td>
+<td style="text-align: right;">0.759462</td>
+<td style="text-align: right;">0.759337</td>
+<td style="text-align: right;">0.766305</td>
+</tr>
+<tr>
+<td style="text-align: left;">智利</td>
+<td style="text-align: right;">0.490100</td>
+<td style="text-align: right;">0.482965</td>
+<td style="text-align: right;">0.487748</td>
+<td style="text-align: right;">0.481536</td>
+</tr>
+<tr>
+<td style="text-align: left;">比利时</td>
+<td style="text-align: right;">0.470847</td>
+<td style="text-align: right;">0.475992</td>
+<td style="text-align: right;">0.483025</td>
+<td style="text-align: right;">0.489316</td>
+</tr>
+<tr>
+<td style="text-align: left;">法国</td>
+<td style="text-align: right;">0.782542</td>
+<td style="text-align: right;">0.795044</td>
+<td style="text-align: right;">0.803640</td>
+<td style="text-align: right;">0.811831</td>
+</tr>
+<tr>
+<td style="text-align: left;">波兰</td>
+<td style="text-align: right;">0.882939</td>
+<td style="text-align: right;">0.905809</td>
+<td style="text-align: right;">0.953373</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td style="text-align: left;">澳大利亚</td>
+<td style="text-align: right;">0.811902</td>
+<td style="text-align: right;">0.818587</td>
+<td style="text-align: right;">0.828866</td>
+<td style="text-align: right;">0.818416</td>
+</tr>
+<tr>
+<td style="text-align: left;">爱尔兰</td>
+<td style="text-align: right;">0.932692</td>
+<td style="text-align: right;">0.968301</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td style="text-align: left;">爱沙尼亚</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td style="text-align: left;">瑞典</td>
+<td style="text-align: right;">0.549008</td>
+<td style="text-align: right;">0.560398</td>
+<td style="text-align: right;">0.582407</td>
+<td style="text-align: right;">0.595020</td>
+</tr>
+<tr>
+<td style="text-align: left;">瑞士</td>
+<td style="text-align: right;">0.934668</td>
+<td style="text-align: right;">0.957339</td>
+<td style="text-align: right;">0.994297</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td style="text-align: left;">美国</td>
+<td style="text-align: right;">0.964457</td>
+<td style="text-align: right;">0.976566</td>
+<td style="text-align: right;">0.984661</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td style="text-align: left;">芬兰</td>
+<td style="text-align: right;">0.519384</td>
+<td style="text-align: right;">0.528983</td>
+<td style="text-align: right;">0.525251</td>
+<td style="text-align: right;">0.526047</td>
+</tr>
+<tr>
+<td style="text-align: left;">英国</td>
+<td style="text-align: right;">0.972280</td>
+<td style="text-align: right;">0.983401</td>
+<td style="text-align: right;">0.987596</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td style="text-align: left;">荷兰</td>
+<td style="text-align: right;">0.683698</td>
+<td style="text-align: right;">0.698806</td>
+<td style="text-align: right;">0.713182</td>
+<td style="text-align: right;">0.719961</td>
+</tr>
+<tr>
+<td style="text-align: left;">葡萄牙</td>
+<td style="text-align: right;">0.388445</td>
+<td style="text-align: right;">0.397368</td>
+<td style="text-align: right;">0.404416</td>
+<td style="text-align: right;">0.413381</td>
+</tr>
+<tr>
+<td style="text-align: left;">西班牙</td>
+<td style="text-align: right;">0.738820</td>
+<td style="text-align: right;">0.753012</td>
+<td style="text-align: right;">0.761364</td>
+<td style="text-align: right;">0.773347</td>
+</tr>
+<tr>
+<td style="text-align: left;">韩国</td>
+<td style="text-align: right;">0.634444</td>
+<td style="text-align: right;">0.644222</td>
+<td style="text-align: right;">0.655105</td>
+<td style="text-align: right;">0.662149</td>
+</tr>
+</tbody>
+</table>
+<h3 id="874">8.7.4 六种模型的汇总比较<a class="headerlink" href="#874" title="Permanent link">&para;</a></h3>
+<p>为了便于横向比较，表8.6汇总了上述六种SBM模型的描述性统计。其中，均值和标准差基于全部132个观测值（33个国家×4年）计算。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># 各模型效率汇总</span>
+<span class="n">summary</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s1">&#39;模型&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;非期望产出导向_CRS&#39;</span><span class="p">,</span> <span class="s1">&#39;非期望产出导向_VRS&#39;</span><span class="p">,</span> <span class="s1">&#39;投入导向_CRS&#39;</span><span class="p">,</span> <span class="s1">&#39;投入导向_VRS&#39;</span><span class="p">,],</span>
+    <span class="s1">&#39;均值&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">res_bad_crs</span><span class="p">[</span><span class="s1">&#39;rho&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">res_bad_vrs</span><span class="p">[</span><span class="s1">&#39;rho&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
+            <span class="n">res_input_crs</span><span class="p">[</span><span class="s1">&#39;rho&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">res_input_vrs</span><span class="p">[</span><span class="s1">&#39;rho&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
+            <span class="p">],</span>
+    <span class="s1">&#39;标准差&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">res_bad_crs</span><span class="p">[</span><span class="s1">&#39;rho&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">(),</span> <span class="n">res_bad_vrs</span><span class="p">[</span><span class="s1">&#39;rho&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">(),</span>
+             <span class="n">res_input_crs</span><span class="p">[</span><span class="s1">&#39;rho&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">(),</span> <span class="n">res_input_vrs</span><span class="p">[</span><span class="s1">&#39;rho&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">(),</span>
+             <span class="p">],</span>
+    <span class="s1">&#39;最大值&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">res_bad_crs</span><span class="p">[</span><span class="s1">&#39;rho&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">res_bad_vrs</span><span class="p">[</span><span class="s1">&#39;rho&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span>
+             <span class="n">res_input_crs</span><span class="p">[</span><span class="s1">&#39;rho&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">res_input_vrs</span><span class="p">[</span><span class="s1">&#39;rho&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span>
+             <span class="p">],</span>
+    <span class="s1">&#39;最小值&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">res_bad_crs</span><span class="p">[</span><span class="s1">&#39;rho&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">res_bad_vrs</span><span class="p">[</span><span class="s1">&#39;rho&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span>
+             <span class="n">res_input_crs</span><span class="p">[</span><span class="s1">&#39;rho&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">res_input_vrs</span><span class="p">[</span><span class="s1">&#39;rho&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span>
+            <span class="p">],</span>
+<span class="p">})</span>
+<span class="n">summary</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>表8.6 四种SBM模型的效率值汇总</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">模型</th>
+<th style="text-align: right;">均值</th>
+<th style="text-align: right;">标准差</th>
+<th style="text-align: right;">最大值</th>
+<th style="text-align: right;">最小值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">非期望产出导向_CRS</td>
+<td style="text-align: right;">0.6398</td>
+<td style="text-align: right;">0.1082</td>
+<td style="text-align: right;">1.0000</td>
+<td style="text-align: right;">0.5293</td>
+</tr>
+<tr>
+<td style="text-align: left;">非期望产出导向_VRS</td>
+<td style="text-align: right;">0.7557</td>
+<td style="text-align: right;">0.1479</td>
+<td style="text-align: right;">1.0000</td>
+<td style="text-align: right;">0.5567</td>
+</tr>
+<tr>
+<td style="text-align: left;">投入导向_CRS</td>
+<td style="text-align: right;">0.5644</td>
+<td style="text-align: right;">0.1511</td>
+<td style="text-align: right;">1.0000</td>
+<td style="text-align: right;">0.3653</td>
+</tr>
+<tr>
+<td style="text-align: left;">投入导向_VRS</td>
+<td style="text-align: right;">0.7168</td>
+<td style="text-align: right;">0.1979</td>
+<td style="text-align: right;">1.0000</td>
+<td style="text-align: right;">0.3866</td>
+</tr>
+</tbody>
+</table>
+<p>从表8.6中可以得出以下几点结论。</p>
+<p>第一，VRS下的平均效率在所有方向上均高于CRS。非期望产出导向从0.6398提升至0.7557，投入导向从0.5644提升至0.7168。这是因为VRS放宽了规模报酬约束，部分DMU可以在局部最优规模下达到更高的效率水平。</p>
+<p>第二，在相同规模报酬假设下，非期望产出导向的平均效率高于投入导向（CRS下0.6398 &gt; 0.5644，VRS下0.7557 &gt; 0.7168）。这说明在本样本中，从CO2削减潜力角度衡量的效率总体上高于仅从投入节约角度衡量的效率。换言之，这些国家在碳减排方面的相对表现优于在投入利用方面的相对表现。</p>
+<p>第三，VRS下爱沙尼亚在非期望产出导向和投入导向上均达到完全有效（$\rho=1$）。CRS下仅少数国家在个别年份达到完全有效（爱尔兰和波兰在2018–2019年、瑞士在2019年）。</p>
+<h3 id="875-sbm">8.7.5 能源投入与非期望产出联合方向SBM<a class="headerlink" href="#875-sbm" title="Permanent link">&para;</a></h3>
+<p>除上述两种"极端"方向外，实践中常关注同时减少能源投入和碳排放的效率。本小节设定 <code>gx=[0,0,1]</code>（仅减少能源投入E）和 <code>gb=[1]</code>（减少CO2），衡量在资本和劳动力不变的前提下，同时节约能源与削减碳排放的潜力。该方向对应表8.5中的 <code>hyper_orientedxb</code> 类型。结果见表8.7和表8.8。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># 能源投入+非期望产出方向 SBM（CRS / VRS）</span>
+<span class="n">res_energy_bad_crs</span> <span class="o">=</span> <span class="n">SBM</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L E=Y:CO2&quot;</span><span class="p">,</span> <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">gb</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">rts</span><span class="o">=</span><span class="n">RTS_CRS</span><span class="p">)</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;mosek&quot;</span><span class="p">)</span>
+<span class="n">res_energy_bad_vrs</span> <span class="o">=</span> <span class="n">SBM</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L E=Y:CO2&quot;</span><span class="p">,</span> <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">gb</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">rts</span><span class="o">=</span><span class="n">RTS_VRS1</span><span class="p">)</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;mosek&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p>表$8.7$ CRS假设下的能源投入+非期望产出方向SBM效率。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">国家</th>
+<th style="text-align: right;">2016</th>
+<th style="text-align: right;">2017</th>
+<th style="text-align: right;">2018</th>
+<th style="text-align: right;">2019</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">爱尔兰</td>
+<td style="text-align: right;">0.687472</td>
+<td style="text-align: right;">0.828108</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td style="text-align: left;">爱沙尼亚</td>
+<td style="text-align: right;">0.321684</td>
+<td style="text-align: right;">0.327762</td>
+<td style="text-align: right;">0.330559</td>
+<td style="text-align: right;">0.343243</td>
+</tr>
+<tr>
+<td style="text-align: left;">奥地利</td>
+<td style="text-align: right;">0.285415</td>
+<td style="text-align: right;">0.284877</td>
+<td style="text-align: right;">0.306187</td>
+<td style="text-align: right;">0.297546</td>
+</tr>
+<tr>
+<td style="text-align: left;">澳大利亚</td>
+<td style="text-align: right;">0.185983</td>
+<td style="text-align: right;">0.186491</td>
+<td style="text-align: right;">0.192288</td>
+<td style="text-align: right;">0.192951</td>
+</tr>
+<tr>
+<td style="text-align: left;">比利时</td>
+<td style="text-align: right;">0.163251</td>
+<td style="text-align: right;">0.165735</td>
+<td style="text-align: right;">0.167989</td>
+<td style="text-align: right;">0.171102</td>
+</tr>
+<tr>
+<td style="text-align: left;">波兰</td>
+<td style="text-align: right;">0.673740</td>
+<td style="text-align: right;">0.711202</td>
+<td style="text-align: right;">0.831586</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td style="text-align: left;">丹麦</td>
+<td style="text-align: right;">0.395162</td>
+<td style="text-align: right;">0.423292</td>
+<td style="text-align: right;">0.442677</td>
+<td style="text-align: right;">0.500610</td>
+</tr>
+<tr>
+<td style="text-align: left;">德国</td>
+<td style="text-align: right;">0.259334</td>
+<td style="text-align: right;">0.260194</td>
+<td style="text-align: right;">0.274618</td>
+<td style="text-align: right;">0.291188</td>
+</tr>
+<tr>
+<td style="text-align: left;">法国</td>
+<td style="text-align: right;">0.287298</td>
+<td style="text-align: right;">0.295619</td>
+<td style="text-align: right;">0.311307</td>
+<td style="text-align: right;">0.326755</td>
+</tr>
+<tr>
+<td style="text-align: left;">芬兰</td>
+<td style="text-align: right;">0.167596</td>
+<td style="text-align: right;">0.179222</td>
+<td style="text-align: right;">0.178891</td>
+<td style="text-align: right;">0.189926</td>
+</tr>
+<tr>
+<td style="text-align: left;">韩国</td>
+<td style="text-align: right;">0.130315</td>
+<td style="text-align: right;">0.133871</td>
+<td style="text-align: right;">0.136918</td>
+<td style="text-align: right;">0.141145</td>
+</tr>
+<tr>
+<td style="text-align: left;">荷兰</td>
+<td style="text-align: right;">0.206643</td>
+<td style="text-align: right;">0.212760</td>
+<td style="text-align: right;">0.225338</td>
+<td style="text-align: right;">0.233488</td>
+</tr>
+<tr>
+<td style="text-align: left;">加拿大</td>
+<td style="text-align: right;">0.096816</td>
+<td style="text-align: right;">0.097580</td>
+<td style="text-align: right;">0.098731</td>
+<td style="text-align: right;">0.100676</td>
+</tr>
+<tr>
+<td style="text-align: left;">捷克</td>
+<td style="text-align: right;">0.165811</td>
+<td style="text-align: right;">0.164789</td>
+<td style="text-align: right;">0.172788</td>
+<td style="text-align: right;">0.182400</td>
+</tr>
+<tr>
+<td style="text-align: left;">卢森</td>
+<td style="text-align: right;">0.271391</td>
+<td style="text-align: right;">0.266736</td>
+<td style="text-align: right;">0.264256</td>
+<td style="text-align: right;">0.268048</td>
+</tr>
+<tr>
+<td style="text-align: left;">美国</td>
+<td style="text-align: right;">0.247615</td>
+<td style="text-align: right;">0.264989</td>
+<td style="text-align: right;">0.279339</td>
+<td style="text-align: right;">0.299886</td>
+</tr>
+<tr>
+<td style="text-align: left;">墨西哥</td>
+<td style="text-align: right;">0.280552</td>
+<td style="text-align: right;">0.292510</td>
+<td style="text-align: right;">0.307837</td>
+<td style="text-align: right;">0.307919</td>
+</tr>
+<tr>
+<td style="text-align: left;">挪威</td>
+<td style="text-align: right;">0.200061</td>
+<td style="text-align: right;">0.210728</td>
+<td style="text-align: right;">0.215003</td>
+<td style="text-align: right;">0.239223</td>
+</tr>
+<tr>
+<td style="text-align: left;">葡萄牙</td>
+<td style="text-align: right;">0.251179</td>
+<td style="text-align: right;">0.258181</td>
+<td style="text-align: right;">0.274318</td>
+<td style="text-align: right;">0.295634</td>
+</tr>
+<tr>
+<td style="text-align: left;">日本</td>
+<td style="text-align: right;">0.201728</td>
+<td style="text-align: right;">0.210575</td>
+<td style="text-align: right;">0.214179</td>
+<td style="text-align: right;">0.220868</td>
+</tr>
+<tr>
+<td style="text-align: left;">瑞典</td>
+<td style="text-align: right;">0.292765</td>
+<td style="text-align: right;">0.296362</td>
+<td style="text-align: right;">0.320358</td>
+<td style="text-align: right;">0.325870</td>
+</tr>
+<tr>
+<td style="text-align: left;">瑞士</td>
+<td style="text-align: right;">0.865041</td>
+<td style="text-align: right;">0.917957</td>
+<td style="text-align: right;">0.992587</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td style="text-align: left;">斯洛伐克</td>
+<td style="text-align: right;">0.164975</td>
+<td style="text-align: right;">0.164510</td>
+<td style="text-align: right;">0.173433</td>
+<td style="text-align: right;">0.186249</td>
+</tr>
+<tr>
+<td style="text-align: left;">斯洛文尼亚</td>
+<td style="text-align: right;">0.186144</td>
+<td style="text-align: right;">0.192191</td>
+<td style="text-align: right;">0.198228</td>
+<td style="text-align: right;">0.216210</td>
+</tr>
+<tr>
+<td style="text-align: left;">土耳其</td>
+<td style="text-align: right;">0.347312</td>
+<td style="text-align: right;">0.350700</td>
+<td style="text-align: right;">0.370129</td>
+<td style="text-align: right;">0.368697</td>
+</tr>
+<tr>
+<td style="text-align: left;">西班牙</td>
+<td style="text-align: right;">0.292179</td>
+<td style="text-align: right;">0.296960</td>
+<td style="text-align: right;">0.303740</td>
+<td style="text-align: right;">0.325833</td>
+</tr>
+<tr>
+<td style="text-align: left;">希腊</td>
+<td style="text-align: right;">0.208446</td>
+<td style="text-align: right;">0.201079</td>
+<td style="text-align: right;">0.206996</td>
+<td style="text-align: right;">0.216358</td>
+</tr>
+<tr>
+<td style="text-align: left;">新西兰</td>
+<td style="text-align: right;">0.299480</td>
+<td style="text-align: right;">0.326786</td>
+<td style="text-align: right;">0.346860</td>
+<td style="text-align: right;">0.336944</td>
+</tr>
+<tr>
+<td style="text-align: left;">匈牙利</td>
+<td style="text-align: right;">0.213049</td>
+<td style="text-align: right;">0.212123</td>
+<td style="text-align: right;">0.222821</td>
+<td style="text-align: right;">0.236984</td>
+</tr>
+<tr>
+<td style="text-align: left;">以色列</td>
+<td style="text-align: right;">0.336621</td>
+<td style="text-align: right;">0.354037</td>
+<td style="text-align: right;">0.383294</td>
+<td style="text-align: right;">0.409901</td>
+</tr>
+<tr>
+<td style="text-align: left;">意大利</td>
+<td style="text-align: right;">0.337235</td>
+<td style="text-align: right;">0.343627</td>
+<td style="text-align: right;">0.347438</td>
+<td style="text-align: right;">0.358269</td>
+</tr>
+<tr>
+<td style="text-align: left;">英国</td>
+<td style="text-align: right;">0.435761</td>
+<td style="text-align: right;">0.456339</td>
+<td style="text-align: right;">0.471092</td>
+<td style="text-align: right;">0.503769</td>
+</tr>
+<tr>
+<td style="text-align: left;">智利</td>
+<td style="text-align: right;">0.225975</td>
+<td style="text-align: right;">0.224828</td>
+<td style="text-align: right;">0.230780</td>
+<td style="text-align: right;">0.231533</td>
+</tr>
+</tbody>
+</table>
+<p>表$8.8$ VRS假设下的能源投入+非期望产出方向SBM效率。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">国家</th>
+<th style="text-align: right;">2016</th>
+<th style="text-align: right;">2017</th>
+<th style="text-align: right;">2018</th>
+<th style="text-align: right;">2019</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">爱尔兰</td>
+<td style="text-align: right;">0.734995</td>
+<td style="text-align: right;">0.860202</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td style="text-align: left;">爱沙尼亚</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td style="text-align: left;">奥地利</td>
+<td style="text-align: right;">0.288627</td>
+<td style="text-align: right;">0.286898</td>
+<td style="text-align: right;">0.307114</td>
+<td style="text-align: right;">0.297726</td>
+</tr>
+<tr>
+<td style="text-align: left;">澳大利亚</td>
+<td style="text-align: right;">0.347103</td>
+<td style="text-align: right;">0.364249</td>
+<td style="text-align: right;">0.381620</td>
+<td style="text-align: right;">0.355147</td>
+</tr>
+<tr>
+<td style="text-align: left;">比利时</td>
+<td style="text-align: right;">0.166847</td>
+<td style="text-align: right;">0.170426</td>
+<td style="text-align: right;">0.173914</td>
+<td style="text-align: right;">0.178166</td>
+</tr>
+<tr>
+<td style="text-align: left;">波兰</td>
+<td style="text-align: right;">0.686923</td>
+<td style="text-align: right;">0.717809</td>
+<td style="text-align: right;">0.831701</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td style="text-align: left;">丹麦</td>
+<td style="text-align: right;">0.446079</td>
+<td style="text-align: right;">0.478877</td>
+<td style="text-align: right;">0.498694</td>
+<td style="text-align: right;">0.570022</td>
+</tr>
+<tr>
+<td style="text-align: left;">德国</td>
+<td style="text-align: right;">0.576155</td>
+<td style="text-align: right;">0.609457</td>
+<td style="text-align: right;">0.666854</td>
+<td style="text-align: right;">0.728847</td>
+</tr>
+<tr>
+<td style="text-align: left;">法国</td>
+<td style="text-align: right;">0.524911</td>
+<td style="text-align: right;">0.544000</td>
+<td style="text-align: right;">0.584350</td>
+<td style="text-align: right;">0.621716</td>
+</tr>
+<tr>
+<td style="text-align: left;">芬兰</td>
+<td style="text-align: right;">0.191741</td>
+<td style="text-align: right;">0.204877</td>
+<td style="text-align: right;">0.203445</td>
+<td style="text-align: right;">0.217068</td>
+</tr>
+<tr>
+<td style="text-align: left;">韩国</td>
+<td style="text-align: right;">0.206685</td>
+<td style="text-align: right;">0.212571</td>
+<td style="text-align: right;">0.217896</td>
+<td style="text-align: right;">0.225549</td>
+</tr>
+<tr>
+<td style="text-align: left;">荷兰</td>
+<td style="text-align: right;">0.264571</td>
+<td style="text-align: right;">0.275226</td>
+<td style="text-align: right;">0.297244</td>
+<td style="text-align: right;">0.310856</td>
+</tr>
+<tr>
+<td style="text-align: left;">加拿大</td>
+<td style="text-align: right;">0.165241</td>
+<td style="text-align: right;">0.171014</td>
+<td style="text-align: right;">0.175181</td>
+<td style="text-align: right;">0.179076</td>
+</tr>
+<tr>
+<td style="text-align: left;">捷克</td>
+<td style="text-align: right;">0.172478</td>
+<td style="text-align: right;">0.170289</td>
+<td style="text-align: right;">0.177880</td>
+<td style="text-align: right;">0.187348</td>
+</tr>
+<tr>
+<td style="text-align: left;">卢森</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.960605</td>
+<td style="text-align: right;">0.915556</td>
+<td style="text-align: right;">0.905969</td>
+</tr>
+<tr>
+<td style="text-align: left;">美国</td>
+<td style="text-align: right;">0.880511</td>
+<td style="text-align: right;">0.928281</td>
+<td style="text-align: right;">0.926910</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td style="text-align: left;">墨西哥</td>
+<td style="text-align: right;">0.649734</td>
+<td style="text-align: right;">0.708946</td>
+<td style="text-align: right;">0.775767</td>
+<td style="text-align: right;">0.743397</td>
+</tr>
+<tr>
+<td style="text-align: left;">挪威</td>
+<td style="text-align: right;">0.211009</td>
+<td style="text-align: right;">0.221326</td>
+<td style="text-align: right;">0.225190</td>
+<td style="text-align: right;">0.250395</td>
+</tr>
+<tr>
+<td style="text-align: left;">葡萄牙</td>
+<td style="text-align: right;">0.274304</td>
+<td style="text-align: right;">0.278805</td>
+<td style="text-align: right;">0.295960</td>
+<td style="text-align: right;">0.319211</td>
+</tr>
+<tr>
+<td style="text-align: left;">日本</td>
+<td style="text-align: right;">0.517926</td>
+<td style="text-align: right;">0.558908</td>
+<td style="text-align: right;">0.576821</td>
+<td style="text-align: right;">0.606384</td>
+</tr>
+<tr>
+<td style="text-align: left;">瑞典</td>
+<td style="text-align: right;">0.302861</td>
+<td style="text-align: right;">0.308972</td>
+<td style="text-align: right;">0.335618</td>
+<td style="text-align: right;">0.343049</td>
+</tr>
+<tr>
+<td style="text-align: left;">瑞士</td>
+<td style="text-align: right;">0.876444</td>
+<td style="text-align: right;">0.927031</td>
+<td style="text-align: right;">0.993996</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td style="text-align: left;">斯洛伐克</td>
+<td style="text-align: right;">0.217358</td>
+<td style="text-align: right;">0.214161</td>
+<td style="text-align: right;">0.223914</td>
+<td style="text-align: right;">0.241710</td>
+</tr>
+<tr>
+<td style="text-align: left;">斯洛文尼亚</td>
+<td style="text-align: right;">0.422160</td>
+<td style="text-align: right;">0.426005</td>
+<td style="text-align: right;">0.435510</td>
+<td style="text-align: right;">0.482257</td>
+</tr>
+<tr>
+<td style="text-align: left;">土耳其</td>
+<td style="text-align: right;">0.913301</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.902319</td>
+</tr>
+<tr>
+<td style="text-align: left;">西班牙</td>
+<td style="text-align: right;">0.467541</td>
+<td style="text-align: right;">0.477627</td>
+<td style="text-align: right;">0.493067</td>
+<td style="text-align: right;">0.536258</td>
+</tr>
+<tr>
+<td style="text-align: left;">希腊</td>
+<td style="text-align: right;">0.225658</td>
+<td style="text-align: right;">0.216856</td>
+<td style="text-align: right;">0.223065</td>
+<td style="text-align: right;">0.233332</td>
+</tr>
+<tr>
+<td style="text-align: left;">新西兰</td>
+<td style="text-align: right;">0.829082</td>
+<td style="text-align: right;">0.902421</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.810363</td>
+</tr>
+<tr>
+<td style="text-align: left;">匈牙利</td>
+<td style="text-align: right;">0.242613</td>
+<td style="text-align: right;">0.238773</td>
+<td style="text-align: right;">0.248514</td>
+<td style="text-align: right;">0.262366</td>
+</tr>
+<tr>
+<td style="text-align: left;">以色列</td>
+<td style="text-align: right;">0.412480</td>
+<td style="text-align: right;">0.430099</td>
+<td style="text-align: right;">0.457423</td>
+<td style="text-align: right;">0.481377</td>
+</tr>
+<tr>
+<td style="text-align: left;">意大利</td>
+<td style="text-align: right;">0.574134</td>
+<td style="text-align: right;">0.589102</td>
+<td style="text-align: right;">0.598299</td>
+<td style="text-align: right;">0.620046</td>
+</tr>
+<tr>
+<td style="text-align: left;">英国</td>
+<td style="text-align: right;">0.838933</td>
+<td style="text-align: right;">0.901077</td>
+<td style="text-align: right;">0.927828</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td style="text-align: left;">智利</td>
+<td style="text-align: right;">0.232071</td>
+<td style="text-align: right;">0.230527</td>
+<td style="text-align: right;">0.235340</td>
+<td style="text-align: right;">0.235710</td>
+</tr>
+</tbody>
+</table>
+<p>从表8.7和表8.8中可以看出，与8.7.2节和8.7.3节的纯方向模型相比，能源+非期望方向呈现出两个显著特征。其一，CRS下效率值普遍偏低（平均仅0.3175），这是因为该方向只允许减少能源投入和CO2排放，而不允许减少资本和劳动力，优化空间更小。其二，VRS下有效单元数量明显增多——爱沙尼亚在所有年份均达到完全有效（$\rho=1$），卢森堡（2016年）、新西兰（2018年）、土耳其（2017–2018年）、美国和瑞士（2019年）等也达到了前沿面。这说明VRS假设对规模效率的分离使得更多国家能够在剥离规模因素后呈现技术有效。</p>
+<p>此外，值得关注的是加拿大。在能源+非期望方向的CRS假设下，加拿大四年的效率值均低于0.11（最低仅0.097），是所有国家中最低的。这反映了加拿大经济高度依赖能源密集型产业（如石油开采和加工），在限制能源和碳排放的条件下，其改进空间极为有限。</p>
+<h2 id="88">8.8 本章小结<a class="headerlink" href="#88" title="Permanent link">&para;</a></h2>
+<p>本章将 SBM 模型按方向进行了系统整理。与径向 DEA 相比，SBM 的核心优势在于直接处理松弛变量，因此能够识别投入冗余、期望产出不足和非期望产出过剩。投入导向 SBM 适合研究资源节约，产出导向 SBM 适合研究产出扩张，非期望产出导向 SBM 适合研究污染削减，综合非导向 SBM 则适合同时考察多个维度的改进空间。</p>
+<p>在案例应用部分，本章以2016—2019年33个OECD国家的面板数据为例，分别计算了非期望产出导向、投入导向以及能源投入与非期望产出联合方向共六种SBM模型（每种含CRS和VRS两种规模报酬假设）的效率值。结果表明：第一，VRS下的平均效率在所有方向上均高于CRS，这符合理论预期——VRS放宽了规模报酬约束后，部分国家可以在自身最优规模处获得更高效率。第二，在相同规模报酬假设下，非期望产出导向的平均效率高于投入导向（CRS下$0.6398$ vs. $0.5644$，VRS下$0.7557$ vs. $0.7168$），说明样本国家在碳减排方面的相对表现优于投入利用方面的相对表现。第三，能源+非期望方向的效率值最低（CRS均值仅$0.3175$），因为该方向仅允许减少能源和CO₂而保持资本与劳动力不变，优化空间最为有限。第四，各国效率排名因方向不同而存在显著差异，例如加拿大在非期望产出导向下排名靠后（均值约$0.55$），反映出其较高的人均碳排放对效率评估的显著影响。这些发现进一步印证了SBM模型在环境效率评估中的实用价值：研究者在应用时应根据具体问题审慎选择方向设定，不同方向可能得出截然不同的效率排名和政策结论。</p>
+<h2 id="_2">参考文献<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>[1] TONE K. A slacks-based measure of efficiency in data envelopment analysis [J]. European Journal of Operational Research, 2001, 130(3): 498-509.</p>
+<p>[2] TONE K. Dealing with undesirable outputs in DEA: A Slacks-Based Measure (SBM) approach [R]. GRIPS Research Report Series, 2004.</p>
+<p>[3] COOPER W W, SEIFORD L M, TONE K. Data Envelopment Analysis: A Comprehensive Text with Models, Applications, References and DEA-Solver Software [M]. Boston: Kluwer Academic Publishers, 2007.</p>
+<p>[4] CHARNES A, COOPER W W, RHODES E. Measuring the efficiency of decision making units [J]. European Journal of Operational Research, 1978, 2(6): 429-444.</p>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="May 2, 2026 14:15:47 UTC"><span class="timeago" datetime="2026-05-02T14:15:47+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="May 2, 2026 14:15:47 UTC">2026-05-02</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="May 2, 2026 14:15:47 UTC"><span class="timeago" datetime="2026-05-02T14:15:47+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="May 2, 2026 14:15:47 UTC">2026-05-02</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2024 - 2024 advancehs
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.top", "search.highlight", "search.share"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../js/timeago.min.js"></script>
+      
+        <script src="../../js/timeago_mkdocs_material.js"></script>
+      
+    
+  </body>
+</html>

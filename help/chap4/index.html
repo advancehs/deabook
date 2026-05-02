@@ -25,7 +25,7 @@
     
     
       
-        <title>第四章：静态与动态能源效率 - deabook</title>
+        <title>第四章：Malmquist 生产率指数（动态产出效率） - deabook</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#_1" class="md-skip">
+        <a href="#malmquist" class="md-skip">
           Skip to content
         </a>
       
@@ -116,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              第四章：静态与动态能源效率
+              第四章：Malmquist 生产率指数（动态产出效率）
             
           </span>
         </div>
@@ -668,22 +668,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#ddf" class="md-nav__link">
+  <a href="#deabook" class="md-nav__link">
     <span class="md-ellipsis">
       
-        第一部分：静态能源效率（DDF）
+        deabook 包介绍与安装
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="第一部分：静态能源效率（DDF）">
+    <nav class="md-nav" aria-label="deabook 包介绍与安装">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#_2" class="md-nav__link">
+  <a href="#_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        导入
+        安装
       
     </span>
   </a>
@@ -691,10 +691,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#ddf-vrs" class="md-nav__link">
+  <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        模型：DDF 投入导向（能源效率）— VRS
+        本章需要的导入
       
     </span>
   </a>
@@ -721,16 +721,66 @@
     </span>
   </a>
   
-</li>
+    <nav class="md-nav" aria-label="返回值">
+      <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#gx" class="md-nav__link">
+  <a href="#techcontemporary-hyper" class="md-nav__link">
     <span class="md-ellipsis">
       
-        gx 方向向量的含义
+        情况一：tech=CONTEMPORARY，投入/产出导向（非 Hyper）
       
     </span>
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#techcontemporaryhyper" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        情况二：tech=CONTEMPORARY，超效率导向（Hyper）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#techtotal-hyper" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        情况三：tech=TOTAL，投入/产出导向（非 Hyper）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#techtotalhyper" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        情况四：tech=TOTAL，超效率导向（Hyper）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mqdea-vs-mqddf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MQDEA vs MQDDF 返回值差异
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -740,74 +790,68 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#mqdea-malmquist" class="md-nav__link">
+  <a href="#1mqdea-vrs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        第二部分：动态能源效率（MQDEA Malmquist）
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="第二部分：动态能源效率（MQDEA Malmquist）">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#_5" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        导入
+        模型 1：MQDEA 产出导向 — VRS + 当期技术
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#mqdea-vrs" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#2mqddf-vrs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        模型：MQDEA 投入导向（能源）— VRS + 当期技术
+        模型 2：MQDDF 产出导向 — VRS + 当期技术
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#_6" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#3mqdea-vrs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        参数详解
+        模型 3：MQDEA 投入导向 — VRS + 当期技术
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#_7" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#1-2-3-4-5-6-7-8-9model-mqdeamqdea-data-iddmuname-yearyear-sentk-l-ey-gx100-gy0-rtsrts_vrs1-techcontemporary-emailopt_local-solvermosek-res-modeloptimize" class="md-nav__link">
     <span class="md-ellipsis">
       
-        返回值
+        1 2 3 4 5 6 7 8 9model = MQDEA.MQDEA( data, id=dmuname, year=&#39;year&#39;, sent=&quot;K L E=Y&quot;, gx=[1,0,0], gy=[0], rts=RTS_VRS1, tech=CONTEMPORARY, email=OPT_LOCAL, solver=&quot;mosek&quot; ) res = model.optimize()
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#vs" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#4mqddf-vrs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        静态 vs 动态对比
+        模型 4：MQDDF 投入导向 — VRS + 当期技术
       
     </span>
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
+      
+        <li class="md-nav__item">
+  <a href="#1-2-3-4-5-6-7-8-9model-mqdeamqddf-data-iddmuname-yearyear-sentk-l-ey-gx100-gy0-rtsrts_vrs1-techcontemporary-emailopt_local-solvermosek-res-modeloptimize" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1 2 3 4 5 6 7 8 9model = MQDEA.MQDDF( data, id=dmuname, year=&#39;year&#39;, sent=&quot;K L E=Y&quot;, gx=[1,0,0], gy=[0], rts=RTS_VRS1, tech=CONTEMPORARY, email=OPT_LOCAL, solver=&quot;mosek&quot; ) res = model.optimize()
+      
+    </span>
+  </a>
   
 </li>
       
@@ -834,77 +878,435 @@
   
 
 
-<h1 id="_1">第四章：静态与动态能源效率<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
-<p><strong>主题</strong>：使用 DDF 测量静态能源效率，使用 MQDEA 测量动态能源效率变动。</p>
+<h1 id="malmquist">第四章：Malmquist 生产率指数（动态产出效率）<a class="headerlink" href="#malmquist" title="Permanent link">&para;</a></h1>
+<p><strong>主题</strong>：使用 Malmquist 指数分解生产率变动（MEFFCH + MTECHCH）。</p>
 <p><strong>数据文件</strong>：
 - <code>oecd data.xlsx</code>（33个OECD国家，2016-2019）
 - <code>china data.xlsx</code>（30个中国省份，2016-2019）</p>
 <p><strong>变量含义</strong>：
 - <code>K</code>：资本, <code>L</code>：劳动, <code>E</code>：能源, <code>Y</code>：产出(GDP)</p>
 <hr />
-<h2 id="ddf">第一部分：静态能源效率（DDF）<a class="headerlink" href="#ddf" title="Permanent link">&para;</a></h2>
-<h3 id="_2">导入<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">deabook</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEA</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">deabook.constant</span><span class="w"> </span><span class="kn">import</span> <span class="n">RTS_VRS1</span><span class="p">,</span> <span class="n">RTS_CRS</span><span class="p">,</span> <span class="n">OPT_LOCAL</span>
+<h2 id="deabook">deabook 包介绍与安装<a class="headerlink" href="#deabook" title="Permanent link">&para;</a></h2>
+<p>deabook 是一个用于数据包络分析（DEA）的 Python 包，提供径向 DEA、方向距离函数（DDF）、Malmquist 指数、弱可处置性模型、物质平衡分解、CNLS 随机前沿等功能。</p>
+<h3 id="_1">安装<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>deabook
 </code></pre></div></td></tr></table></div>
-<h3 id="ddf-vrs">模型：DDF 投入导向（能源效率）— VRS<a class="headerlink" href="#ddf-vrs" title="Permanent link">&para;</a></h3>
+<h3 id="_2">本章需要的导入<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">DEA</span><span class="o">.</span><span class="n">DDF2</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L E=Y&quot;</span><span class="p">,</span> <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">rts</span><span class="o">=</span><span class="n">RTS_VRS1</span><span class="p">)</span>
-<span class="n">res</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;mosek&quot;</span><span class="p">)</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">deabook</span><span class="w"> </span><span class="kn">import</span> <span class="n">MQDEA</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">deabook.constant</span><span class="w"> </span><span class="kn">import</span> <span class="n">RTS_VRS1</span><span class="p">,</span> <span class="n">RTS_CRS</span><span class="p">,</span> <span class="n">OPT_LOCAL</span><span class="p">,</span> <span class="n">TOTAL</span><span class="p">,</span> <span class="n">CONTEMPORARY</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 </code></pre></div></td></tr></table></div>
+<blockquote>
+<p>各常量的含义与可选值见下方<a href="#参数详解">参数详解</a>表中的 <code>rts</code>、<code>tech</code>、<code>email</code> 行。</p>
+</blockquote>
+<hr />
 <h3 id="_3">参数详解<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
 <th>参数</th>
-<th>值</th>
+<th>类型</th>
+<th>可选值</th>
 <th>含义</th>
 </tr>
 </thead>
 <tbody>
 <tr>
+<td><code>data</code></td>
+<td>DataFrame</td>
+<td>—</td>
+<td>面板数据，需包含 sent 中指定的列、<code>id</code> 列和 <code>year</code> 列</td>
+</tr>
+<tr>
+<td><code>id</code></td>
+<td>str</td>
+<td>数据中任意列名</td>
+<td>DMU 标识列名，用于分组计算跨期效率</td>
+</tr>
+<tr>
+<td><code>year</code></td>
+<td>str</td>
+<td>数据中任意时间列名</td>
+<td>时间列名，需可排序</td>
+</tr>
+<tr>
 <td><code>sent</code></td>
-<td><code>"K L E=Y"</code></td>
-<td>3个投入(K,L,E)，1个产出(Y)</td>
+<td>str</td>
+<td><code>"投入1 投入2 ...=产出1 产出2 ..."</code></td>
+<td><code>=</code> 左边为投入变量，右边为产出变量</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
 </tr>
 <tr>
 <td><code>gy</code></td>
+<td>list[int]</td>
 <td><code>[0]</code></td>
-<td>不调整产出（投入导向）</td>
+<td>不沿该产出方向调整</td>
+</tr>
+<tr>
+<td></td>
+<td>list[int]</td>
+<td><code>[1]</code></td>
+<td>沿该产出方向扩大产出</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
 </tr>
 <tr>
 <td><code>gx</code></td>
-<td><code>[0,0,1]</code></td>
-<td>只沿第三个投入（E，能源）方向缩减</td>
+<td>list[int]</td>
+<td><code>[0]</code></td>
+<td>不沿该投入方向调整</td>
+</tr>
+<tr>
+<td></td>
+<td>list[int]</td>
+<td><code>[1]</code></td>
+<td>沿该投入方向缩减</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>gx/gy 组合</strong></td>
+<td><strong>判断规则</strong></td>
+<td><strong><code>sum(gx)&gt;=1</code></strong></td>
+<td>至少缩减一个投入</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td><strong><code>sum(gy)&gt;=1</code></strong></td>
+<td>至少扩大一个产出</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><strong>组合</strong></td>
+<td>✗ ✓ → 产出导向</td>
+<td>不缩减投入，只扩大产出</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>✓ ✗ → 投入导向</td>
+<td>缩减投入中 gx=1 对应的变量，产出不变</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>✓ ✓ → 超效率(Hyper)</td>
+<td>同时缩减投入、扩大产出</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><strong>示例</strong>（3投入K,L,E + 1产出Y）</td>
+<td><code>gx=[0,0,0] gy=[1]</code></td>
+<td>产出导向：扩大 Y，投入不变</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td><code>gx=[1,0,0] gy=[0]</code></td>
+<td>投入导向：只缩减 K</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td><code>gx=[0,1,0] gy=[0]</code></td>
+<td>投入导向：只缩减 L</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td><code>gx=[1,1,0] gy=[0]</code></td>
+<td>投入导向：同时缩减 K 和 L</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td><code>gx=[1,0,0] gy=[1]</code></td>
+<td>超效率：缩减 K 同时扩大 Y</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
 </tr>
 <tr>
 <td><code>rts</code></td>
+<td>str</td>
+<td><code>RTS_CRS</code></td>
+<td>不变规模报酬</td>
+</tr>
+<tr>
+<td></td>
+<td>str</td>
 <td><code>RTS_VRS1</code></td>
 <td>可变规模报酬</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>tech</code></td>
+<td>str</td>
+<td><code>CONTEMPORARY</code></td>
+<td>当期技术——每期仅用当期 DMU 构成参考集，计算 D11、D12、D21 三个距离值</td>
+</tr>
+<tr>
+<td></td>
+<td>str</td>
+<td><code>TOTAL</code></td>
+<td>全局技术——所有时期 DMU 构成统一参考集，只计算 D11 一个距离值，额外返回 <code>mqpi</code> 列（相邻期 D11 的比值）</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>email</code></td>
+<td>str</td>
+<td><code>OPT_LOCAL</code></td>
+<td>本地求解</td>
+</tr>
+<tr>
+<td></td>
+<td>str</td>
+<td>邮箱地址</td>
+<td>远程求解完成后发送通知</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>solver</code></td>
+<td>str</td>
+<td><code>"mosek"</code></td>
+<td>商业求解器，速度快、精度高</td>
+</tr>
+<tr>
+<td></td>
+<td>str</td>
+<td><code>"glpk"</code></td>
+<td>开源求解器</td>
+</tr>
+<tr>
+<td></td>
+<td>str</td>
+<td><code>"cbc"</code></td>
+<td>开源求解器</td>
 </tr>
 </tbody>
 </table>
 <h3 id="_4">返回值<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
-<ul>
-<li><code>optimization_status</code>：求解状态</li>
-<li><code>rho</code>：距离函数值</li>
-<li><code>tei</code>：能源技术效率（<code>tei = 1 - rho</code>，范围 0-1）</li>
-</ul>
-<h3 id="gx">gx 方向向量的含义<a class="headerlink" href="#gx" title="Permanent link">&para;</a></h3>
-<p><code>gx=[0,0,1]</code> 表示只对能源 E 做效率评估：
-- <code>[0,0,1]</code>：能源效率（EO）
-- <code>[1,0,0]</code>：资本效率（PEO）
-- <code>[0,1,0]</code>：劳动效率
-- <code>[1,1,1]</code>：全要素效率</p>
+<p><code>optimize()</code> 返回一个 DataFrame，结构与 <strong>tech 参数和 gx/gy 导向</strong>有关。</p>
+<h4 id="techcontemporary-hyper">情况一：<code>tech=CONTEMPORARY</code>，投入/产出导向（非 Hyper）<a class="headerlink" href="#techcontemporary-hyper" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>返回列</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>D11</code></td>
+<td>当期技术下，t 期 DMU 对 t 期参考集的效率距离值</td>
+</tr>
+<tr>
+<td><code>D12</code></td>
+<td>当期技术下，t 期 DMU 对 t-1 期参考集的效率距离值（从第二年起有值）</td>
+</tr>
+<tr>
+<td><code>D21</code></td>
+<td>当期技术下，t 期 DMU 对 t+1 期参考集的效率距离值（到倒数第二年起有值）</td>
+</tr>
+<tr>
+<td><code>MQ</code></td>
+<td>Malmquist 指数，&gt; 1 表示生产率提升，= 1 不变，&lt; 1 下降</td>
+</tr>
+<tr>
+<td><code>MEFFCH</code></td>
+<td>效率变化（技术效率追赶效应），= D11(t) / D11(t-1)</td>
+</tr>
+<tr>
+<td><code>MTECHCH</code></td>
+<td>技术变化（前沿移动效应）</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>分解关系</strong>：<code>MQ = MEFFCH × MTECHCH</code></p>
+<p><strong>第一年无 MQ 值</strong>：MQ 需要相邻两期对比，因此第一年的 <code>MQ</code>、<code>MEFFCH</code>、<code>MTECHCH</code> 均为 NaN。</p>
+</blockquote>
+<h4 id="techcontemporaryhyper">情况二：<code>tech=CONTEMPORARY</code>，超效率导向（Hyper）<a class="headerlink" href="#techcontemporaryhyper" title="Permanent link">&para;</a></h4>
+<p>Hyper + CRS 时返回结构与情况一相同（单列 <code>D11</code>/<code>MQ</code> 等，底层 <code>te = sqrt(rho)</code>）。</p>
+<p>Hyper + VRS 时底层的 DEA2 会返回 <code>tei</code>（投入端）和 <code>teo</code>（产出端）两个效率值，因此 Malmquist 结果列拆分为投入/产出方向：</p>
+<table>
+<thead>
+<tr>
+<th>返回列</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>D11_tei</code></td>
+<td>当期技术下，t 期对 t 期参考集的投入方向距离值</td>
+</tr>
+<tr>
+<td><code>D11_teo</code></td>
+<td>当期技术下，t 期对 t 期参考集的产出方向距离值</td>
+</tr>
+<tr>
+<td><code>D12_tei</code> / <code>D12_teo</code></td>
+<td>t 期 DMU 对 t-1 期参考集的投入/产出距离值</td>
+</tr>
+<tr>
+<td><code>D21_tei</code> / <code>D21_teo</code></td>
+<td>t 期 DMU 对 t+1 期参考集的投入/产出距离值</td>
+</tr>
+<tr>
+<td><code>MQ_tei</code></td>
+<td>投入方向的 Malmquist 指数</td>
+</tr>
+<tr>
+<td><code>MQ_teo</code></td>
+<td>产出方向的 Malmquist 指数</td>
+</tr>
+<tr>
+<td><code>MEFFCH_tei</code> / <code>MEFFCH_teo</code></td>
+<td>投入/产出方向的效率变化</td>
+</tr>
+<tr>
+<td><code>MTECHCH_tei</code> / <code>MTECHCH_teo</code></td>
+<td>投入/产出方向的技术变化</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>分解关系</strong>：<code>MQ_tei = MEFFCH_tei × MTECHCH_tei</code>，<code>MQ_teo</code> 同理。</p>
+</blockquote>
+<h4 id="techtotal-hyper">情况三：<code>tech=TOTAL</code>，投入/产出导向（非 Hyper）<a class="headerlink" href="#techtotal-hyper" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>返回列</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>D11</code></td>
+<td>全局技术下，t 期 DMU 对全时期统一参考集的效率距离值</td>
+</tr>
+<tr>
+<td><code>mqpi</code></td>
+<td>Malmquist 生产率指数，= D11(t) / D11(t-1)，即相邻期全局效率的比值</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>注意</strong>：全局技术下不区分 MEFFCH 和 MTECHCH，只返回比值 <code>mqpi</code>。</p>
+</blockquote>
+<h4 id="techtotalhyper">情况四：<code>tech=TOTAL</code>，超效率导向（Hyper）<a class="headerlink" href="#techtotalhyper" title="Permanent link">&para;</a></h4>
+<p>与情况三同理，Hyper + CRS 返回结构与情况三相同（单列）。Hyper + VRS 时拆分为投入/产出方向：</p>
+<table>
+<thead>
+<tr>
+<th>返回列</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>D11_tei</code></td>
+<td>全局技术下，投入方向距离值</td>
+</tr>
+<tr>
+<td><code>D11_teo</code></td>
+<td>全局技术下，产出方向距离值</td>
+</tr>
+<tr>
+<td><code>mqpi_tei</code></td>
+<td>投入方向的 Malmquist 指数，= D11_tei(t) / D11_tei(t-1)</td>
+</tr>
+<tr>
+<td><code>mqpi_teo</code></td>
+<td>产出方向的 Malmquist 指数，= D11_teo(t) / D11_teo(t-1)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="mqdea-vs-mqddf">MQDEA vs MQDDF 返回值差异<a class="headerlink" href="#mqdea-vs-mqddf" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>特征</th>
+<th>MQDEA</th>
+<th>MQDDF</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>底层模型</td>
+<td>DEA2（径向）</td>
+<td>DDF2（方向距离函数）</td>
+</tr>
+<tr>
+<td>效率列名</td>
+<td>投入导向用 <code>te</code> → <code>D11</code></td>
+<td>投入导向用 <code>tei</code> → <code>D11</code></td>
+</tr>
+<tr>
+<td></td>
+<td>产出导向用 <code>te</code> → <code>D11</code></td>
+<td>产出导向用 <code>teo</code> → <code>D11</code></td>
+</tr>
+<tr>
+<td>分解公式</td>
+<td>相同</td>
+<td>相同</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>返回列名完全一致，差异仅在距离值的底层计算方式（径向比率 vs DDF 距离）。</p>
+</blockquote>
 <hr />
-<h2 id="mqdea-malmquist">第二部分：动态能源效率（MQDEA Malmquist）<a class="headerlink" href="#mqdea-malmquist" title="Permanent link">&para;</a></h2>
-<h3 id="_5">导入<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">deabook</span><span class="w"> </span><span class="kn">import</span> <span class="n">MQDEA</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">deabook.constant</span><span class="w"> </span><span class="kn">import</span> <span class="n">RTS_VRS1</span><span class="p">,</span> <span class="n">RTS_CRS</span><span class="p">,</span> <span class="n">OPT_LOCAL</span><span class="p">,</span> <span class="n">TOTAL</span><span class="p">,</span> <span class="n">CONTEMPORARY</span>
-</code></pre></div></td></tr></table></div>
-<h3 id="mqdea-vrs">模型：MQDEA 投入导向（能源）— VRS + 当期技术<a class="headerlink" href="#mqdea-vrs" title="Permanent link">&para;</a></h3>
+<h2 id="1mqdea-vrs">模型 1：MQDEA 产出导向 — VRS + 当期技术<a class="headerlink" href="#1mqdea-vrs" title="Permanent link">&para;</a></h2>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
 <span class="normal">3</span>
@@ -916,79 +1318,73 @@
 <span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">MQDEA</span><span class="o">.</span><span class="n">MQDEA</span><span class="p">(</span>
     <span class="n">data</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">dmuname</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="s1">&#39;year&#39;</span><span class="p">,</span>
     <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L E=Y&quot;</span><span class="p">,</span>
-    <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+    <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
     <span class="n">rts</span><span class="o">=</span><span class="n">RTS_VRS1</span><span class="p">,</span>
     <span class="n">tech</span><span class="o">=</span><span class="n">CONTEMPORARY</span><span class="p">,</span>
     <span class="n">email</span><span class="o">=</span><span class="n">OPT_LOCAL</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="s2">&quot;mosek&quot;</span>
 <span class="p">)</span>
 <span class="n">res</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">optimize</span><span class="p">()</span>
 </code></pre></div></td></tr></table></div>
-<h3 id="_6">参数详解<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
-<table>
-<thead>
-<tr>
-<th>参数</th>
-<th>值</th>
-<th>含义</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>gx</code></td>
-<td><code>[0,0,1]</code></td>
-<td>只沿能源方向缩减（能源 Malmquist）</td>
-</tr>
-<tr>
-<td><code>gy</code></td>
-<td><code>[0]</code></td>
-<td>不调整产出（投入导向）</td>
-</tr>
-<tr>
-<td><code>tech</code></td>
-<td><code>CONTEMPORARY</code></td>
-<td>当期生产技术</td>
-</tr>
-</tbody>
-</table>
-<h3 id="_7">返回值<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
-<ul>
-<li><code>D11</code>：当期能源距离值</li>
-<li><code>MQ</code>：Malmquist 指数</li>
-<li><code>MEFFCH</code>：效率变化分量</li>
-<li><code>MTECHCH</code>：技术变化分量</li>
-</ul>
-<h3 id="vs">静态 vs 动态对比<a class="headerlink" href="#vs" title="Permanent link">&para;</a></h3>
-<table>
-<thead>
-<tr>
-<th>特征</th>
-<th>静态（DDF2）</th>
-<th>动态（MQDEA）</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>时间维度</td>
-<td>单截面</td>
-<td>面板跨期</td>
-</tr>
-<tr>
-<td>输入要求</td>
-<td>仅需数据+sent</td>
-<td>需 data + id + year</td>
-</tr>
-<tr>
-<td>输出指标</td>
-<td>tei（单期效率）</td>
-<td>MQ, MEFFCH, MTECHCH</td>
-</tr>
-<tr>
-<td>效率含义</td>
-<td>相对当期前沿</td>
-<td>跨期生产率变动</td>
-</tr>
-</tbody>
-</table>
+<hr />
+<h2 id="2mqddf-vrs">模型 2：MQDDF 产出导向 — VRS + 当期技术<a class="headerlink" href="#2mqddf-vrs" title="Permanent link">&para;</a></h2>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">MQDEA</span><span class="o">.</span><span class="n">MQDDF</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">dmuname</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="s1">&#39;year&#39;</span><span class="p">,</span>
+    <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L E=Y&quot;</span><span class="p">,</span>
+    <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+    <span class="n">rts</span><span class="o">=</span><span class="n">RTS_VRS1</span><span class="p">,</span>
+    <span class="n">tech</span><span class="o">=</span><span class="n">CONTEMPORARY</span><span class="p">,</span>
+    <span class="n">email</span><span class="o">=</span><span class="n">OPT_LOCAL</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="s2">&quot;mosek&quot;</span>
+<span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">optimize</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+<p>MQDDF 使用 DDF 的 <code>teo</code> 效率值计算 Malmquist 指数，返回列结构相同。</p>
+<hr />
+<h2 id="3mqdea-vrs">模型 3：MQDEA 投入导向 — VRS + 当期技术<a class="headerlink" href="#3mqdea-vrs" title="Permanent link">&para;</a></h2>
+<h2 id="1-2-3-4-5-6-7-8-9model-mqdeamqdea-data-iddmuname-yearyear-sentk-l-ey-gx100-gy0-rtsrts_vrs1-techcontemporary-emailopt_local-solvermosek-res-modeloptimize"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">MQDEA</span><span class="o">.</span><span class="n">MQDEA</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">dmuname</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="s1">&#39;year&#39;</span><span class="p">,</span>
+    <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L E=Y&quot;</span><span class="p">,</span>
+    <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+    <span class="n">rts</span><span class="o">=</span><span class="n">RTS_VRS1</span><span class="p">,</span>
+    <span class="n">tech</span><span class="o">=</span><span class="n">CONTEMPORARY</span><span class="p">,</span>
+    <span class="n">email</span><span class="o">=</span><span class="n">OPT_LOCAL</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="s2">&quot;mosek&quot;</span>
+<span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">optimize</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div><a class="headerlink" href="#1-2-3-4-5-6-7-8-9model-mqdeamqdea-data-iddmuname-yearyear-sentk-l-ey-gx100-gy0-rtsrts_vrs1-techcontemporary-emailopt_local-solvermosek-res-modeloptimize" title="Permanent link">&para;</a></h2>
+<h2 id="4mqddf-vrs">模型 4：MQDDF 投入导向 — VRS + 当期技术<a class="headerlink" href="#4mqddf-vrs" title="Permanent link">&para;</a></h2>
+<h2 id="1-2-3-4-5-6-7-8-9model-mqdeamqddf-data-iddmuname-yearyear-sentk-l-ey-gx100-gy0-rtsrts_vrs1-techcontemporary-emailopt_local-solvermosek-res-modeloptimize"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">MQDEA</span><span class="o">.</span><span class="n">MQDDF</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">dmuname</span><span class="p">,</span> <span class="n">year</span><span class="o">=</span><span class="s1">&#39;year&#39;</span><span class="p">,</span>
+    <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L E=Y&quot;</span><span class="p">,</span>
+    <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+    <span class="n">rts</span><span class="o">=</span><span class="n">RTS_VRS1</span><span class="p">,</span>
+    <span class="n">tech</span><span class="o">=</span><span class="n">CONTEMPORARY</span><span class="p">,</span>
+    <span class="n">email</span><span class="o">=</span><span class="n">OPT_LOCAL</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="s2">&quot;mosek&quot;</span>
+<span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">optimize</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div><a class="headerlink" href="#1-2-3-4-5-6-7-8-9model-mqdeamqddf-data-iddmuname-yearyear-sentk-l-ey-gx100-gy0-rtsrts_vrs1-techcontemporary-emailopt_local-solvermosek-res-modeloptimize" title="Permanent link">&para;</a></h2>
 
 
 
@@ -1011,7 +1407,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="April 28, 2026 14:08:16 UTC"><span class="timeago" datetime="2026-04-28T14:08:16+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="April 28, 2026 14:08:16 UTC">2026-04-28</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="May 2, 2026 14:15:47 UTC"><span class="timeago" datetime="2026-05-02T14:15:47+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="May 2, 2026 14:15:47 UTC">2026-05-02</span>
   </span>
 
     

@@ -1,0 +1,2845 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="dea">
+      
+      
+        <meta name="author" content="advancehs">
+      
+      
+        <link rel="canonical" href="https://advancehs.github.io/deabook/deabook%E6%96%87%E6%A1%A3/09_%E5%9F%BA%E4%BA%8E%E7%89%A9%E8%B4%A8%E5%B9%B3%E8%A1%A1%E7%9A%84%E7%8E%AF%E5%A2%83%E7%BB%A9%E6%95%88%E6%B5%8B%E5%BA%A6%E6%96%B9%E6%B3%95/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>09 基于物质平衡的环境绩效测度方法 - deabook</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans:300,300i,400,400i,700,700i%7CRegular:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Google Sans";--md-code-font:"Regular"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../css/timeago.css">
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#9" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="deabook" class="md-header__button md-logo" aria-label="deabook" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            deabook
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              09 基于物质平衡的环境绩效测度方法
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6m0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4M7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/advancehs/deabook" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="deabook" class="md-nav__button md-logo" aria-label="deabook" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    deabook
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/advancehs/deabook" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../faq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FAQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/advancehs/deabook/issues" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Report Issues
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/intro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Intro
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../deabook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    deabook module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../common/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    common module
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#91" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.1 物质平衡原则
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#92" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.2 物质平衡条件
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9.2 物质平衡条件">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#921" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.2.1 距离函数与物质平衡条件
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#922" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.2.2 符合物质平衡的生产技术的公理
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#93" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.3 物质平衡生产技术的非参数刻画
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#94" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.4 绩效测度
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9.4 绩效测度">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#941" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.4.1 非期望产出方向上的技术效率
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#942" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.4.2 投入方向上的技术效率
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#943" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.4.3 期望产出方向上的技术效率
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#944" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.4.4 混合方向上的技术效率
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#95" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.5 物质平衡条件的发展
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#96-deabook" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.6 deabook 调用代码
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9.6 deabook 调用代码">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#961" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.6.1 导入
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#962" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.6.2 参数说明
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#963" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.6.3 返回值
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9.6.3 返回值">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data3dataframe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        data3（DataFrame）— 公共列
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#infostr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        info（str）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#level1-b" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        level=1（仅调整非期望产出 b）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#level2-x_p" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        level=2（加入污染投入 $x_p$）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#level3-x_np" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        level=3（加入非污染投入 $x_{np}$）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#level4-y_p-y_np" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        level=4（加入产出 $y_p$ 或 $y_{np}$）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#level5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        level=5（完整分解）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5 个分解层级汇总
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#964" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.6.4 后处理：污染物分解指标
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#965" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.6.5 模型调用示例
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#97" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.7 案例应用：中国的发电行业的符合物质平衡条件的环境效率
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#98" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.8 本章总结
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        参考文献
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+
+
+
+                  
+
+
+  
+  
+
+
+<div class="toc">
+<ul>
+<li><a href="#9">9. 基于物质平衡的环境绩效测度方法</a><ul>
+<li><a href="#91">9.1 物质平衡原则</a></li>
+<li><a href="#92">9.2 物质平衡条件</a><ul>
+<li><a href="#921">9.2.1 距离函数与物质平衡条件</a></li>
+<li><a href="#922">9.2.2 符合物质平衡的生产技术的公理</a></li>
+</ul>
+</li>
+<li><a href="#93">9.3 物质平衡生产技术的非参数刻画</a></li>
+<li><a href="#94">9.4 绩效测度</a><ul>
+<li><a href="#941">9.4.1 非期望产出方向上的技术效率</a></li>
+<li><a href="#942">9.4.2 投入方向上的技术效率</a></li>
+<li><a href="#943">9.4.3 期望产出方向上的技术效率</a></li>
+<li><a href="#944">9.4.4 混合方向上的技术效率</a></li>
+</ul>
+</li>
+<li><a href="#95">9.5 物质平衡条件的发展</a></li>
+<li><a href="#96-deabook">9.6 deabook 调用代码</a><ul>
+<li><a href="#961">9.6.1 导入</a></li>
+<li><a href="#962">9.6.2 参数说明</a></li>
+<li><a href="#963">9.6.3 返回值</a><ul>
+<li><a href="#data3dataframe">data3（DataFrame）— 公共列</a></li>
+<li><a href="#infostr">info（str）</a></li>
+<li><a href="#level1-b">level=1（仅调整非期望产出 b）</a></li>
+<li><a href="#level2-x_p">level=2（加入污染投入 $x_p$）</a></li>
+<li><a href="#level3-x_np">level=3（加入非污染投入 $x_{np}$）</a></li>
+<li><a href="#level4-y_p-y_np">level=4（加入产出 $y_p$ 或 $y_{np}$）</a></li>
+<li><a href="#level5">level=5（完整分解）</a></li>
+<li><a href="#5">5 个分解层级汇总</a></li>
+</ul>
+</li>
+<li><a href="#964">9.6.4 后处理：污染物分解指标</a></li>
+<li><a href="#965">9.6.5 模型调用示例</a></li>
+</ul>
+</li>
+<li><a href="#97">9.7 案例应用：中国的发电行业的符合物质平衡条件的环境效率</a></li>
+<li><a href="#98">9.8 本章总结</a></li>
+<li><a href="#_1">参考文献</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h1 id="9">9. 基于物质平衡的环境绩效测度方法<a class="headerlink" href="#9" title="Permanent link">&para;</a></h1>
+<p>我们曾系统探讨了非期望产出约束下的全要素生产率测度方法，从曼奎斯特指数到方向距离函数框架下的动态环境绩效分析，为多维度环境效率评估提供了理论工具。然而，传统模型对生产过程中物质流与能量流的守恒关系缺乏显性刻画，可能导致技术效率的高估或减排潜力的误判。基于此，本章转向物质平衡原则（Material Balance Principle, MBP）下的效率测度创新，将热力学定律内生于生产技术构建，通过公理化定义与非参数模型重构符合物理规律的环境绩效指标。</p>
+<h2 id="91">9.1 物质平衡原则<a class="headerlink" href="#91" title="Permanent link">&para;</a></h2>
+<p>在应用 DEA 方法的文献中，非期望产出的建模有几种形式：(i) 将非期望产出视为强可处置性投入[1]；(ii) 将非期望产出视为弱可处置性产出[2][3]；(iii) 使用两个子技术分别产生期望产出和非期望产出（例如，副生产法和自然/管理处置法）[4][5]；(iv) 使用物质平衡原理 (MBP) 包括热力学定律（例如，弱 G 可处置性方法）[6][7] [8]。将非期望产出作为投入的方法受到了严重的质疑，因为它不能反映真实的生产过程，也不符合物理规律。将非期望产出视为具有弱可处置性的产出的方法也存在一些问题，第一，这种方法违反了非期望产出生产的单调性，因此可能导致对非期望产出的影子价格的不恰当估计。第二，在没有末端减排的情况下，这种方法不符合热力学定律[7][9] [10]。下面我们介绍如何在对生产技术的建模中考虑热力学规律的中物质平衡原则。</p>
+<h2 id="92">9.2 物质平衡条件<a class="headerlink" href="#92" title="Permanent link">&para;</a></h2>
+<p>物质平衡原则指出，投入中的物质（如污染物）或能源的总量必须等于期望产出中的物质或能量的总量加上非期望产出中的的物质或能源的总量[6, 11]。不考虑非期望产出的减排时，物质平衡条件可以定义为:
+$$
+\boldsymbol{S_x x}-\boldsymbol{S_y y}=\boldsymbol{b}       \tag{9.1}
+$$
+其中$\boldsymbol{x}$、$\boldsymbol{y}$和$\boldsymbol{b}$是投入、期望产出和非期望产出的向量。这里的物质表示从投入生产资源到得到产出中一直存在的物质，如在饲养猪时，投入是猪饲料和猪仔，产出是成品猪和猪粪便。猪饲料和猪仔中含有的氮物质会保存在成品猪和猪粪便中。又比如，在火力发电过程中，发电厂使用煤进行发电，并产生$CO_2$、$SO_2$和$NO_x$。此时煤炭中的碳含量、硫含量、氮含量应与产生的$CO_2$、$SO_2$和$NO_x$中的碳含量、硫含量、氮含量相同。下面我们以污染物质来指代这种物质平衡原则中所说的物质。$\boldsymbol{S_x}$和$\boldsymbol{S_y}$代表投入中单位质量约束的向量和期望产出中单位质量约束的向量。在公式（9.1）中，与不包含污染物质的投入相关的$\boldsymbol{S_x}$的分量为零，与包含污染物质的投入相关的$\boldsymbol{S_x}$的分量大于零。同样，对于不含污染物质的期望产出，对应的$\boldsymbol{S_y}$的分量为零，而对于包含污染物质的期望产出，对应的$\boldsymbol{S_y}$的分量大于零。从物质平衡条件来看，减少非期望产出的方法有两种，一种是增加包含污染物质的期望产出，例如增加产出效率；另一种是减少包含污染物质的投入，例如从高硫燃料转换为低硫燃料，从而降低$SO_{2}$排放。</p>
+<h3 id="921">9.2.1 距离函数与物质平衡条件<a class="headerlink" href="#921" title="Permanent link">&para;</a></h3>
+<p>在前面的章节中，我们已经知道，存在多种评估效率的方法，如谢泼德产出距离函数、谢泼德投入距离函数、双曲线距离函数和方向距离函数。在定义物质平衡的生产技术公理之前，我们来检察各种效率评估的方法在何种条件下符合上面定义的物质平衡条件。我们先给出结论：当$\boldsymbol{S_y}\ne \boldsymbol{0}$时，谢泼德距离函数和双曲线距离函数不符合物质平衡条件，而方向距离函数在特定方向上符合物质平衡条件。</p>
+<p>下面我们说明为何谢泼德距离函数不符合物质平衡条件。考虑这样一种情况，我们有一家公司使用向量 $ k=1,2, \ldots, K $个投入，$ \mathbf{x} \in \mathbf{R}<em _="+">{+}^{K} $，产生$ l=1,2, \ldots, L $个产出，$ \mathbf{y} \in \mathbf{R}</em>$是已知非负常数的($K×1$和$L×1$)向量。}^{L} $。 生产活动还产生污染物质的副产品$b$。 排放量由物质平衡方程定义：$\boldsymbol{S_x x}-\boldsymbol{S_y y}=\boldsymbol{b}$，其中$\boldsymbol{S_x}$和$\boldsymbol{S_y</p>
+<p>首先，让我们考虑原始的Färe, Grosskopf [3]方法。 他们的双曲线效率度量（双曲线距离函数）涉及尝试找到最大的标量$λ$，从而在可行的生产集中放缩向量$(λy,x/λ,b/λ)$。如果我们将此比例应用于物质平衡方程，我们将获得：
+$$
+b/ \lambda=\boldsymbol{S_x x} / \lambda   -   \boldsymbol{S_y y} \lambda     \tag{9.2}
+$$
+这表示，当$\boldsymbol{S_y}\ne \boldsymbol{0}$时，
+$$
+b- \boldsymbol{S_x x}   =     -     \boldsymbol{S_y y}\lambda^{2}     \tag{9.3}
+$$
+此时，$λ=1$ 是唯一可以同时满足双曲线效率测量和物质平衡方程的正值。 因此，在这种情况下，生产技术中的内部点（即低效率点）是不可行的。 这不是一个有吸引力的性质。 因此，Färe, Grosskopf [3]方法在这种物质平衡情况下不是可行的方法。</p>
+<p>Färe and and Grosskopf [12]中的方法也会出现类似的问题。 他们以投入为导向的效率度量（使用投入距离函数）涉及尝试找到最大的标量$λ$，从而在可行的生产集中放缩向量$(y,x/λ,b)$ 。 如果我们将此比例应用于物质平衡方程，我们将获得：
+$$
+b= \boldsymbol{S_x x} / \lambda     -  \boldsymbol{S_y y}     \tag{9.4}
+$$
+这表示，当$\boldsymbol{S_y}$为任何值时（即包括0），
+$$
+\left(  b   + \boldsymbol{S_y y}\right) \lambda   =    \boldsymbol{S_x x}     \tag{9.5}
+$$
+此时，$λ=1$是唯一在数学上可行的值。</p>
+<p>如果我们也对 Reinhard, Knox Lovell [13] 中使用的三个替代效率度量（即$ (\mathbf{y}, \mathbf{x}, \mathrm{b} / \lambda),(\mathbf{y} \lambda, \mathbf{x}, \mathrm{b}) $和$(\mathbf{y}, \mathbf{x}/ \lambda, \mathrm{b} / \lambda)$）应用类似的测试，我们会得出相同的结论。 也就是说，与物质平衡条件一致的唯一效率分数是 1，这意味着不允许低效生产。因此，有必要设置新的环境生产技术。</p>
+<p>接下来解释为何方向距离函数可以符合物质平衡条件。当将方向向量被设定为 $ (-\boldsymbol{g}<em _boldsymbol_y="\boldsymbol{y">{\boldsymbol{x}}, \boldsymbol{g}</em>} }, -\boldsymbol{g<em _boldsymbol_x="\boldsymbol{x">{\boldsymbol{b}})=  (\boldsymbol{x},\boldsymbol{y},\boldsymbol{b}) $时，得到投入和产出方向的方向距离函数，定义如下 [14]:
+$$
+\vec{D}_i\left(\boldsymbol{x}, \boldsymbol{y},\boldsymbol{b} ; -\boldsymbol{g}</em>}}, \boldsymbol{g<em _boldsymbol_b="\boldsymbol{b">{\boldsymbol{y}},-\boldsymbol{g}</em>}}\right)=\sup \left{\beta:\left(\boldsymbol{x}-\beta \boldsymbol{g<em _boldsymbol_y="\boldsymbol{y">{\boldsymbol{x}}, \boldsymbol{y}+\beta \boldsymbol{g}</em>}},\boldsymbol{b}-\beta \boldsymbol{g<em x="x">{\boldsymbol{b}}\right) \in T\right}     \tag{9.6}
+$$
+式中， $ T$为包含非期望产出的生产技术； $\boldsymbol{g</em> $，反映了方向距离函数的投射法则。$ \beta $ 是方向距离函数的取值，表示缩减投入的最大比例。}}= $ $ \left(g_{x_{1}}, g_{x_{2}}, \cdots, g_{x_{K}}\right)^{\mathrm{\prime}} \in R_{+}^{K</p>
+<p>投入和产出的变动需符合物质平衡条件，即：
+$$
+\begin{array}{ll}
+(\boldsymbol{b}-\beta \boldsymbol{g_b})=\boldsymbol{S_x }(\boldsymbol{x}-\beta \boldsymbol{g_x})- \boldsymbol{S_y }(\boldsymbol{y}+\beta \boldsymbol{g_y})
+ \end{array}     \tag{9.7}
+$$
+可得：
+$$
+\boldsymbol{b}-\boldsymbol{S_x x}+ \boldsymbol{S_y }\boldsymbol{y}= \beta ( \boldsymbol{g_b}- \boldsymbol{S_x}\boldsymbol{g_x}- \boldsymbol{S_y }\boldsymbol{g_y})     \tag{9.8}
+$$
+为了使物质平衡条件成立，上式的右边必须为零。这个条件在两种情况下得到满足；（1）当定向产出距离函数β对所有生产者都等于零时（即所有生产者都是技术有效的）；（2）当调整方向满足$\boldsymbol{g_b}- \boldsymbol{S_x}\boldsymbol{g_x}- \boldsymbol{S_y }\boldsymbol{g_y}=0$时（允许定向产出距离函数取任何非负值）。当$\boldsymbol{S_y}= \boldsymbol{0}$时，这个条件可以变为$\boldsymbol{g_b}- \boldsymbol{S_x}\boldsymbol{g_x}=0$，即期望产出的调整方向为任意方向。</p>
+<h3 id="922">9.2.2 符合物质平衡的生产技术的公理<a class="headerlink" href="#922" title="Permanent link">&para;</a></h3>
+<p>在得到关于方向距离函数满足物质平衡条件的条件后，我们将注意力转到对生产技术公理的定义。我们使用以下方式对符合物质平衡的生产技术进行刻画。考虑一个生产过程，其中 $ \mathrm{K} $ 个投入 $ \mathbf{x} \in {R}<em _="+">{+}^{K} $ 被用 来生产 $ \mathrm{L} $ 个期望产出 $ \mathbf{y} \in {R}</em> $是所有技术上可行的投入-产出组合的集合，其定义为：
+$$
+T={(\boldsymbol{x}, \boldsymbol{y}, \boldsymbol{b}): \boldsymbol{x} \text { 能生产 }(\boldsymbol{y}, \boldsymbol{b})}     \tag{9.9}
+$$
+根据上一小节的描述，方向距离函数中，物质平衡条件的前提是$\boldsymbol{g_b}- \boldsymbol{S_x}\boldsymbol{g_x}- \boldsymbol{S_y }\boldsymbol{g_y}$，因此，Rødseth [15]将其作为物质平衡的生产技术的公理的一部分。另外，这一条件的存在排除了<!--包含污染物质的投入和产出的可处置性，-->即：包含污染物质的投入、期望产出和非期望产出的变化需要满足条件$\boldsymbol{g_b}- \boldsymbol{S_x}\boldsymbol{g_x}- \boldsymbol{S_y }\boldsymbol{g_y}$，其中，使用$g_i，i \in {x,y,b}$表示投入或产出$i$的变动。因此，在非期望产出的弱可处置生产技术的基础上，我们可以在Rødseth [15]的基础上，设定满足物质平衡条件的的技术集满足如下假设：}^{L} $ 。我们进一步假设，$ \mathrm{K} $ 个投入可以分成 $ K_{1} $ 个包含污染物质的投入$ \left(x^{P}\right) $和 $ K_{2}=K-K_{1} $ 个不包含污染物质的投入$ \left(x^{NP}\right) $，因此 $ \mathbf{x}=\left[\begin{array}{l}\mathbf{x}^{\mathrm{P}} \ \mathbf{x}^{\mathrm{NP}}\end{array}\right] $ 。同样, 我们假设前 $ L_1 $个期望产出包含污染物质$\left(y^{P}\right)$ ，后$L_2=L-L_1$个期望产出不包含污染物质 $ \left(y^{N P}\right) $ 。包含污染物质的投入的消耗会导致生产出 $ \mathrm{M} $ 个非期望产出$ \mathbf{b} \in {R}_{+}^{M} $ 。这个生产过程的技术集$ \mathrm{T</p>
+<p>Rødseth [15]认为物质平衡条件的前提是$\boldsymbol{g_b}- \boldsymbol{S_x}\boldsymbol{g_x}- \boldsymbol{S_y }\boldsymbol{g_y}$排除了所有投入和产出的弱可处置性，这显然是错误的。</p>
+<p>$ (1)$ $T$是封闭有界的；</p>
+<p>$(2)$ 没有免费的午餐：若$(\boldsymbol{y},\boldsymbol{b})\geq(\boldsymbol{0},\boldsymbol{0})$，则$(\boldsymbol{0},\boldsymbol{y},\boldsymbol{b}) \notin T$；</p>
+<p>$(3)$ 不包含污染物质的投入的强可处置性；</p>
+<p>$ (4) $  不包含污染物质的期望产出的强可处置性；</p>
+<p>$(5)$ 包含污染物质的产出essentiality：若$(\boldsymbol{x},\boldsymbol{y},\boldsymbol{b}) \in T$，且$\boldsymbol{b}=\boldsymbol{0}$，则$\boldsymbol{x^P}=\boldsymbol{0}$；</p>
+<p>$(6)$ 包含污染物质的投入essentiality：若$(\boldsymbol{x},\boldsymbol{y},\boldsymbol{b}) \in T$，且$\boldsymbol{x^P}=\boldsymbol{0}$，则$\boldsymbol{b}=\boldsymbol{0}$；</p>
+<p>$(7)$ 投入和产出是弱G-可处置的：若$(\boldsymbol{x},\boldsymbol{y},\boldsymbol{b}) \in T$，且$\boldsymbol{S_xg_x}+\boldsymbol{S_yg_y}-\boldsymbol{g_b}=0$，则$(\boldsymbol{x}-\boldsymbol{g_x},\boldsymbol{y}+\boldsymbol{g_y},\boldsymbol{b}-\boldsymbol{g_b}) \in T$。</p>
+<p>$(8)$ T 是凸的；</p>
+<p>$(9)$ 可变规模报酬或不变规模报酬。</p>
+<p>当存在包含污染物质的投入时，公理$(5)$排除了传统的inactivity 和零结合假设。即当存在包含污染物质的投入时，非期望产出必定不为0。公理$(5)$和$(6)$确保热力学第二定律不被违反，指出不可能将包含污染物质的投入完全转化非期望产出。公理$(7)$中的总结条件指出，在处置投入和产出时，由于增加投入而增加的污染物质增加（$\boldsymbol{S_xg_x}$）和/或包含污染物质的期望产出的减少而导致的污染物质增加（$\boldsymbol{S_yg_y}$）必须等于非期望产出的增加（$\boldsymbol{g_b}$）。公理$(7)$排除了包含污染物质的投入和包含污染物质的期望产出的强可处置性。Rødseth [15]还认为，公理$(7)$排除了期望产出和非期望产出之间的弱可处置性，然而，在现实中，可能存在这样一种情况，即使用包含较低污染物的投入替代包含较高污染物的投入的做法需要消耗期望产出，如低硫煤和高硫煤的脱硫设备差别较大，使用低硫煤后需要消耗资金来安装脱硫设备。因此，期望产出和非期望产出之间的弱可处置性得到满足。当期望产出包含污染物质时，同时调整的期望产出和非期望产出的变动导致的污染物质的变动可以由投入变动来抵消。当期望产出不包含污染物质时，调整期望产出对污染物质没有影响，而调整非期望产出的变动导致的污染物质的变动可以由投入变动来抵消。</p>
+<h2 id="93">9.3 物质平衡生产技术的非参数刻画<a class="headerlink" href="#93" title="Permanent link">&para;</a></h2>
+<p>用投入和产出中的具体斜率 $\epsilon_{\boldsymbol{x}}$、$\epsilon_{\boldsymbol{y}}$ 和$\epsilon_{\boldsymbol{b}}$取代了弱G-可处置性假设（公理$(9)$）的非指定方向向量，则规模报酬不变下的物质平衡模型（MB）的相应非参数估计为：</p>
+<p>$$
+\begin{array}{ll}
+\hat{T}<em _boldsymbol_x="\boldsymbol{x">{CRS}^{M B}=  { &amp; (\boldsymbol{x}, \boldsymbol{y}, \boldsymbol{b}):  \<br />
+ &amp; \boldsymbol{x}=\boldsymbol{X} \boldsymbol{\lambda}+\epsilon</em>, \
+ &amp; \boldsymbol{y}=\boldsymbol{Y} \boldsymbol{\lambda}-\epsilon_{\boldsymbol{y}}, \ 
+ &amp; \boldsymbol{b}=\boldsymbol{B} \boldsymbol{\lambda}+\epsilon_{\boldsymbol{b}}, \
+ &amp; \boldsymbol{S}}<em _boldsymbol_x="\boldsymbol{x">{\boldsymbol{x}} \epsilon</em>}}+\boldsymbol{S<em _boldsymbol_y="\boldsymbol{y">{\boldsymbol{y}}  \epsilon</em>, \ 
+ &amp; \epsilon_{\boldsymbol{x}},\epsilon_{\boldsymbol{y}} ,\epsilon_{\boldsymbol{b}},\boldsymbol{\lambda} \geqq \mathbf{0}                &amp;}
+ \end{array}     \tag{9.10}
+$$
+可变规模报酬下的物质平衡模型（MB）的相应非参数估计为：
+$$
+\begin{array}{ll}
+\hat{T}}}=\epsilon_{\boldsymbol{b}<em _boldsymbol_x="\boldsymbol{x">{VRS}^{M B}=  { &amp; (\boldsymbol{x}, \boldsymbol{y}, \boldsymbol{b}):  \<br />
+ &amp; \boldsymbol{x}=\boldsymbol{X} \boldsymbol{\lambda}+\epsilon</em>, \
+ &amp; \boldsymbol{y}=\boldsymbol{Y} \boldsymbol{\lambda}-\epsilon_{\boldsymbol{y}}, \ 
+ &amp; \boldsymbol{b}=\boldsymbol{B} \boldsymbol{\lambda}+\epsilon_{\boldsymbol{b}}, \
+ &amp; \boldsymbol{S}}<em _boldsymbol_x="\boldsymbol{x">{\boldsymbol{x}} \epsilon</em>}}+\boldsymbol{S<em _boldsymbol_y="\boldsymbol{y">{\boldsymbol{y}}  \epsilon</em>, \ 
+ &amp;  \mathbf{1}^{T} \boldsymbol{\lambda}=1, \
+ &amp; \epsilon_{\boldsymbol{x}},\epsilon_{\boldsymbol{y}} ,\epsilon_{\boldsymbol{b}},\boldsymbol{\lambda} \geqq \mathbf{0}                &amp;}
+ \end{array}     \tag{9.11}
+$$
+因此，当指定的方向向量满足 $ \boldsymbol{S}}}=\epsilon_{\boldsymbol{b}<em _boldsymbol_x="\boldsymbol{x">{\boldsymbol{x}} \epsilon</em>}}+\boldsymbol{S<em _boldsymbol_y="\boldsymbol{y">{\boldsymbol{y}}  \epsilon</em>}}=\epsilon_{\boldsymbol{b}}$时，物质平衡条件下的环境生产技术被刻画出来。例如：当假定$\epsilon_{\boldsymbol{b}}=0$时，上述模型估计的是调整投入和期望产出的结构的技术。本质上，物质平衡下的生产技术只是在联合生产技术中添加$ \boldsymbol{S<em _boldsymbol_x="\boldsymbol{x">{\boldsymbol{x}} \epsilon</em>}}+\boldsymbol{S<em _boldsymbol_y="\boldsymbol{y">{\boldsymbol{y}}  \epsilon</em>$的约束条件，从而将联合生产技术中的G-可处置性变为弱G可处置性。}}=\epsilon_{\boldsymbol{b}</p>
+<p>另外，$\boldsymbol{S}<em _boldsymbol_y="\boldsymbol{y">{\boldsymbol{x}}$ 和 $\boldsymbol{S}</em> $。}} $也需要提前指定。在Wang, Wei [16]中，作者使用研究使用能源投入和其他投入发电的效率，由于期望产出电力不包含污染物质，所以可以直接使用包含污染物质的非期望产出/包含污染物质的投入来计算$\boldsymbol{S}_{\boldsymbol{x}</p>
+<h2 id="94">9.4 绩效测度<a class="headerlink" href="#94" title="Permanent link">&para;</a></h2>
+<h3 id="941">9.4.1 非期望产出方向上的技术效率<a class="headerlink" href="#941" title="Permanent link">&para;</a></h3>
+<p>使用上一节中对生产技术的非参数的刻画，本节我们将分析投入方向上的技术效率。首先，我们定义非期望产出方向上的技术效率。对于每个DMU，我们可以假设目标是最小化非期望产出。根据该DMU的包含污染物质的投入变化与否，我们可以得到下面两种情形：</p>
+<p><strong>第一种情形包含污染物质的投入不变，最小化的非期望产出与实际非期望产出之间的比值衡量非期望产出方向上的技术效率。</strong></p>
+<p>在规模报酬不变下的该种情况下的技术效率可以通过下式求解：
+$$
+\begin{array}{ll}
+ B_{1}= &amp; \underset {\lambda, \epsilon,  b_{m}} {\min} \frac{1}{M} \sum_{m=1}^{M} b_{m} \
+&amp;\sum_{i=1}^{n} \lambda_{i} x_{k i}^{ P}+\epsilon_{k x^{ P}}=x_{k0}^{P}, \quad k=1, \ldots, K_1\
+&amp;\sum_{i=1}^{n} \lambda_{i} x_{k i}^{N P}+\epsilon_{k x^{N P}}=x_{k0}^{N P}, \quad k=K_{1}+1, \ldots, K\
+&amp; \sum_{i=1}^{n} \lambda_{i} y_{l i}^{P}-\epsilon_{l y^{P} } =y_{l {0}}^{P}, \quad l=1, \ldots, L_{1} \
+&amp;\sum_{i=1}^{n}\lambda_{i}y_{l i}^{N P}-\epsilon_{l y^{N P}}=y_{l {0}}^{N P}, \quad l=L_{1}+1, \ldots,L \
+ &amp;\sum_{i=1}^{n} \lambda_{i} b_{m i}+\epsilon_{m b}=b_{m}, \quad m=1, \ldots M \
+&amp; \sum_{k=1}^{K_{1}} S_{x_{km}} \epsilon_{k x^{ P}} +\sum_{l=1}^{L_{1}} S_{y_{lm}} \epsilon_{l y^{P} }=(b_{m{0}}-b_{m}),  \quad m= 1, \ldots, M\
+&amp; \lambda_{i}  \geq 0 \quad i= 1, \ldots, N\ 
+\end{array}     \tag{9.12}
+$$
+需要注意的是，由于最小化非期望产出之和，所以根据第5个约束，$\epsilon_{m b}$最优值为0，所以可以省去。但是应该注意的是，根据公理，我们需要使用非期望产出的所有变化，而所有变化需要包含$\epsilon_{m b}$。</p>
+<p>因此，上式等价于：
+$$
+\begin{array}{ll}
+ B_{1}= &amp; \underset {\lambda, \epsilon,  b_{m}} {\min} \frac{1}{M} \sum_{m=1}^{M} b_{m} \
+&amp;\sum_{i=1}^{n} \lambda_{i} x_{k i}^{P}+\epsilon_{k x^{P}}=x_{k0}^{P}, \quad k=1, \ldots, K_1\
+&amp;\sum_{i=1}^{n} \lambda_{i} x_{k i}^{NP}+\epsilon_{k x^{NP}}=x_{k0}^{NP}, \quad k=K_{1}+1, \ldots, K\
+&amp;\sum_{i=1}^{n} \lambda_{i} y_{l i}^{P}-\epsilon_{l y^{P}} = y_{l0}^{P}, \quad l=1, \ldots, L_{1} \
+&amp;\sum_{i=1}^{n}\lambda_{i}y_{l i}^{NP}-\epsilon_{l y^{NP}}=y_{l0}^{NP}, \quad l=L_{1}+1, \ldots, L \
+&amp;\sum_{i=1}^{n} \lambda_{i} b_{m i}+\epsilon_{m b}=b_{m}, \quad m=1, \ldots, M \
+&amp; \sum_{k=1}^{K_{1}} S_{x_{km}} \epsilon_{k x^{P}} +\sum_{l=1}^{L_{1}} S_{y_{lm}} \epsilon_{l y^{P}} = (\epsilon_{m b} + b_{m0} - b_{m}), \quad m= 1, \ldots, M\
+&amp; \lambda_{i} \geq 0, \quad i=1, \ldots, N 
+\end{array}     \tag{9.13}
+$$
+<strong>第二种情形在第一种情形的基础上，可以进一步设定当包含污染物质的投入改变，并将最小化的非期望产出与第一种情形中的最小化的非期望产出之间的比值衡量包含污染物质的投入的分配效率。</strong></p>
+<p>在规模报酬不变下的第（2）种情况下的技术效率可以通过下式求解：
+$$
+\begin{array}{ll}
+ B_{2}= &amp; \underset {\lambda, \epsilon,  b_{m}, x^{ P}} {\min} \frac{1}{M} \sum_{m=1}^{M} b_{m} \
+&amp;\sum_{i=1}^{n} \lambda_{i} x_{k i}^{ P}+\epsilon_{k x^{ P}}=x_{k}^{P}, \quad k=1, \ldots, K_1\
+&amp;\sum_{i=1}^{n} \lambda_{i} x_{k i}^{N P}+\epsilon_{k x^{N P}}=x_{k0}^{N P}, \quad k=K_{1}+1, \ldots, K\
+&amp; \sum_{i=1}^{n} \lambda_{i} y_{l i}^{P}-\epsilon_{l y^{P} } =y_{l {0}}^{P}, \quad l=1, \ldots, L_{1} \
+&amp;\sum_{i=1}^{n}\lambda_{i}y_{l i}^{N P}-\epsilon_{l y^{N P}}=y_{l {0}}^{N P}, \quad l=L_{1}+1, \ldots,L \
+ &amp;\sum_{i=1}^{n} \lambda_{i} b_{m i}+\epsilon_{m b}=b_{m}, \quad m=1, \ldots M \
+&amp;\sum_{k=1}^{K_{1}} S_{x_{km}}  \left(x_{k {0}}^{P}-x_{k}^{P}\right)  +\sum_{l=1}^{L_{1}} S_{y_{lm}} \epsilon_{l y^{P} }=(b_{m {0}}-b_{m}), \quad m = 1, \ldots, M \
+&amp; \lambda_{i}  \geq 0 \quad i= 1, \ldots, N\ 
+\end{array}     \tag{9.14}
+$$
+请注意，由于包含污染质量的投入是可变的，投入$\boldsymbol{S}<em _boldsymbol_x="\boldsymbol{x">{\boldsymbol{x}} \epsilon</em>$为根据第6个约束求解的最大值。两种情况对目标函数的影响相同。}}$ 中污染质量的减少总和由$ S_{x_{km}}  \left(x_{k {0}}^{P}-x_{k}^{P}\right)$或（$S_{x_{km}}  \left(\epsilon_{k x^{ P}}+x_{k {0}}^{P}-x_{k}^{P}\right) $）表示，而不是$ S_{x_{km}}  \epsilon_{k x^{ P}}$ 。并且由于$b$取最小值，$x_{k}^{P}$也应该尽量减小到最小值，即$\sum_{i=1}^{n} \lambda_{i} x_{k i}^{ P}$，此时$x_{k {0}}^{P} \geq x_{k}^{P}$。根据目标函数可知，在第6个约束的左边需要最大化，而由第1个约束可知，$x_{k}^{P}$最小时，$\epsilon_{k x^{ P}}$为0。因此，当第6个约束中没有$\epsilon_{k x^{ P}}$时，$\epsilon_{k x^{ P}}$最优值为0，$x_{k}^{P}$为根据第1个约束求解的最小值。而当第6个约束中有$\epsilon_{k x^{ P}}$时，$\epsilon_{k x^{ P}}-x_{k}^{P</p>
+<p>因此，上式等价于：
+$$
+\begin{array}{ll}
+ B_{2}= &amp; \underset {\lambda, \epsilon,  b_{m}, x^{ P}} {\min} \frac{1}{M} \sum_{m=1}^{M} b_{m} \
+&amp;\sum_{i=1}^{n} \lambda_{i} x_{k i}^{ P}+\epsilon_{k x^{ P}}=x_{k}^{P}, \quad k=1, \ldots, K_1\
+&amp;\sum_{i=1}^{n} \lambda_{i} x_{k i}^{N P}+\epsilon_{k x^{N P}}=x_{k0}^{N P}, \quad k=K_{1}+1, \ldots, K\
+&amp; \sum_{i=1}^{n} \lambda_{i} y_{l i}^{P}-\epsilon_{l y^{P} } =y_{l {0}}^{P}, \quad l=1, \ldots, L_{1} \
+&amp;\sum_{i=1}^{n}\lambda_{i}y_{l i}^{N P}-\epsilon_{l y^{N P}}=y_{l {0}}^{N P}, \quad l=L_{1}+1, \ldots,L \
+&amp;\sum_{i=1}^{n} \lambda_{i} b_{m i}+\epsilon_{m b}=b_{m}, \quad m=1, \ldots M \
+&amp;\sum_{k=1}^{K_{1}} S_{x_{km}}  \left(\epsilon_{k x^{ P}}+x_{k {0}}^{P}-x_{k}^{P}\right)  +\sum_{l=1}^{L_{1}} S_{y_{lm}} \epsilon_{l y^{P} }=(b_{m {0}}-b_{m}), \quad m = 1, \ldots, M \
+&amp; \lambda_{i}  \geq 0 \quad i= 1, \ldots, N\ 
+\end{array}     \tag{9.15}
+$$</p>
+<p>在第二种情形的基础上，通过改变不包含污染物质的投入，我们可以得到第三种情形：</p>
+<p><strong>第三种情形不包含污染物质的投入改变，则最小化的非期望产出与第二种情形中的最小化的非期望产出之间的比值衡量不包含污染物质的投入的分配效率。</strong></p>
+<p>在规模报酬不变的条件下，第三种情形下的技术效率可以通过下式求解：
+$$
+\begin{array}{ll}
+ B_{3}= &amp; \underset {\lambda, \epsilon,  b_{m}, x  } {\min} \frac{1}{M} \sum_{m=1}^{M} b_{m} \
+&amp;\sum_{i=1}^{n} \lambda_{i} x_{k i}^{ P}+\epsilon_{k x^{ P}}=x_{k}^{P}, \quad k=1, \ldots, K_1\
+&amp;\sum_{i=1}^{n} \lambda_{i} x_{k i}^{N P}+\epsilon_{k x^{N P}}=x_{k}^{N P}, \quad k=K_{1}+1, \ldots, K\
+&amp; \sum_{i=1}^{n} \lambda_{i} y_{l i}^{P}-\epsilon_{l y^{P} } =y_{l {0}}^{P}, \quad l=1, \ldots, L_{1} \
+&amp;\sum_{i=1}^{n}\lambda_{i}y_{l i}^{N P}-\epsilon_{l y^{N P}}=y_{l {0}}^{N P}, \quad l=L_{1}+1, \ldots,L \
+&amp;\sum_{i=1}^{n} \lambda_{i} b_{m i}+\epsilon_{m b}=b_{m}, \quad m=1, \ldots M \
+&amp;\sum_{k=1}^{K_{1}} S_{x_{km}} \left(x_{k {0}}^{P}-x_{k}^{P}\right)+\sum_{l=1}^{L_{1}} S_{y_{lm}} \epsilon_{l y^{P} }=(b_{m {0}}-b_{m}), \quad m = 1, \ldots, M \
+&amp; \lambda_{i}  \geq 0 \quad i= 1, \ldots, N\ 
+\end{array}     \tag{9.16}
+$$</p>
+<p>在第三种情形的基础上，通过改变包含污染物质的期望产出后，我们可以得到第四种情形：</p>
+<p><strong>第四种情形包含污染物质的期望产出改变，则最小化的非期望产出与第三种情形中的最小化的非期望产出之间的比值衡量包含污染物质的期望产出的分配效率。</strong></p>
+<p>在规模报酬不变的条件下，第四种情形的技术效率可以通过下式求解：
+$$
+\begin{array}{ll}
+ B_{4}= &amp; \underset {\lambda, \epsilon,  b_{m}, x ,y^{P}} {\min} \frac{1}{M} \sum_{m=1}^{M} b_{m} \
+&amp;\sum_{i=1}^{n} \lambda_{i} x_{k i}^{ P}+\epsilon_{k x^{ P}}=x_{k}^{P}, \quad k=1, \ldots, K_1\
+&amp;\sum_{i=1}^{n} \lambda_{i} x_{k i}^{N P}+\epsilon_{k x^{N P}}=x_{k}^{N P}, \quad k=K_{1}+1, \ldots, K\
+&amp; \sum_{i=1}^{n} \lambda_{i} y_{l i}^{P}-\epsilon_{l y^{P} } =y_{l }^{P}, \quad l=1, \ldots, L_{1} \
+&amp;\sum_{i=1}^{n}\lambda_{i}y_{l i}^{N P}-\epsilon_{l y^{N P}}=y_{l {0}}^{N P}, \quad l=L_{1}+1, \ldots,L \
+&amp;\sum_{i=1}^{n} \lambda_{i} b_{m i}+\epsilon_{m b}=b_{m}, \quad m=1, \ldots M \
+&amp;\sum_{k=1}^{K_{1}} S_{x_{km}}  \left(x_{k {0}}^{P}-x_{k}^{P}\right)+\sum_{l=1}^{L_{1}} S_{y_{lm}} \left(y_{l}^{P}-y_{l {0}}^{P}\right)=(b_{m {0}}-b_{m}), \quad m = +1, \ldots, M \
+&amp; \lambda_{i}  \geq 0 \quad i= 1, \ldots, N\ 
+\end{array}     \tag{9.17}
+$$
+同理，由于包含污染质量的期望产出是可变的，期望产出$\boldsymbol{S}<em _boldsymbol_y="\boldsymbol{y">{\boldsymbol{y}} \epsilon</em>$。}}$ 中污染质量的增加总和由$S_{y_{lm}} \left(y_{l}^{P}-y_{l {0}}^{P}\right)$表示，而不是$S_{y_{lm}} \epsilon_{l y^{P} }$ 。并且由于$b$取最小值，$y_{l}^{P}$也应该尽量增加到最大值，即$\sum_{i=1}^{n} \lambda_{i} y_{l i}^{P}$，此时$y_{l}^{P} \geq y_{l {0}}^{P</p>
+<p>在第四种情形的基础上，改变不包含污染物质的期望产出后，可以得到第五种情形：</p>
+<p><strong>第五种情形不包含污染物质的期望产出改变，则最小化的非期望产出与第一种情形中的最小化的非期望产出之间的比值衡量不包含污染物质的期望产出的分配效率。第五种情形中的到的最小化的非期望产出与第一种情形中的最小化的期望产出之间的比值衡量整体效率。</strong></p>
+<p>在规模报酬不变下的第（5）种情况下的技术效率可以通过下式求解：
+$$
+\begin{array}{ll}
+ B_{5}= &amp; \underset {\lambda, \epsilon,  b_{m}, x ,y} {\min} \frac{1}{M} \sum_{m=1}^{M} b_{m} \
+&amp;\sum_{i=1}^{n} \lambda_{i} x_{k i}^{ P}+\epsilon_{k x^{ P}}=x_{k}^{P}, \quad k=1, \ldots, K_1\
+&amp;\sum_{i=1}^{n} \lambda_{i} x_{k i}^{N P}+\epsilon_{k x^{N P}}=x_{k}^{N P}, \quad k=K_{1}+1, \ldots, K\
+&amp; \sum_{i=1}^{n} \lambda_{i} y_{l i}^{P}-\epsilon_{l y^{P} } =y_{l }^{P}, \quad l=1, \ldots, L_{1} \
+&amp;\sum_{i=1}^{n}\lambda_{i}y_{l i}^{N P}-\epsilon_{l y^{N P}}=y_{l }^{N P}, \quad l=L_{1}+1, \ldots,L \
+&amp;\sum_{i=1}^{n} \lambda_{i} b_{m i}+\epsilon_{m b}=b_{m}, \quad m=1, \ldots M \
+&amp;\sum_{k=1}^{K_{1}} S_{x_{km}}  \left(x_{k {0}}^{P}-x_{k}^{P}\right)+\sum_{l=1}^{L_{1}} S_{y_{lm}} \left(y_{l}^{P}-y_{l {0}}^{P}\right)=(b_{m {0}}-b_{m}), \quad m = 1, \ldots, M \
+&amp; \lambda_{i}  \geq 0 \quad i= 1, \ldots, N\ 
+\end{array}     \tag{9.18}
+$$
+上式等价为：
+$$
+\begin{array}{ll}
+ B_{5}= &amp; \underset {\lambda, \epsilon,  b_{m}, x ,y} {\min} \frac{1}{M} \sum_{m=1}^{M} b_{m} \
+&amp;\sum_{i=1}^{n} \lambda_{i} x_{k i}^{ P}+\epsilon_{k x^{ P}}=x_{k}^{P}, \quad k=1, \ldots, K_1\
+&amp;\sum_{i=1}^{n} \lambda_{i} x_{k i}^{N P}+\epsilon_{k x^{N P}}=x_{k}^{N P}, \quad k=K_{1}+1, \ldots, K\
+&amp; \sum_{i=1}^{n} \lambda_{i} y_{l i}^{P}-\epsilon_{l y^{P} } =y_{l }^{P}, \quad l=1, \ldots, L_{1} \
+&amp;\sum_{i=1}^{n}\lambda_{i}y_{l i}^{N P}-\epsilon_{l y^{N P}}=y_{l }^{N P}, \quad l=L_{1}+1, \ldots,L \
+&amp;\sum_{i=1}^{n} \lambda_{i} b_{m i}+\epsilon_{m b}=b_{m}, \quad m=1, \ldots M \
+&amp;\sum_{k=1}^{K_{1}} S_{x_{km}}  \left(\epsilon_{k x^{ P}}+x_{k {0}}^{P}-x_{k}^{P}\right)+\sum_{l=1}^{L_{1}} S_{y_{lm}} \left(\epsilon_{l y^{P} }+y_{l}^{P}-y_{l {0}}^{P}\right)=(b_{m {0}}-b_{m}), \quad m = 1, \ldots, M \
+&amp; \lambda_{i}  \geq 0 \quad i= 1, \ldots, N\ 
+\end{array}     \tag{9.19}
+$$
+相关的减少非期望产出的效率可按以下方式衡量：
+$$
+整体效率(OE)= \frac {B_5}{\frac{1}{M} \sum_{m=1}^{M} b_{m0}}     \tag{9.20}
+$$</p>
+<p>$$
+非期望产出方向的技术效率(TE)= \frac {B_1}{\frac{1}{M} \sum_{m=1}^{M} b_{m0}}     \tag{9.21}
+$$</p>
+<p>$$
+包含污染物质的投入配置效率(PIAE)=\frac {B_2}{B_1}     \tag{9.22}
+$$</p>
+<p>$$
+不包含污染物质的投入配置效率(NPIAE)=\frac {B_3}{B_2}     \tag{9.23}
+$$</p>
+<p>$$
+包含污染物质的期望产出配置效率(POAE)=\frac {B_4}{B_3}     \tag{9.24}
+$$</p>
+<p>$$
+不包含污染物质的期望产出配置效率(NPOAE)=\frac {B_5}{B_4}     \tag{9.25}
+$$</p>
+<p>整体效率可以被分解为非期望产出方向上的技术效率、包含污染物质的投入配置效率、不包含污染物质的投入配置效率、包含污染物质的期望产出配置效率和不包含污染物质的期望产出配置效率：
+$$
+OE=TE<em>PIAE</em>NPIAE<em>POAE</em>NPOAE     \tag{9.26}
+$$
+当设定规模报酬可变假设下的生产技术时，只需要在约束条件中加上$\sum_{i=1}^{n} \lambda_{i}=1$。除了将目标函数设定为最小化非期望产出的做法外，还可以将目标函数设定为最大化期望产出和非期望产出的比值，这种做法见Hampf and Rødseth [7]。</p>
+<p>需要注意的是，当$\boldsymbol{S}<em _boldsymbol_y="\boldsymbol{y">{\boldsymbol{y}}$为0时，表示期望产出中不包含污染物质。比如，火力发电中，投入是含硫的煤炭，期望产出是电力，非期望产出是$SO_2$。期望产出电力中不包含硫，此时$\boldsymbol{S}</em>=0$。}</p>
+<p>上述第四种情况用下式求解：
+$$
+\begin{array}{ll}
+ B_{4}^\prime= &amp; \underset {\lambda, \epsilon,  b_{m}, x ,y^{P}} {\min} \frac{1}{M} \sum_{m=1}^{M} b_{m} \
+&amp;\sum_{i=1}^{n} \lambda_{i} x_{k i}^{ P}+\epsilon_{k x^{ P}}=x_{k}^{P}, \quad k=1, \ldots, K_1\
+&amp;\sum_{i=1}^{n} \lambda_{i} x_{k i}^{N P}+\epsilon_{k x^{N P}}=x_{k}^{N P}, \quad k=K_{1}+1, \ldots, K\
+&amp; \sum_{i=1}^{n} \lambda_{i} y_{l i}^{P}-\epsilon_{l y^{P} } =y_{l }^{P}, \quad l=1, \ldots, L_{1} \
+&amp;\sum_{i=1}^{n}\lambda_{i}y_{l i}^{N P}-\epsilon_{l y^{N P}}=y_{l {0}}^{N P}, \quad l=L_{1}+1, \ldots,L \
+&amp;\sum_{i=1}^{n} \lambda_{i} b_{m i}+\epsilon_{m b}=b_{m}, \quad m=1, \ldots M \
+&amp;\sum_{k=1}^{K_{1}} S_{x_{km}}  \left(x_{k {0}}^{P}-x_{k}^{P}\right)=(b_{m {0}}-b_{m}), \quad m = 1, \ldots, M \
+&amp; \lambda_{i}  \geq 0 \quad i= 1, \ldots, N\ 
+\end{array}     \tag{9.27}
+$$
+上述第五种情况用下式求解：
+$$
+\begin{array}{ll}
+ B_{5}^\prime= &amp; \underset {\lambda, \epsilon,  b_{m}, x ,y} {\min} \frac{1}{M} \sum_{m=1}^{M} b_{m} \
+&amp;\sum_{i=1}^{n} \lambda_{i} x_{k i}^{ P}+\epsilon_{k x^{ P}}=x_{k}^{P}, \quad k=1, \ldots, K_1\
+&amp;\sum_{i=1}^{n} \lambda_{i} x_{k i}^{N P}+\epsilon_{k x^{N P}}=x_{k}^{N P}, \quad k=K_{1}+1, \ldots, K\
+&amp; \sum_{i=1}^{n} \lambda_{i} y_{l i}^{P}-\epsilon_{l y^{P} } =y_{l }^{P}, \quad l=1, \ldots, L_{1} \
+&amp;\sum_{i=1}^{n}\lambda_{i}y_{l i}^{N P}-\epsilon_{l y^{N P}}=y_{l }^{N P}, \quad l=L_{1}+1, \ldots,L \
+&amp;\sum_{i=1}^{n} \lambda_{i} b_{m i}+\epsilon_{m b}=b_{m}, \quad m=1, \ldots M \
+&amp;\sum_{k=1}^{K_{1}} S_{x_{km}}  \left(x_{k {0}}^{P}-x_{k}^{P}\right)=(b_{m {0}}-b_{m}), \quad m = 1, \ldots, M \
+&amp; \lambda_{i}  \geq 0 \quad i= 1, \ldots, N\ 
+\end{array}     \tag{9.28}
+$$</p>
+<p>易知，$B_{4}^\prime$和$B_{5}^\prime$与$B_{4}$和$B_{5}$之间的区别是$\boldsymbol{S}_{\boldsymbol{y}}$是否为$\boldsymbol{0}$，此时，仍然可以通过分别放松对包含污染的期望产出和不包含污染的期望产出来扩大可行域，从而获得更优的目标函数。</p>
+<h3 id="942">9.4.2 投入方向上的技术效率<a class="headerlink" href="#942" title="Permanent link">&para;</a></h3>
+<p>对于每个DMU，我们也可以假设目标是最小化包含污染物质的投入，从而分析包含污染物质的投入方向上的技术效率。根据非期望产出、期望产出或者投入变动与否，我们可以得到各种情况下的投入方向上的技术效率。根据9.4.1中相同的思路，我们可以假定其他投入、期望产出和非期望产出不变，使用最小化的包含污染物质的投入与实际包含污染物质的投入之间的比值衡量投入方向上的技术效率。在规模报酬不变下的该种情况下的技术效率可以通过下式求解：
+$$
+\begin{array}{ll}
+ X_{1}= &amp; \underset {\lambda, \epsilon,  b_{m}} {\min} \frac{1}{K} \sum_{k=1}^{K} x_{k} \
+&amp;\sum_{i=1}^{n} \lambda_{i} x_{k i}^{ P}+\epsilon_{k x^{ P}}=x_{k}^{P}, \quad k=1, \ldots, K_1\
+&amp;\sum_{i=1}^{n} \lambda_{i} x_{k i}^{N P}+\epsilon_{k x^{N P}}=x_{k}^{N P}, \quad k=K_{1}+1, \ldots, K\
+&amp; \sum_{i=1}^{n} \lambda_{i} y_{l i}^{P}-\epsilon_{l y^{P} } =y_{l {0}}^{P}, \quad l=1, \ldots, L_{1} \
+&amp;\sum_{i=1}^{n}\lambda_{i}y_{l i}^{N P}-\epsilon_{l y^{N P}}=y_{l {0}}^{N P}, \quad l=L_{1}+1, \ldots,L \
+&amp;\sum_{i=1}^{n} \lambda_{i} b_{m i}+\epsilon_{m b}=b_{m0}, \quad m=1, \ldots M \
+&amp;\sum_{k=1}^{K_{1}} S_{x_{km}}  \left(x_{k {0}}^{P}-x_{k}^{P}\right)+\sum_{l=1}^{L_{1}} S_{y_{lm}} \epsilon_{l y^{P} }=\epsilon_{m b}, \quad m =1, \ldots, M \
+&amp; \lambda_{i}  \geq 0 \quad i= 1, \ldots, N\ 
+\end{array}     \tag{9.29}
+$$
+相关的减少投入的效率可按以下方式衡量：
+$$
+投入方向的技术效率(TE)= \frac {X_{1k}}{\frac{1}{K} \sum_{k=1}^{K} x_{k0}}     \tag{9.30}
+$$
+也可以进一步调整不包含污染物质的投入、期望产出和非期望产出，以进一步衡量分配效率。</p>
+<h3 id="943">9.4.3 期望产出方向上的技术效率<a class="headerlink" href="#943" title="Permanent link">&para;</a></h3>
+<p>对于每个DMU，我们也可以假设目标是最小化期望产出，从而分析期望产出方向上的技术效率。根据非期望产出或者投入变动与否，我们可以得到各种情况下的期望产出方向上的技术效率。根据9.4.1中相同的思路，我们可以假定其他投入和非期望产出不变，使用最大化的期望产出与实际期望产出之间的比值衡量期望产出方向上的技术效率。在规模报酬不变下的该种情况下的技术效率可以通过下式求解：
+$$
+\begin{array}{ll}
+ Y_{1}= &amp; \underset {\lambda, \epsilon,  b_{m}} {\max} \frac{1}{L} \sum_{l=1}^{L} y_{l} \
+&amp;\sum_{i=1}^{n} \lambda_{i} x_{k i}^{ P}+\epsilon_{k x^{ P}}=x_{k0}^{P}, \quad k=1, \ldots, K_1\
+&amp;\sum_{i=1}^{n} \lambda_{i} x_{k i}^{N P}+\epsilon_{k x^{N P}}=x_{k0}^{N P}, \quad k=K_{1}+1, \ldots, K\
+&amp; \sum_{i=1}^{n} \lambda_{i} y_{l i}^{P}-\epsilon_{l y^{P} } =y_{l {}}^{P}, \quad l=1, \ldots, L_{1} \
+&amp;\sum_{i=1}^{n}\lambda_{i}y_{l i}^{N P}-\epsilon_{l y^{N P}}=y_{l {}}^{N P}, \quad l=L_{1}+1, \ldots,L \
+&amp;\sum_{i=1}^{n} \lambda_{i} b_{m i}+\epsilon_{m b}=b_{m0}, \quad m=1, \ldots M \
+&amp;\sum_{k=1}^{K_{1}} S_{x_{km}} \epsilon_{k x^{ P}}+\sum_{l=1}^{L_{1}} S_{y_{lm}} \left(y_{l}^{P}-y_{l {0}}^{P}\right)=\epsilon_{m b}, \quad m = 1, \ldots, M \
+&amp; \lambda_{i}  \geq 0 \quad i= 1, \ldots, N\ 
+\end{array}     \tag{9.31}
+$$
+相关的增加期望产出的效率可按以下方式衡量：
+$$
+期望产出方向的技术效率(TE)= \frac {Y_{1l}}{\frac{1}{L} \sum_{l=1}^{L} y_{l0}}     \tag{9.32}
+$$
+也可以进一步调整不包含污染物质的投入和非期望产出，以进一步衡量其他的分配效率。</p>
+<h3 id="944">9.4.4 混合方向上的技术效率<a class="headerlink" href="#944" title="Permanent link">&para;</a></h3>
+<p>可以像SBM模型那样，将目标函数设置为：
+$$
+\min \quad \rho = \frac{
+  \frac{1}{K+M} \left( \sum_{k=1}^{K} \frac{x_k}{x_{k0}} + \sum_{m=1}^{M} \frac{b_m}{b_{m0}} \right)
+}{
+  \frac{1}{L} \sum_{l=1}^{L} \frac{y_l}{y_{l0}}
+} \tag{9.33}
+$$
+约束条件为：
+$$
+\begin{array}{ll}
+&amp;\sum_{i=1}^{n} \lambda_{i} x_{k i}^{ P}+\epsilon_{k x^{ P}}=x_{k}^{P}, \quad k=1, \ldots, K_1\
+&amp;\sum_{i=1}^{n} \lambda_{i} x_{k i}^{N P}+\epsilon_{k x^{N P}}=x_{k}^{N P}, \quad k=K_{1}+1, \ldots, K\
+&amp; \sum_{i=1}^{n} \lambda_{i} y_{l i}^{P}-\epsilon_{l y^{P} } =y_{l {}}^{P}, \quad l=1, \ldots, L_{1} \
+&amp;\sum_{i=1}^{n}\lambda_{i}y_{l i}^{N P}-\epsilon_{l y^{N P}}=y_{l {}}^{N P}, \quad l=L_{1}+1, \ldots,L \
+&amp;\sum_{i=1}^{n} \lambda_{i} b_{m i}+\epsilon_{m b}=b_{m}, \quad m=1, \ldots M \
+&amp;\sum_{k=1}^{K_{1}} S_{x_{km}} \left(x_{k {0}}^{P}-x_{k}^{P}\right)+\sum_{l=1}^{L_{1}} S_{y_{lm}} \left(y_{l}^{P}-y_{l {0}}^{P}\right)=(b_{m {0}}-b_{m}), \quad m = 1, \ldots, M \
+&amp; \lambda_{i}  \geq 0 \quad i= 1, \ldots, N\ 
+\end{array}     \tag{9.34}
+$$</p>
+<p>需要说明的是，物质平衡条件模型并不是不存在问题。在实际应用中，$\boldsymbol{S}<em _boldsymbol_y="\boldsymbol{y">{\boldsymbol{x}}$和$\boldsymbol{S}</em>}}$是使用观测数据得到的，如，在Wang, Wei [16]中，排放（即产生）的 CO2 排放量除以每个省火电行业部门消耗的能源来计算 CO2 排放因子，即上述模型中的$\boldsymbol{S<em _boldsymbol_x="\boldsymbol{x">{\boldsymbol{x}}$。而$\boldsymbol{S}</em>}}$和$\boldsymbol{S<em _boldsymbol_x="\boldsymbol{x">{\boldsymbol{y}}$可以生产技术，生产技术又可以影响观测值。因此，这种使用观测值确定$\boldsymbol{S}</em>$的方法存在一定的缺陷。}}$和$\boldsymbol{S}_{\boldsymbol{y}</p>
+<h2 id="95">9.5 物质平衡条件的发展<a class="headerlink" href="#95" title="Permanent link">&para;</a></h2>
+<p>Hampf and Rødseth [7]认为，上述物质平衡条件没有考虑存在减排活动的情况。现实中，可以通过减排活动来降低非期望产出的排放。对于一些 DMU 而言，使用额外资源来清理其不受控制的排放可能比用昂贵的低污染投入替代廉价的高污染投入成本更低。比如，电厂中可以安装脱硫除尘设备来降低$SO_2$的排放。在养猪厂的例子中，猪育成的主要投入是仔猪和饲料，而资本和劳动力是次要投入。仔猪和饲料为猪的育成过程提供氮流入，但只有约 36% 的流入保留在可销售的肉中。残留的氮是非期望产出，通常包含在粪便中。粪便副产品可以收集并使用劳动力和资本运输到其他农场用作肥料。因此，粪便运输后农场剩余的氮是其受控的氮副产品。考虑非期望产出的减排时，物质平衡可以定义为:
+$$
+\boldsymbol{S_x x}-\boldsymbol{S_y y}=\boldsymbol{b}+\boldsymbol{a}     \tag{9.35}
+$$
+其中 $\boldsymbol{a}$是非期望产出减排量的向量；如果没有减少非期望产出的活动，则$\boldsymbol{a}=0$，如果进行了减少非期望产出的活动，则$\boldsymbol{a}&gt;0$。</p>
+<p>我们使用以下方式对生产技术进行刻画。考虑一个生产过程，其中 $ \mathrm{K} $ 个投入 $ \mathbf{x} \in {R}<em _="+">{+}^{K} $ 被用 来生产 $ \mathrm{L} $ 个期望产出 $ \mathbf{y} \in {R}</em>}^{L} $ 。我们进一步假设，$ \mathrm{K} $ 个投入可以分成 $ K_{1} $ 个包含污染物质的投入$ \left(x^{P}\right) $和 $ K_{2}=K-K_{1} $ 个不包含污染物质的投入$ \left(x^{NP}\right) $，因此 $ \mathbf{x}=\left[\begin{array}{l}\mathbf{x}^{\mathrm{P}} \ \mathbf{x}^{\mathrm{NP}}\end{array}\right] $ 。同样, 我们假设前 $ L_1 $个期望产出包含污染物质$\left(y^{P}\right)$ ，后$L_2=L-L_1$个期望产出不包含污染物质 $ \left(y^{N P}\right) $ 。包含污染物质的投入的消耗会导致生产出 $ \mathrm{M} $ 个非期望产出$ \mathbf{b} \in {R<em m="m">{+}^{M} $ 。另外，假定前$M_1$个非期望产出是可控的，即可以进行减排操作，用 $ a</em> $是所有技术上可行的投入-产出组合的集合，其定义为：
+$$
+T={(\boldsymbol{x}, \boldsymbol{y}, \boldsymbol{a},\boldsymbol{b}): \boldsymbol{x} \text { 能生产 }(\boldsymbol{y}, \boldsymbol{a},\boldsymbol{b})}     \tag{9.36}
+$$
+规模报酬不变下的物质平衡模型（MB）的相应非参数估计为：
+$$
+\begin{array}{ll}
+\hat{T}}, \mathrm{m}=1, \ldots, M_{1} $ 来表示污 染物的减排量。这个生产过程的技术集$ \mathrm{T<em _boldsymbol_x="\boldsymbol{x">{CRS}^{M B}=  { &amp; (\boldsymbol{x}, \boldsymbol{y}, \boldsymbol{b}):  \<br />
+ &amp; \boldsymbol{x}=\boldsymbol{X} \boldsymbol{\lambda}+\epsilon</em>, \
+ &amp; \boldsymbol{y}=\boldsymbol{Y} \boldsymbol{\lambda}-\epsilon_{\boldsymbol{y}}, \ 
+ &amp; \boldsymbol{b}=\boldsymbol{B} \boldsymbol{\lambda}+\epsilon_{\boldsymbol{b}}, \
+ &amp; \boldsymbol{a}=\boldsymbol{A} \boldsymbol{\lambda}-\epsilon_{\boldsymbol{a}}, \
+ &amp; \boldsymbol{S}}<em _boldsymbol_x="\boldsymbol{x">{\boldsymbol{x}} \epsilon</em>}}+\boldsymbol{S<em _boldsymbol_y="\boldsymbol{y">{\boldsymbol{y}}  \epsilon</em>, \ 
+ &amp; \epsilon_{\boldsymbol{x}},\epsilon_{\boldsymbol{y}} ,\epsilon_{\boldsymbol{b}},\epsilon_{\boldsymbol{a}},\boldsymbol{\lambda} \geqq \mathbf{0}                &amp;}
+ \end{array}     \tag{9.37}
+$$
+可变规模报酬下的物质平衡模型（MB）的相应非参数估计为：
+$$
+\begin{array}{ll}
+\hat{T}}}=\epsilon_{\boldsymbol{b}}-\epsilon_{\boldsymbol{a}<em _boldsymbol_x="\boldsymbol{x">{VRS}^{M B}=  { &amp; (\boldsymbol{x}, \boldsymbol{y}, \boldsymbol{b}):  \<br />
+ &amp; \boldsymbol{x}=\boldsymbol{X} \boldsymbol{\lambda}+\epsilon</em>, \
+ &amp; \boldsymbol{y}=\boldsymbol{Y} \boldsymbol{\lambda}-\epsilon_{\boldsymbol{y}}, \ 
+ &amp; \boldsymbol{b}=\boldsymbol{B} \boldsymbol{\lambda}+\epsilon_{\boldsymbol{b}}, \
+  &amp; \boldsymbol{a}=\boldsymbol{A} \boldsymbol{\lambda}-\epsilon_{\boldsymbol{a}}, \
+ &amp; \boldsymbol{S}}<em _boldsymbol_x="\boldsymbol{x">{\boldsymbol{x}} \epsilon</em>}}+\boldsymbol{S<em _boldsymbol_y="\boldsymbol{y">{\boldsymbol{y}}  \epsilon</em>, \ 
+ &amp;  \mathbf{1}^{T} \boldsymbol{\lambda}=1, \
+ &amp; \boldsymbol{\lambda} \geqq \mathbf{0}                &amp;}
+ \end{array}     \tag{9.38}
+$$
+因此，当指定的方向向量满足 $ \boldsymbol{S}}}=\epsilon_{\boldsymbol{b}}-\epsilon_{\boldsymbol{a}<em _boldsymbol_x="\boldsymbol{x">{\boldsymbol{x}} \epsilon</em>}}+\boldsymbol{S<em _boldsymbol_y="\boldsymbol{y">{\boldsymbol{y}}  \epsilon</em>}}=\epsilon_{\boldsymbol{b}}-\epsilon_{\boldsymbol{a}}$时，物质平衡条件下的环境生产技术被刻画出来。例如：当假定不存在减排（$\epsilon_{\boldsymbol{a}}=0$）且$\epsilon_{\boldsymbol{b}}=0$时，上述模型估计的是调整投入和期望产出的结构的技术。本质上，物质平衡下的生产技术只是在联合生产技术中添加$ \boldsymbol{S<em _boldsymbol_x="\boldsymbol{x">{\boldsymbol{x}} \epsilon</em>}}+\boldsymbol{S<em _boldsymbol_y="\boldsymbol{y">{\boldsymbol{y}}  \epsilon</em>}}=\epsilon_{\boldsymbol{b}}-\epsilon_{\boldsymbol{a}}$的约束条件。只是在加上$ \boldsymbol{S<em _boldsymbol_x="\boldsymbol{x">{\boldsymbol{x}} \epsilon</em>}}+\boldsymbol{S<em _boldsymbol_y="\boldsymbol{y">{\boldsymbol{y}}  \epsilon</em>$的约束条件后，还需要将联合生产技术中的G-可处置性变为弱G可处置性。}}=\epsilon_{\boldsymbol{b}}-\epsilon_{\boldsymbol{a}</p>
+<p>在规模报酬不变下的该种情况下的技术效率可以通过下式求解：
+$$
+\begin{array}{ll}
+ B_{1}= &amp; \underset {\lambda, \epsilon, b_{m}} {\min} \frac{1}{M} \sum_{m=1}^{M} b_{m} \
+&amp;\sum_{i=1}^{n} \lambda_{i} x_{k i}^{ P}+\epsilon_{k x^{ P}}=x_{k0}^{P}, \quad k=1, \ldots, K_1\
+&amp;\sum_{i=1}^{n} \lambda_{i} x_{k i}^{N P}+\epsilon_{k x^{N P}}=x_{k0}^{N P}, \quad k=K_{1}+1, \ldots, K\
+&amp; \sum_{i=1}^{n} \lambda_{i} y_{l i}^{P}-\epsilon_{l y^{P} } =y_{l {0}}^{P}, \quad l=1, \ldots, L_{1} \
+&amp;\sum_{i=1}^{n}\lambda_{i}y_{l i}^{N P}-\epsilon_{l y^{N P}}=y_{l {0}}^{N P}, \quad l=L_{1}+1, \ldots,L \
+ &amp;\sum_{i=1}^{n} \lambda_{i} b_{m i}+\epsilon_{m b}=b_{m}, \quad m=1, \ldots M \
+&amp;\sum_{i=1}^{n} \lambda_{i} a_{m j}-\epsilon_{m a }=a_{m {0}}, \quad m=1, \ldots, M_{1} \
+&amp; \sum_{k=1}^{K_{1}} S_{x_{km}} \epsilon_{k x^{ P}} +\sum_{l=1}^{L_{1}} S_{y_{lm}} \epsilon_{l y^{P} }=(b_{m{0}}-b_{m})-\epsilon_{m a },  \quad m= 1, \ldots, M_1 \
+&amp;\sum_{k=1}^{K_{1}} S_{x_{km}} \epsilon_{k x^{ P}}+\sum_{l=1}^{L_{1}} S_{y_{lm}} \epsilon_{l y^{P} }=(b_{m {0}}-b_{m}), \quad m = M_{1}+1, \ldots, M \
+&amp; \lambda_{i}  \geq 0 \quad i= 1, \ldots, N\ 
+\end{array}     \tag{9.39}
+$$</p>
+<h2 id="96-deabook">9.6 <code>deabook</code> 调用代码<a class="headerlink" href="#96-deabook" title="Permanent link">&para;</a></h2>
+<p>本章案例涉及的物质平衡分解模型通过 <code>deabook</code> 包的 <code>MB</code> 模块实现。与其他模块不同，<code>MB.optimize()</code> 返回元组 <code>(data3, info)</code> 而非单独 DataFrame。</p>
+<h3 id="961">9.6.1 导入<a class="headerlink" href="#961" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">deabook</span><span class="w"> </span><span class="kn">import</span> <span class="n">MB</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">deabook.constant</span><span class="w"> </span><span class="kn">import</span> <span class="n">RTS_CRS</span><span class="p">,</span> <span class="n">RTS_VRS1</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="962">9.6.2 参数说明<a class="headerlink" href="#962" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>类型</th>
+<th>可选值</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>data</code></td>
+<td>DataFrame</td>
+<td>—</td>
+<td>包含 K, L, F, E, CO2 列的数据</td>
+</tr>
+<tr>
+<td><code>sent</code></td>
+<td>str</td>
+<td><code>"K L+F=E:CO2"</code></td>
+<td><code>=</code> 左边 <code>+</code> 前：非污染投入（K, L）<br><code>=</code> 左边 <code>+</code> 后：污染投入（F）<br><code>=</code> 右边 <code>:</code> 前：期望产出（E）<br><code>:</code> 后：非期望产出（CO2）</td>
+</tr>
+<tr>
+<td></td>
+<td>str</td>
+<td><code>"K L+F=E+Y2:CO2"</code></td>
+<td>含污染产出 Y2 的情况</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>sx</code></td>
+<td>list[list]</td>
+<td><code>[[0, 0, sx]]</code></td>
+<td>投入端污染系数（per 非期望产出），长度等于总投入个数<br><code>0</code>：非污染投入（K, L）的系数<br><code>sx</code>：污染投入（F）的系数，<code>sx = CO2.sum() / F.sum()</code></td>
+</tr>
+<tr>
+<td><code>sy</code></td>
+<td>list[list]</td>
+<td><code>[[0]]</code></td>
+<td>产出端污染系数（per 非期望产出），长度等于总产出个数<br><code>0</code>：期望产出（E）的系数为 0，表示该期望产出不含污染物质</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>rts</code></td>
+<td>str</td>
+<td><code>RTS_CRS</code></td>
+<td>不变规模报酬</td>
+</tr>
+<tr>
+<td></td>
+<td>str</td>
+<td><code>RTS_VRS1</code></td>
+<td>可变规模报酬</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>level</code></td>
+<td>int</td>
+<td><code>1</code></td>
+<td>仅调整 b（非期望产出），得到 B1</td>
+</tr>
+<tr>
+<td></td>
+<td>int</td>
+<td><code>2</code></td>
+<td>在 B1 基础上加入 x_p（污染投入），得到 B2</td>
+</tr>
+<tr>
+<td></td>
+<td>int</td>
+<td><code>3</code></td>
+<td>在 B2 基础上加入 x_np（非污染投入），得到 B3</td>
+</tr>
+<tr>
+<td></td>
+<td>int</td>
+<td><code>4</code></td>
+<td>在 B3 基础上加入 y（产出），得到 B4</td>
+</tr>
+<tr>
+<td></td>
+<td>int</td>
+<td><code>5</code></td>
+<td>在 B4 基础上加入 y_np（非污染产出），得到 B5（完整分解）</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>email</code></td>
+<td>str</td>
+<td><code>OPT_LOCAL</code></td>
+<td>本地求解</td>
+</tr>
+<tr>
+<td></td>
+<td>str</td>
+<td>邮箱地址</td>
+<td>远程求解完成后发送通知</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>baseindex</code></td>
+<td>str</td>
+<td><code>None</code></td>
+<td>被评价 DMU 筛选条件，<code>None</code> 表示全部</td>
+</tr>
+<tr>
+<td></td>
+<td>str</td>
+<td><code>"year=[2017]"</code></td>
+<td>仅评价 2017 年 DMU</td>
+</tr>
+<tr>
+<td><code>refindex</code></td>
+<td>str</td>
+<td><code>None</code></td>
+<td>参考 DMU 筛选条件，<code>None</code> 表示全部</td>
+</tr>
+<tr>
+<td></td>
+<td>str</td>
+<td><code>"year=[2015,2016]"</code></td>
+<td>仅用 2015 和 2016 年 DMU 做参考</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>solver</code></td>
+<td>str</td>
+<td><code>"mosek"</code></td>
+<td>商业求解器</td>
+</tr>
+<tr>
+<td></td>
+<td>str</td>
+<td><code>"glpk"</code></td>
+<td>开源求解器</td>
+</tr>
+</tbody>
+</table>
+<h3 id="963">9.6.3 返回值<a class="headerlink" href="#963" title="Permanent link">&para;</a></h3>
+<p><code>optimize()</code> 返回<strong>元组</strong> <code>(data3, info)</code>。与其他模块不同，<code>MB</code> 的 DataFrame 返回列固定为 3 列，不随 <code>sent</code>/<code>rts</code>/<code>level</code> 参数变化；差异体现在 <code>best of Undesirable</code> 的<strong>语义</strong>（对应不同分解层级的 $B$ 值）。</p>
+<p>以下按分解层级（<code>level</code>）对称列出。</p>
+<h4 id="data3dataframe">data3（DataFrame）— 公共列<a class="headerlink" href="#data3dataframe" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>返回列</th>
+<th>类型</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>optimization_status</code></td>
+<td>str</td>
+<td>求解状态（<code>"optimal"</code> 表示成功）</td>
+</tr>
+<tr>
+<td><code>obj</code></td>
+<td>float</td>
+<td>目标函数值（即 $\min B$）</td>
+</tr>
+<tr>
+<td><code>best of Undesirable</code></td>
+<td>float</td>
+<td>最优非期望产出值（$B$ 的最佳水平值），含义随 <code>level</code> 变化（见下文）</td>
+</tr>
+</tbody>
+</table>
+<h4 id="infostr">info（str）<a class="headerlink" href="#infostr" title="Permanent link">&para;</a></h4>
+<p>指定 DMU 的 LP 模型详细信息。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># 查看 LP 模型详情</span>
+<span class="n">model</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">dmu</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">)</span>   <span class="c1"># 打印所有 DMU 的详细信息</span>
+<span class="n">model</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">dmu</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>        <span class="c1"># 打印第 1 个 DMU 的详细信息</span>
+</code></pre></div></td></tr></table></div>
+<h4 id="level1-b">level=1（仅调整非期望产出 b）<a class="headerlink" href="#level1-b" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>返回列</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>best of Undesirable</code></td>
+<td>$B_1$：仅最小化非期望产出 $b$，衡量<strong>技术效率（TE）</strong></td>
+</tr>
+</tbody>
+</table>
+<p>优化变量：仅 $b$。$B_1$ 反映在当前技术条件下，非期望产出的最小可达水平。</p>
+<h4 id="level2-x_p">level=2（加入污染投入 $x_p$）<a class="headerlink" href="#level2-x_p" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>返回列</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>best of Undesirable</code></td>
+<td>$B_2$：同时优化 $b$ 和 $x_p$，衡量技术效率 + <strong>污染投入配置效率（PIAE）</strong></td>
+</tr>
+</tbody>
+</table>
+<p>优化变量：$b$, $x_p$。$B_2 = B_1 \times \text{PIAE}$。</p>
+<h4 id="level3-x_np">level=3（加入非污染投入 $x_{np}$）<a class="headerlink" href="#level3-x_np" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>返回列</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>best of Undesirable</code></td>
+<td>$B_3$：同时优化 $b$, $x_p$, $x_{np}$，额外包含<strong>非污染投入配置效率（NPIAE）</strong></td>
+</tr>
+</tbody>
+</table>
+<p>优化变量：$b$, $x_p$, $x_{np}$。$B_3 = B_2 \times \text{NPIAE}$。</p>
+<h4 id="level4-y_p-y_np">level=4（加入产出 $y_p$ 或 $y_{np}$）<a class="headerlink" href="#level4-y_p-y_np" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>返回列</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>best of Undesirable</code></td>
+<td>$B_4$：同时优化 $b$, $x_p$, $x_{np}$, $y$（污染产出 $y_p$ 优先，无 $y_p$ 则用 $y_{np}$），额外包含<strong>产出配置效率（NPOAE）</strong></td>
+</tr>
+</tbody>
+</table>
+<p>优化变量：$b$, $x_p$, $x_{np}$, $y_p$（或 $y_{np}$）。$B_4 = B_3 \times \text{NPOAE}$。</p>
+<h4 id="level5">level=5（完整分解）<a class="headerlink" href="#level5" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>返回列</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>best of Undesirable</code></td>
+<td>$B_5$：同时优化所有变量（$b$, $x_p$, $x_{np}$, $y_p$, $y_{np}$），得到<strong>完整物质平衡分解</strong></td>
+</tr>
+</tbody>
+</table>
+<p>优化变量：$b$, $x_p$, $x_{np}$, $y_p$, $y_{np}$。$B_5 = B_4 \times \text{OE}<em np="np">{np}$（若数据不含非污染产出 $y</em>$，则 $B_5 = B_4$）。</p>
+<h4 id="5">5 个分解层级汇总<a class="headerlink" href="#5" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>level</th>
+<th>优化变量</th>
+<th>$B$ 值</th>
+<th>对应效率指标</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>$b$</td>
+<td>$B_1$</td>
+<td>技术效率 TE = $|B_1| / |CO_2|$</td>
+</tr>
+<tr>
+<td>2</td>
+<td>$b$, $x_p$</td>
+<td>$B_2$</td>
+<td>PIAE = $|B_2| / |B_1|$</td>
+</tr>
+<tr>
+<td>3</td>
+<td>$b$, $x_p$, $x_{np}$</td>
+<td>$B_3$</td>
+<td>NPIAE = $B_3 / B_2$</td>
+</tr>
+<tr>
+<td>4</td>
+<td>$b$, $x_p$, $x_{np}$, $y$</td>
+<td>$B_4$</td>
+<td>NPOAE = $B_4 / B_3$</td>
+</tr>
+<tr>
+<td>5</td>
+<td>全部变量</td>
+<td>$B_5$</td>
+<td>完整分解（含 OE）</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>所有 level 的 DataFrame 列名完全相同（<code>optimization_status</code>, <code>obj</code>, <code>best of Undesirable</code>），差异仅在于 <code>best of Undesirable</code> 对应的 $B$ 值层级。实际使用中需分别调用 <code>level=1</code> 至 <code>level=5</code>（或 <code>level=4</code>），将各层级的 <code>best of Undesirable</code> 列重命名为 $B_1$-$B_5$，再计算分解指标。</p>
+</blockquote>
+<h3 id="964">9.6.4 后处理：污染物分解指标<a class="headerlink" href="#964" title="Permanent link">&para;</a></h3>
+<p>将 Level 1-4 的 B 值合并后计算分解指标。<strong>注意</strong>：本案例数据不含“不包含污染物质的期望产出”（Y_NP），因此 Level 5 的结果 $B_5 = B_4$，OE 和 NPOAE 直接用 $B_4$ 计算。若数据中存在非污染产出，则应运行 Level 5 并用 $B_5$ 计算 OE 和 NPOAE（见公式 9.20、9.25）。</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;OE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;B4&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="nb">abs</span><span class="p">(</span><span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;CO2&#39;</span><span class="p">])</span>
+<span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;TE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;B1&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="nb">abs</span><span class="p">(</span><span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;CO2&#39;</span><span class="p">])</span>
+<span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;PIAE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;B2&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="nb">abs</span><span class="p">(</span><span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;B1&#39;</span><span class="p">])</span>
+<span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;NPIAE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;B3&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;B2&#39;</span><span class="p">]</span>
+<span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;NPOAE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;B4&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;B3&#39;</span><span class="p">]</span>
+</code></pre></div></td></tr></table></div>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>公式（本案例）</th>
+<th>理论公式（含 Y_NP）</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>OE</code></td>
+<td><code>|B4| / |CO2|</code></td>
+<td><code>|B5| / |CO2|</code></td>
+<td>总体排放效率</td>
+</tr>
+<tr>
+<td><code>TE</code></td>
+<td><code>|B1| / |CO2|</code></td>
+<td><code>|B1| / |CO2|</code></td>
+<td>技术效率</td>
+</tr>
+<tr>
+<td><code>PIAE</code></td>
+<td><code>|B2| / |B1|</code></td>
+<td><code>|B2| / |B1|</code></td>
+<td>污染投入配置效率</td>
+</tr>
+<tr>
+<td><code>NPIAE</code></td>
+<td><code>B3 / B2</code></td>
+<td><code>B3 / B2</code></td>
+<td>非污染投入配置效率</td>
+</tr>
+<tr>
+<td><code>NPOAE</code></td>
+<td><code>B4 / B3</code></td>
+<td><code>B5 / B4</code></td>
+<td>非污染产出配置效率</td>
+</tr>
+</tbody>
+</table>
+<p>B 值层次关系：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>CO2 → B1(技术效率) → B2(+污染投入) → B3(+非污染投入) → B4(+产出)
+      TE              PIAE             NPIAE               NPOAE
+</code></pre></div></td></tr></table></div>
+<h3 id="965">9.6.5 模型调用示例<a class="headerlink" href="#965" title="Permanent link">&para;</a></h3>
+<p><strong>Level 1-4（需分别调用，合并结果后计算分解指标）</strong>：</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Level 1</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">MB</span><span class="o">.</span><span class="n">MB</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L+F=E:CO2&quot;</span><span class="p">,</span> <span class="n">sx</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">sx</span><span class="p">]],</span> <span class="n">sy</span><span class="o">=</span><span class="p">[[</span><span class="n">sy</span><span class="p">]],</span>
+              <span class="n">rts</span><span class="o">=</span><span class="n">RTS_VRS1</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">res</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="s2">&quot;mosek&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">)</span>
+
+<span class="c1"># Level 2</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">MB</span><span class="o">.</span><span class="n">MB</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L+F=E:CO2&quot;</span><span class="p">,</span> <span class="n">sx</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">sx</span><span class="p">]],</span> <span class="n">sy</span><span class="o">=</span><span class="p">[[</span><span class="n">sy</span><span class="p">]],</span>
+              <span class="n">rts</span><span class="o">=</span><span class="n">RTS_CRS</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">res</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="s2">&quot;mosek&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">)</span>
+
+<span class="c1"># Level 3</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">MB</span><span class="o">.</span><span class="n">MB</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L+F=E:CO2&quot;</span><span class="p">,</span> <span class="n">sx</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">sx</span><span class="p">]],</span> <span class="n">sy</span><span class="o">=</span><span class="p">[[</span><span class="n">sy</span><span class="p">]],</span>
+              <span class="n">rts</span><span class="o">=</span><span class="n">RTS_CRS</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">res</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="s2">&quot;mosek&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">)</span>
+
+<span class="c1"># Level 4</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">MB</span><span class="o">.</span><span class="n">MB</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L+F=E:CO2&quot;</span><span class="p">,</span> <span class="n">sx</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">sx</span><span class="p">]],</span> <span class="n">sy</span><span class="o">=</span><span class="p">[[</span><span class="n">sy</span><span class="p">]],</span>
+              <span class="n">rts</span><span class="o">=</span><span class="n">RTS_CRS</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">res</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="s2">&quot;mosek&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<h2 id="97">9.7 案例应用：中国的发电行业的符合物质平衡条件的环境效率<a class="headerlink" href="#97" title="Permanent link">&para;</a></h2>
+<p>本节应用9.4.1节中的模型（9.12）-（9.26）评估2015-2017年中国大陆30个省市的火电行业的环境效率。资本、劳动力和能源被视为产生电力和二氧化碳排放量的投入。资本投入以总装机容量衡量，数据来自中国电力年鉴（2010-2018）。劳动力投入以《中国人口与就业统计年鉴（2010-2018）》中公布的“电力和热力生产和供应业”的就业人数表示。能源输入是使用以吨标准煤为单位的总能源消耗来衡量的。数据来源于《中国能源统计年鉴（2010-2018）》各省能源平衡表；这也是发电数据的来源。 CO2 排放量仅包括与能源相关的排放量，并根据能源消耗数据和排放因子计算得出。首先，我们进行数据准备和数据预处理工作。
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># 导入必要的包和模块</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">deabook</span><span class="w"> </span><span class="kn">import</span> <span class="n">MB</span>  <span class="c1"># 导入MB分析模块</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">deabook.constant</span><span class="w"> </span><span class="kn">import</span> <span class="n">RTS_CRS</span><span class="p">,</span> <span class="n">RTS_VRS1</span>  <span class="c1"># 导入规模报酬假设常量</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>  <span class="c1"># 导入数据处理库</span>
+
+<span class="c1"># 设置分类变量的类型和顺序</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pandas.api.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">CategoricalDtype</span>
+<span class="c1"># 定义效率分解指标的有序分类类型</span>
+<span class="n">cat_size_order</span> <span class="o">=</span> <span class="n">CategoricalDtype</span><span class="p">(</span>
+    <span class="p">[</span><span class="s1">&#39;OE&#39;</span><span class="p">,</span> <span class="s1">&#39;TE&#39;</span><span class="p">,</span> <span class="s1">&#39;PIAE&#39;</span><span class="p">,</span> <span class="s1">&#39;NPIAE&#39;</span><span class="p">,</span> <span class="s1">&#39;NPOAE&#39;</span><span class="p">],</span>  <span class="c1"># 效率指标：</span>
+    <span class="c1"># OE: 整体效率</span>
+    <span class="c1"># TE: 技术效率  </span>
+    <span class="c1"># PIAE: 投入配置效率</span>
+    <span class="c1"># NPIAE: 非投入配置效率</span>
+    <span class="c1"># NPOAE: 非产出配置效率</span>
+    <span class="n">ordered</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+
+<span class="c1"># 读取电厂数据并预处理</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;../../data\power plant data.xlsx&quot;</span><span class="p">)</span>  <span class="c1"># 读取电厂数据</span>
+    <span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;year&gt;2014&#39;</span><span class="p">)</span>  <span class="c1"># 筛选2014年以后的数据</span>
+    <span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># 重置索引</span>
+
+<span class="c1"># 重命名数据列（中英文对照）</span>
+<span class="n">data</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;province&#39;</span><span class="p">,</span> <span class="s1">&#39;K&#39;</span><span class="p">,</span> <span class="s1">&#39;L&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;E&#39;</span><span class="p">,</span> <span class="s1">&#39;CO2&#39;</span><span class="p">,</span> <span class="s1">&#39;year&#39;</span><span class="p">,</span> <span class="s1">&#39;省份&#39;</span><span class="p">]</span>
+<span class="c1"># K: 资本投入</span>
+<span class="c1"># L: 劳动投入  </span>
+<span class="c1"># F: 燃料投入</span>
+<span class="c1"># E: 能源投入</span>
+<span class="c1"># CO2: 二氧化碳排放</span>
+
+<span class="n">dmuname</span> <span class="o">=</span> <span class="s1">&#39;省份&#39;</span>  <span class="c1"># 设置决策单元名称列为&quot;省份&quot;</span>
+
+<span class="c1"># 提取关键变量</span>
+<span class="n">yearid</span> <span class="o">=</span> <span class="n">data</span><span class="p">[[</span><span class="s1">&#39;year&#39;</span><span class="p">,</span> <span class="n">dmuname</span><span class="p">,</span> <span class="s1">&#39;CO2&#39;</span><span class="p">]]</span>  <span class="c1"># 包含年份、省份和CO2排放的数据</span>
+<span class="n">yearid</span><span class="p">[</span><span class="n">dmuname</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>  <span class="c1"># 查看所有唯一的省份名称</span>
+
+<span class="c1"># 生成描述性统计表并导出</span>
+<span class="n">data</span><span class="p">[[</span><span class="s1">&#39;K&#39;</span><span class="p">,</span><span class="s1">&#39;L&#39;</span><span class="p">,</span><span class="s1">&#39;F&#39;</span><span class="p">,</span><span class="s1">&#39;E&#39;</span><span class="p">,</span><span class="s1">&#39;CO2&#39;</span><span class="p">]]</span>  <span class="c1"># 选择所有投入产出变量</span>
+    <span class="o">.</span><span class="n">describe</span><span class="p">()</span><span class="o">.</span><span class="n">T</span>  <span class="c1"># 计算描述性统计并转置（行变列）</span>
+    <span class="o">.</span><span class="n">to_markdown</span><span class="p">(</span><span class="s2">&quot;table9.1.md&quot;</span><span class="p">)</span>  <span class="c1"># 保存为Markdown格式表格</span>
+</code></pre></div></td></tr></table></div></p>
+<p>表 $9.1$ 显示了投入和产出变量的描述性统计数据。</p>
+<p>表$9.1$  描述性统计</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"></th>
+<th style="text-align: right;">count</th>
+<th style="text-align: right;">mean</th>
+<th style="text-align: right;">std</th>
+<th style="text-align: right;">min</th>
+<th style="text-align: right;">25%</th>
+<th style="text-align: right;">50%</th>
+<th style="text-align: right;">75%</th>
+<th style="text-align: right;">max</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">K</td>
+<td style="text-align: right;">90</td>
+<td style="text-align: right;">3522.47</td>
+<td style="text-align: right;">2511.4</td>
+<td style="text-align: right;">318</td>
+<td style="text-align: right;">1778.5</td>
+<td style="text-align: right;">2579.5</td>
+<td style="text-align: right;">5018.5</td>
+<td style="text-align: right;">10335</td>
+</tr>
+<tr>
+<td style="text-align: left;">L</td>
+<td style="text-align: right;">90</td>
+<td style="text-align: right;">10.0167</td>
+<td style="text-align: right;">5.47088</td>
+<td style="text-align: right;">1.41</td>
+<td style="text-align: right;">6.8325</td>
+<td style="text-align: right;">9.62</td>
+<td style="text-align: right;">12.5025</td>
+<td style="text-align: right;">24.08</td>
+</tr>
+<tr>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">90</td>
+<td style="text-align: right;">4860.47</td>
+<td style="text-align: right;">4010.58</td>
+<td style="text-align: right;">436.98</td>
+<td style="text-align: right;">2022.88</td>
+<td style="text-align: right;">3123.49</td>
+<td style="text-align: right;">7396.23</td>
+<td style="text-align: right;">15874.4</td>
+</tr>
+<tr>
+<td style="text-align: left;">E</td>
+<td style="text-align: right;">90</td>
+<td style="text-align: right;">1489.55</td>
+<td style="text-align: right;">1231.75</td>
+<td style="text-align: right;">122</td>
+<td style="text-align: right;">613.99</td>
+<td style="text-align: right;">1006.49</td>
+<td style="text-align: right;">2310.3</td>
+<td style="text-align: right;">5142.88</td>
+</tr>
+<tr>
+<td style="text-align: left;">CO2</td>
+<td style="text-align: right;">90</td>
+<td style="text-align: right;">13526</td>
+<td style="text-align: right;">11263.3</td>
+<td style="text-align: right;">1156.22</td>
+<td style="text-align: right;">5519.77</td>
+<td style="text-align: right;">8715.52</td>
+<td style="text-align: right;">20544.8</td>
+<td style="text-align: right;">44495.8</td>
+</tr>
+</tbody>
+</table>
+<p>接下来的代码实现了电厂效率的多种分析，从模型构建、求解到结果处理和输出，为评估电厂运营效率提供了多维度的量化指标。通过4层MB模型结果计算5个效率指标，包括：OE(整体效率)反映综合效率水平；TE(技术效率)反映生产技术有效性；PIAE(投入配置效率)反映投入要素配置合理性；NPIAE(非投入配置效率)反映非投入因素影响；NPOAE(非产出配置效率)反映产出结构调整空间。将结果分为整体效率单独输出，技术效率和投入配置效率组合输出，以及非投入和非产出配置效率组合输出等三部分导出。
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># 计算CO2排放与燃料消耗的比率</span>
+<span class="n">sx</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;CO2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;F&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>  <span class="c1"># 总CO2排放/总燃料消耗</span>
+<span class="n">sy</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># 产出方向调整系数设为0</span>
+
+<span class="c1"># 定义并求解第一层MB_VRS模型</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">MB_VRSL1</span><span class="p">():</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">MB</span><span class="o">.</span><span class="n">MB</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L+F=E:CO2&quot;</span><span class="p">,</span>  <span class="c1"># 投入: K(资本), L+F(劳动+燃料); 产出: E(能源), CO2</span>
+                 <span class="n">sx</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">sx</span><span class="p">]],</span> <span class="n">sy</span><span class="o">=</span><span class="p">[[</span><span class="n">sy</span><span class="p">]],</span>  <span class="c1"># 方向向量设置</span>
+                 <span class="n">rts</span><span class="o">=</span><span class="n">RTS_VRS1</span><span class="p">,</span>  <span class="c1"># 规模报酬可变假设</span>
+                 <span class="n">baseindex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">refindex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># 第一层分析</span>
+    <span class="n">res</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="s2">&quot;mosek&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">)</span>  <span class="c1"># 使用Mosek求解器</span>
+    <span class="k">return</span> <span class="n">res</span>
+<span class="n">MB_VRSL1</span> <span class="o">=</span> <span class="n">MB_VRSL1</span><span class="p">()</span>  <span class="c1"># 执行模型</span>
+
+<span class="c1"># 定义并求解第二层MB_CRS模型 (level=2)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">MB_CRSL2</span><span class="p">():</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">MB</span><span class="o">.</span><span class="n">MB</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L+F=E:CO2&quot;</span><span class="p">,</span> 
+                 <span class="n">sx</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">sx</span><span class="p">]],</span> <span class="n">sy</span><span class="o">=</span><span class="p">[[</span><span class="n">sy</span><span class="p">]],</span>
+                 <span class="n">rts</span><span class="o">=</span><span class="n">RTS_CRS</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">res</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="s2">&quot;mosek&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">res</span>
+<span class="n">MB_CRSL2</span> <span class="o">=</span> <span class="n">MB_CRSL2</span><span class="p">()</span>
+
+<span class="c1"># 定义并求解第三层MB_CRS模型 (level=3)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">MB_CRSL3</span><span class="p">():</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">MB</span><span class="o">.</span><span class="n">MB</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L+F=E:CO2&quot;</span><span class="p">,</span> 
+                 <span class="n">sx</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">sx</span><span class="p">]],</span> <span class="n">sy</span><span class="o">=</span><span class="p">[[</span><span class="n">sy</span><span class="p">]],</span>
+                 <span class="n">rts</span><span class="o">=</span><span class="n">RTS_CRS</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">res</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="s2">&quot;mosek&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">res</span>
+<span class="n">MB_CRSL3</span> <span class="o">=</span> <span class="n">MB_CRSL3</span><span class="p">()</span>
+
+<span class="c1"># 定义并求解第四层MB_CRS模型 (level=4)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">MB_CRSL4</span><span class="p">():</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">MB</span><span class="o">.</span><span class="n">MB</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L+F=E:CO2&quot;</span><span class="p">,</span> 
+                 <span class="n">sx</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">sx</span><span class="p">]],</span> <span class="n">sy</span><span class="o">=</span><span class="p">[[</span><span class="n">sy</span><span class="p">]],</span>
+                 <span class="n">rts</span><span class="o">=</span><span class="n">RTS_CRS</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+    <span class="n">res</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="s2">&quot;mosek&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">res</span>
+<span class="n">MB_CRSL4</span> <span class="o">=</span> <span class="n">MB_CRSL4</span><span class="p">()</span>
+
+<span class="c1"># 数据清洗与合并</span>
+<span class="n">MB_VRSL1</span> <span class="o">=</span> <span class="n">MB_VRSL1</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;optimization_status&#39;</span><span class="p">,</span> <span class="s1">&#39;obj&#39;</span><span class="p">])</span>  <span class="c1"># 删除状态列</span>
+<span class="n">MB_CRSL2</span> <span class="o">=</span> <span class="n">MB_CRSL2</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;optimization_status&#39;</span><span class="p">,</span> <span class="s1">&#39;obj&#39;</span><span class="p">])</span>
+<span class="n">MB_CRSL3</span> <span class="o">=</span> <span class="n">MB_CRSL3</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;optimization_status&#39;</span><span class="p">,</span> <span class="s1">&#39;obj&#39;</span><span class="p">])</span>
+<span class="n">MB_CRSL4</span> <span class="o">=</span> <span class="n">MB_CRSL4</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;optimization_status&#39;</span><span class="p">,</span> <span class="s1">&#39;obj&#39;</span><span class="p">])</span>
+
+<span class="c1"># 重命名各层结果列</span>
+<span class="n">MB_VRSL1</span> <span class="o">=</span> <span class="n">MB_VRSL1</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;best of Undesirable&#39;</span><span class="p">:</span> <span class="s1">&#39;B1&#39;</span><span class="p">})</span>  <span class="c1"># 第一层结果</span>
+<span class="n">MB_CRSL2</span> <span class="o">=</span> <span class="n">MB_CRSL2</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;best of Undesirable&#39;</span><span class="p">:</span> <span class="s1">&#39;B2&#39;</span><span class="p">})</span>  <span class="c1"># 第二层结果</span>
+<span class="n">MB_CRSL3</span> <span class="o">=</span> <span class="n">MB_CRSL3</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;best of Undesirable&#39;</span><span class="p">:</span> <span class="s1">&#39;B3&#39;</span><span class="p">})</span>  <span class="c1"># 第三层结果</span>
+<span class="n">MB_CRSL4</span> <span class="o">=</span> <span class="n">MB_CRSL4</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;best of Undesirable&#39;</span><span class="p">:</span> <span class="s1">&#39;B4&#39;</span><span class="p">})</span>  <span class="c1"># 第四层结果</span>
+
+<span class="c1"># 合并所有结果</span>
+<span class="n">MB_CRS</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">yearid</span><span class="p">,</span> <span class="n">MB_VRSL1</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># 合并基础信息</span>
+<span class="n">MB_CRS</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">MB_CRS</span><span class="p">,</span> <span class="n">MB_CRSL2</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">MB_CRS</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">MB_CRS</span><span class="p">,</span> <span class="n">MB_CRSL3</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">MB_CRS</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">MB_CRS</span><span class="p">,</span> <span class="n">MB_CRSL4</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># 计算效率分解指标</span>
+<span class="c1"># 注：本案例数据不含&quot;不包含污染物质的期望产出&quot;（Y_NP），因此 B5=B4，OE 和 NPOAE 直接用 B4 计算。</span>
+<span class="c1"># 若数据中存在非污染产出，应运行 Level 5 并用 B5 计算 OE（公式9.20）和 NPOAE（公式9.25）。</span>
+<span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;OE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;B4&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="nb">abs</span><span class="p">(</span><span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;CO2&#39;</span><span class="p">])</span>   <span class="c1"># 整体效率 = |B4|/|实际CO2|（理论公式用B5，因无Y_NP故B5=B4）</span>
+<span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;TE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;B1&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="nb">abs</span><span class="p">(</span><span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;CO2&#39;</span><span class="p">])</span>   <span class="c1"># 技术效率 = |B1|/|实际CO2|</span>
+<span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;PIAE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;B2&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="nb">abs</span><span class="p">(</span><span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;B1&#39;</span><span class="p">])</span>  <span class="c1"># 投入配置效率 = |B2|/|B1|</span>
+<span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;NPIAE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;B3&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;B2&#39;</span><span class="p">]</span> <span class="c1"># 非投入配置效率 = B3/B2</span>
+<span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;NPOAE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;B4&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">MB_CRS</span><span class="p">[</span><span class="s1">&#39;B3&#39;</span><span class="p">]</span> <span class="c1"># 非产出配置效率 = B4/B3（理论公式用B5/B4，因无Y_NP故B5=B4）</span>
+
+<span class="c1"># 创建透视表分析结果</span>
+<span class="n">MB_CRS3</span> <span class="o">=</span> <span class="n">MB_CRS</span><span class="o">.</span><span class="n">pivot_table</span><span class="p">(</span>
+    <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;OE&#39;</span><span class="p">,</span> <span class="s1">&#39;TE&#39;</span><span class="p">,</span> <span class="s1">&#39;PIAE&#39;</span><span class="p">,</span> <span class="s1">&#39;NPIAE&#39;</span><span class="p">,</span> <span class="s1">&#39;NPOAE&#39;</span><span class="p">],</span>  <span class="c1"># 效率指标</span>
+    <span class="n">index</span><span class="o">=</span><span class="n">dmuname</span><span class="p">,</span>  <span class="c1"># 行索引为省份</span>
+    <span class="n">columns</span><span class="o">=</span><span class="s1">&#39;year&#39;</span><span class="p">,</span>  <span class="c1"># 列索引为年份</span>
+    <span class="n">aggfunc</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span>  <span class="c1"># 计算均值</span>
+    <span class="n">fill_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">margins</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">dropna</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">observed</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">)[[</span><span class="s1">&#39;OE&#39;</span><span class="p">,</span> <span class="s1">&#39;TE&#39;</span><span class="p">,</span> <span class="s1">&#39;PIAE&#39;</span><span class="p">,</span> <span class="s1">&#39;NPIAE&#39;</span><span class="p">,</span> <span class="s1">&#39;NPOAE&#39;</span><span class="p">]]</span>  <span class="c1"># 指定列顺序</span>
+
+<span class="c1"># 导出结果到Markdown表格</span>
+<span class="n">MB_CRS3</span><span class="p">[[</span><span class="s1">&#39;OE&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">to_markdown</span><span class="p">(</span><span class="s2">&quot;MB_CRS_1.md&quot;</span><span class="p">)</span>  <span class="c1"># 整体效率结果</span>
+<span class="n">MB_CRS3</span><span class="p">[[</span><span class="s1">&#39;TE&#39;</span><span class="p">,</span><span class="s1">&#39;PIAE&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">to_markdown</span><span class="p">(</span><span class="s2">&quot;MB_CRS_23.md&quot;</span><span class="p">)</span>  <span class="c1"># 技术和投入配置效率</span>
+<span class="n">MB_CRS3</span><span class="p">[[</span><span class="s1">&#39;NPIAE&#39;</span><span class="p">,</span><span class="s1">&#39;NPOAE&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">to_markdown</span><span class="p">(</span><span class="s2">&quot;MB_CRS_45.md&quot;</span><span class="p">)</span>  <span class="c1"># 非投入和非产出配置效率</span>
+</code></pre></div></td></tr></table></div></p>
+<p>表$9.2-9.4$展示了采用模型（9.12）-（9.26）评估的符合物质平衡条件的环境效率。</p>
+<p>表$9.2$  整体效率(OE)</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">省份</th>
+<th style="text-align: right;">('OE', 2015)</th>
+<th style="text-align: right;">('OE', 2016)</th>
+<th style="text-align: right;">('OE', 2017)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">上海</td>
+<td style="text-align: right;">0.0310036</td>
+<td style="text-align: right;">0.018273</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;">云南</td>
+<td style="text-align: right;">0.0324087</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.0123219</td>
+</tr>
+<tr>
+<td style="text-align: left;">内蒙古</td>
+<td style="text-align: right;">0.0052316</td>
+<td style="text-align: right;">0.00636454</td>
+<td style="text-align: right;">0.007179</td>
+</tr>
+<tr>
+<td style="text-align: left;">北京</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;">吉林</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;">四川</td>
+<td style="text-align: right;">0.0831174</td>
+<td style="text-align: right;">0.120015</td>
+<td style="text-align: right;">0.144551</td>
+</tr>
+<tr>
+<td style="text-align: left;">天津</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;">宁夏</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.000238601</td>
+<td style="text-align: right;">0.00328404</td>
+</tr>
+<tr>
+<td style="text-align: left;">安徽</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;">山东</td>
+<td style="text-align: right;">0.0147461</td>
+<td style="text-align: right;">0.00763918</td>
+<td style="text-align: right;">0.00890175</td>
+</tr>
+<tr>
+<td style="text-align: left;">山西</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;">广东</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;">广西</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.00347207</td>
+</tr>
+<tr>
+<td style="text-align: left;">新疆</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;">江苏</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;">江西</td>
+<td style="text-align: right;">0.0114995</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;">河北</td>
+<td style="text-align: right;">0.135243</td>
+<td style="text-align: right;">0.15146</td>
+<td style="text-align: right;">0.166044</td>
+</tr>
+<tr>
+<td style="text-align: left;">河南</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;">浙江</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;">海南</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;">湖北</td>
+<td style="text-align: right;">0.0323638</td>
+<td style="text-align: right;">0.0285665</td>
+<td style="text-align: right;">0.00771573</td>
+</tr>
+<tr>
+<td style="text-align: left;">湖南</td>
+<td style="text-align: right;">0.0189008</td>
+<td style="text-align: right;">0.097623</td>
+<td style="text-align: right;">0.0981462</td>
+</tr>
+<tr>
+<td style="text-align: left;">甘肃</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;">福建</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;">贵州</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;">辽宁</td>
+<td style="text-align: right;">0.0447629</td>
+<td style="text-align: right;">0.0526226</td>
+<td style="text-align: right;">0.0365144</td>
+</tr>
+<tr>
+<td style="text-align: left;">重庆</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;">陕西</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;">青海</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td style="text-align: left;">黑龙江</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+<p>表$9.3$  非期望产出方向的技术效率(TE)和包含污染物质的投入配置效率(PIAE)</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">省份</th>
+<th style="text-align: right;">('TE', 2015)</th>
+<th style="text-align: right;">('TE', 2016)</th>
+<th style="text-align: right;">('TE', 2017)</th>
+<th style="text-align: right;">('PIAE', 2015)</th>
+<th style="text-align: right;">('PIAE', 2016)</th>
+<th style="text-align: right;">('PIAE', 2017)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">上海</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.977622</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.964068</td>
+<td style="text-align: right;">0.961904</td>
+<td style="text-align: right;">0.943613</td>
+</tr>
+<tr>
+<td style="text-align: left;">云南</td>
+<td style="text-align: right;">0.582192</td>
+<td style="text-align: right;">0.574859</td>
+<td style="text-align: right;">0.557999</td>
+<td style="text-align: right;">0.906367</td>
+<td style="text-align: right;">0.845118</td>
+<td style="text-align: right;">0.85284</td>
+</tr>
+<tr>
+<td style="text-align: left;">内蒙古</td>
+<td style="text-align: right;">0.707959</td>
+<td style="text-align: right;">0.695773</td>
+<td style="text-align: right;">0.692582</td>
+<td style="text-align: right;">0.985751</td>
+<td style="text-align: right;">0.983007</td>
+<td style="text-align: right;">0.986508</td>
+</tr>
+<tr>
+<td style="text-align: left;">北京</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td style="text-align: left;">吉林</td>
+<td style="text-align: right;">0.521593</td>
+<td style="text-align: right;">0.528705</td>
+<td style="text-align: right;">0.527378</td>
+<td style="text-align: right;">0.903726</td>
+<td style="text-align: right;">0.899259</td>
+<td style="text-align: right;">0.889147</td>
+</tr>
+<tr>
+<td style="text-align: left;">四川</td>
+<td style="text-align: right;">0.644366</td>
+<td style="text-align: right;">0.697759</td>
+<td style="text-align: right;">0.710887</td>
+<td style="text-align: right;">0.979021</td>
+<td style="text-align: right;">0.980598</td>
+<td style="text-align: right;">0.984439</td>
+</tr>
+<tr>
+<td style="text-align: left;">天津</td>
+<td style="text-align: right;">0.937162</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.933159</td>
+<td style="text-align: right;">0.991293</td>
+<td style="text-align: right;">0.946106</td>
+<td style="text-align: right;">0.974599</td>
+</tr>
+<tr>
+<td style="text-align: left;">宁夏</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.963093</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.870653</td>
+<td style="text-align: right;">0.971211</td>
+<td style="text-align: right;">0.820628</td>
+</tr>
+<tr>
+<td style="text-align: left;">安徽</td>
+<td style="text-align: right;">0.895015</td>
+<td style="text-align: right;">0.908827</td>
+<td style="text-align: right;">0.925465</td>
+<td style="text-align: right;">0.99795</td>
+<td style="text-align: right;">0.999045</td>
+<td style="text-align: right;">0.999765</td>
+</tr>
+<tr>
+<td style="text-align: left;">山东</td>
+<td style="text-align: right;">0.955517</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.984955</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.961953</td>
+</tr>
+<tr>
+<td style="text-align: left;">山西</td>
+<td style="text-align: right;">0.814743</td>
+<td style="text-align: right;">0.813181</td>
+<td style="text-align: right;">0.774766</td>
+<td style="text-align: right;">0.997363</td>
+<td style="text-align: right;">0.992665</td>
+<td style="text-align: right;">0.995565</td>
+</tr>
+<tr>
+<td style="text-align: left;">广东</td>
+<td style="text-align: right;">0.960185</td>
+<td style="text-align: right;">0.979635</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.856065</td>
+<td style="text-align: right;">0.84201</td>
+<td style="text-align: right;">0.85448</td>
+</tr>
+<tr>
+<td style="text-align: left;">广西</td>
+<td style="text-align: right;">0.702276</td>
+<td style="text-align: right;">0.685174</td>
+<td style="text-align: right;">0.687119</td>
+<td style="text-align: right;">0.921632</td>
+<td style="text-align: right;">0.909216</td>
+<td style="text-align: right;">0.898854</td>
+</tr>
+<tr>
+<td style="text-align: left;">新疆</td>
+<td style="text-align: right;">0.857847</td>
+<td style="text-align: right;">0.83705</td>
+<td style="text-align: right;">0.822347</td>
+<td style="text-align: right;">0.9998</td>
+<td style="text-align: right;">0.998285</td>
+<td style="text-align: right;">0.998491</td>
+</tr>
+<tr>
+<td style="text-align: left;">江苏</td>
+<td style="text-align: right;">0.994871</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.98496</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td style="text-align: left;">江西</td>
+<td style="text-align: right;">0.807207</td>
+<td style="text-align: right;">0.847555</td>
+<td style="text-align: right;">0.862762</td>
+<td style="text-align: right;">0.874398</td>
+<td style="text-align: right;">0.986949</td>
+<td style="text-align: right;">0.999865</td>
+</tr>
+<tr>
+<td style="text-align: left;">河北</td>
+<td style="text-align: right;">0.908897</td>
+<td style="text-align: right;">0.899945</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.999885</td>
+<td style="text-align: right;">0.999961</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td style="text-align: left;">河南</td>
+<td style="text-align: right;">0.877889</td>
+<td style="text-align: right;">0.865403</td>
+<td style="text-align: right;">0.874602</td>
+<td style="text-align: right;">0.907893</td>
+<td style="text-align: right;">0.897741</td>
+<td style="text-align: right;">0.904705</td>
+</tr>
+<tr>
+<td style="text-align: left;">浙江</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr>
+<td style="text-align: left;">海南</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.980608</td>
+<td style="text-align: right;">0.800122</td>
+<td style="text-align: right;">0.746078</td>
+</tr>
+<tr>
+<td style="text-align: left;">湖北</td>
+<td style="text-align: right;">0.844753</td>
+<td style="text-align: right;">0.865934</td>
+<td style="text-align: right;">0.876096</td>
+<td style="text-align: right;">0.869077</td>
+<td style="text-align: right;">0.872286</td>
+<td style="text-align: right;">0.887049</td>
+</tr>
+<tr>
+<td style="text-align: left;">湖南</td>
+<td style="text-align: right;">0.786299</td>
+<td style="text-align: right;">0.804697</td>
+<td style="text-align: right;">0.839009</td>
+<td style="text-align: right;">0.876673</td>
+<td style="text-align: right;">0.886557</td>
+<td style="text-align: right;">0.875293</td>
+</tr>
+<tr>
+<td style="text-align: left;">甘肃</td>
+<td style="text-align: right;">0.772674</td>
+<td style="text-align: right;">0.779346</td>
+<td style="text-align: right;">0.7641</td>
+<td style="text-align: right;">0.876281</td>
+<td style="text-align: right;">0.87626</td>
+<td style="text-align: right;">0.872488</td>
+</tr>
+<tr>
+<td style="text-align: left;">福建</td>
+<td style="text-align: right;">0.836522</td>
+<td style="text-align: right;">0.793791</td>
+<td style="text-align: right;">0.828802</td>
+<td style="text-align: right;">0.996084</td>
+<td style="text-align: right;">0.991505</td>
+<td style="text-align: right;">0.999167</td>
+</tr>
+<tr>
+<td style="text-align: left;">贵州</td>
+<td style="text-align: right;">0.905482</td>
+<td style="text-align: right;">0.905058</td>
+<td style="text-align: right;">0.850053</td>
+<td style="text-align: right;">0.904821</td>
+<td style="text-align: right;">0.919709</td>
+<td style="text-align: right;">0.983028</td>
+</tr>
+<tr>
+<td style="text-align: left;">辽宁</td>
+<td style="text-align: right;">0.701138</td>
+<td style="text-align: right;">0.733603</td>
+<td style="text-align: right;">0.707798</td>
+<td style="text-align: right;">0.953157</td>
+<td style="text-align: right;">0.958304</td>
+<td style="text-align: right;">0.967245</td>
+</tr>
+<tr>
+<td style="text-align: left;">重庆</td>
+<td style="text-align: right;">0.765456</td>
+<td style="text-align: right;">0.739204</td>
+<td style="text-align: right;">0.75944</td>
+<td style="text-align: right;">0.982187</td>
+<td style="text-align: right;">0.978128</td>
+<td style="text-align: right;">0.978274</td>
+</tr>
+<tr>
+<td style="text-align: left;">陕西</td>
+<td style="text-align: right;">0.948327</td>
+<td style="text-align: right;">0.984612</td>
+<td style="text-align: right;">0.973494</td>
+<td style="text-align: right;">0.967692</td>
+<td style="text-align: right;">0.975645</td>
+<td style="text-align: right;">0.987207</td>
+</tr>
+<tr>
+<td style="text-align: left;">青海</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.98489</td>
+<td style="text-align: right;">0.935433</td>
+<td style="text-align: right;">0.594048</td>
+<td style="text-align: right;">0.700787</td>
+<td style="text-align: right;">0.702895</td>
+</tr>
+<tr>
+<td style="text-align: left;">黑龙江</td>
+<td style="text-align: right;">0.664436</td>
+<td style="text-align: right;">0.645498</td>
+<td style="text-align: right;">0.64046</td>
+<td style="text-align: right;">0.853666</td>
+<td style="text-align: right;">0.849608</td>
+<td style="text-align: right;">0.847119</td>
+</tr>
+</tbody>
+</table>
+<p>表$9.4$  不包含污染物质的投入配置效率(NPIAE)和不包含污染物质的期望产出配置效率(NPOAE)
+| 省份   |   ('NPIAE', 2015) |   ('NPIAE', 2016) |   ('NPIAE', 2017) |   ('NPOAE', 2015) |   ('NPOAE', 2016) |   ('NPOAE', 2017) |
+|:-------|------------------:|------------------:|------------------:|------------------:|------------------:|------------------:|
+| 上海   |          0.77702  |          0.777552 |          0.759212 |        0.0413878  |       0.0249907   |        0          |
+| 云南   |          1        |          1        |          1        |        0.0614174  |       0           |        0.0258926  |
+| 内蒙古 |          0.759861 |          0.768336 |          0.756741 |        0.00986565 |       0.0121113   |        0.013885   |
+| 北京   |          0.979755 |          0.999656 |          1        |        0          |       0           |        0          |
+| 吉林   |          1        |          1        |          0.995028 |        0          |       0           |        0          |
+| 四川   |          1        |          1        |          1        |        0.131755   |       0.175404    |        0.206553   |
+| 天津   |          0.761213 |          0.76614  |          0.772754 |        0          |       0           |        0          |
+| 宁夏   |          0.730112 |          0.753031 |          0.744451 |        0          |       0.000338748 |        0.00537559 |
+| 安徽   |          0.777038 |          0.770951 |          0.755448 |        0          |       0           |        0          |
+| 山东   |          0.74613  |          0.727224 |          0.770852 |        0.0209994  |       0.0105046   |        0.0120047  |
+| 山西   |          0.776656 |          0.780629 |          0.773225 |        0          |       0           |        0          |
+| 广东   |          0.84657  |          0.847264 |          0.811921 |        0          |       0           |        0          |
+| 广西   |          1        |          1        |          0.999914 |        0          |       0           |        0.00562219 |
+| 新疆   |          0.750504 |          0.758858 |          0.76021  |        0          |       0           |        0          |
+| 江苏   |          0.742164 |          0.728928 |          0.714219 |        0          |       0           |        0          |
+| 江西   |          0.978904 |          0.847401 |          0.802043 |        0.0166435  |       0           |        0          |
+| 河北   |          0.783236 |          0.788324 |          0.724755 |        0.190002   |       0.213498    |        0.229104   |
+| 河南   |          0.847744 |          0.858678 |          0.850379 |        0          |       0           |        0          |
+| 浙江   |          0.760612 |          0.761281 |          0.757532 |        0          |       0           |        0          |
+| 海南   |          0.769098 |          0.840424 |          0.821716 |        0          |       0           |        0          |
+| 湖北   |          0.963361 |          0.956263 |          0.932844 |        0.0457597  |       0.0395491   |        0.0106431  |
+| 湖南   |          1        |          1        |          0.999872 |        0.0274193  |       0.13684     |        0.133662   |
+| 甘肃   |          0.994033 |          0.998465 |          0.999801 |        0          |       0           |        0          |
+| 福建   |          0.815669 |          0.839739 |          0.806632 |        0          |       0           |        0          |
+| 贵州   |          0.901209 |          0.877935 |          0.818457 |        0          |       0           |        0          |
+| 辽宁   |          0.852885 |          0.841416 |          0.831205 |        0.0785345  |       0.0889606   |        0.0641668  |
+| 重庆   |          0.896678 |          0.877672 |          0.866361 |        0          |       0           |        0          |
+| 陕西   |          0.797753 |          0.785499 |          0.773886 |        0          |       0           |        0          |
+| 青海   |          0.987354 |          0.953515 |          0.964655 |        0          |       0           |        0          |
+| 黑龙江 |          0.999874 |          0.999897 |          0.999934 |        0          |       0           |        0          |</p>
+<p>观察表9.2可以发现，整体效率OE大多数为0。在样本期间内，只有内蒙古、四川、山东、河北、湖北、湖南和辽宁的整体环境效率大于0，其他的省份都在样本期间内有1年或者3年的整体环境效率为0。表9.3和9.4可以帮助解释整体环境效率的驱动因素。观察表9.3可以发现，包含污染物质的投入配置效率(PIAE)在样本期间的所有省份都为1，所以可以认为包含污染物质的投入配置不需要改进。北京和浙江的非期望产出方向的技术效率(TE)在样本期间都为1，可以认为在当前最优生产技术下，这两个省份的非期望产出CO2没有减少的空间。观察表9.4可以发现，不包含污染物质的期望产出配置效率(NPOAE)在大多数省份都为0，不包含污染物质的期望产出（电力）的错误配置是导致整体环境效率较低的主要因素，因此可以从不包含污染物质的期望产出的配置来改进环境效率。云南和四川的不包含污染物质的投入配置效率(NPIAE)在样本期间都为1，可以这两个省份的不包含污染物质的投入（资本和劳动力）没有减少的空间。</p>
+<h2 id="98">9.8 本章总结<a class="headerlink" href="#98" title="Permanent link">&para;</a></h2>
+<p>基于物质平衡原则（MBP）的环境效率测度框架，本章系统重构了符合热力学定律的生产技术公理化定义与非参数模型，突破了传统DEA方法忽视物质流守恒的局限。通过将物质平衡条件内生于方向距离函数，模型有效协调了投入压缩、产出扩张与非期望排放缩减间的物理约束，解决了因独立缩放变量导致的效率悖论（λ=1）。在技术集构建中，弱G可处置性公理替代了传统弱可处置性假设，明确区分污染物质载体型投入/产出与清洁要素的处置规则，既避免了将非期望产出误设为投入的缺陷，又修正了早期弱可处置性模型对热力学定律的违背。</p>
+<p>实证研究表明，中国火电行业整体环境效率普遍偏低，其根源并非污染密集型投入配置失效（PIAE=1），而主要源于非污染性期望产出（电力）的配置扭曲（NPOAE趋近于0）。这一发现揭示政策焦点需从单纯末端减排转向电力调度优化与跨区域能源协作。同时，案例验证了MBP框架的科学性：当电力不含硫（$S_y=0$）时，CO₂减排潜力严格受限于燃煤硫分（$S_x$），表明提升煤质清洁度比扩大脱硫设备投资更具成本有效性，为“双碳”目标下的技术路径选择提供了微观证据。</p>
+<h2 id="_1">参考文献<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>[1] Hailu A, Veeman TS. Non-parametric Productivity Analysis with Undesirable Outputs: An Application to the Canadian Pulp and Paper Industry. American Journal of Agricultural Economics. 2001;83(3):605-16.</p>
+<p>[2] Färe R, Grosskopf S. Modeling undesirable factors in efficiency evaluation: Comment. European Journal of Operational Research. 2004;157(1):242-5.</p>
+<p>[3] Färe R, Grosskopf S, Lovell CAK, Pasurka C. Multilateral Productivity Comparisons When Some Outputs are Undesirable: A Nonparametric Approach. The Review of Economics and Statistics. 1989;71(1):90-8.</p>
+<p>[4] Murty S, Robert Russell R, Levkoff SB. On modeling pollution-generating technologies. Journal of Environmental Economics and Management. 2012;64(1):117-35.</p>
+<p>[5] Sueyoshi T, Goto M. Data envelopment analysis for environmental assessment: Comparison between public and private ownership in petroleum industry. European Journal of Operational Research. 2012;216(3):668-78.</p>
+<p>[6] Coelli T, Lauwers L, Van Huylenbroeck G. Environmental efficiency measurement and the materials balance condition. Journal of Productivity Analysis. 2007;28(1):3-12.</p>
+<p>[7] Hampf B, Rødseth KL. Carbon dioxide emission standards for U.S. power plants: An efficiency analysis perspective. Energy Economics. 2015;50:140-53.</p>
+<p>[8] Welch E, Barnum D. Joint environmental and cost efficiency analysis of electricity generation. Ecological Economics. 2009;68(8):2336-43.</p>
+<p>[9] Dakpo KH, Jeanneaux P, Latruffe L. Modelling pollution-generating technologies in performance benchmarking: Recent developments, limits and future prospects in the nonparametric framework. European Journal of Operational Research. 2016;250(2):347-59.</p>
+<p>[10] Førsund FR. Good modelling of bad outputs: pollution and multiple-output production. Memorandum; 2008.</p>
+<p>[11] Ayres RU, Kneese AV. Production, Consumption, and Externalities. In: Klaus P, Müller S, editors. The Roots of Logistics: A Reader of Classical Contributions to the History and Conceptual Foundations of the Science of Logistics. Berlin, Heidelberg: Springer Berlin Heidelberg; 2012. p. 363-88.</p>
+<p>[12] Färe R, and Grosskopf S. Intertemporal Production Frontiers: With Dynamic DEA. Journal of the Operational Research Society. 1997;48(6):656-.</p>
+<p>[13] Reinhard S, Knox Lovell CA, Thijssen GJ. Environmental efficiency with multiple environmentally detrimental variables; estimated with SFA and DEA. European Journal of Operational Research. 2000;121(2):287-303.</p>
+<p>[14] Chung YH, Färe R, Grosskopf S. Productivity and Undesirable Outputs: A Directional Distance Function Approach. Journal of Environmental Management. 1997;51(3):229-40.</p>
+<p>[15] Rødseth KL. Environmental efficiency measurement and the materials balance condition reconsidered. European Journal of Operational Research. 2016;250(1):342-6.</p>
+<p>[16] Wang K, Wei Y-M, Huang Z. Environmental efficiency and abatement efficiency measurements of China's thermal power industry: A data envelopment analysis based materials balance approach. European Journal of Operational Research. 2018;269(1):35-50.</p>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="May 2, 2026 14:15:47 UTC"><span class="timeago" datetime="2026-05-02T14:15:47+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="May 2, 2026 14:15:47 UTC">2026-05-02</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="May 2, 2026 14:15:47 UTC"><span class="timeago" datetime="2026-05-02T14:15:47+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="May 2, 2026 14:15:47 UTC">2026-05-02</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2024 - 2024 advancehs
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.top", "search.highlight", "search.share"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="../../js/timeago.min.js"></script>
+      
+        <script src="../../js/timeago_mkdocs_material.js"></script>
+      
+    
+  </body>
+</html>

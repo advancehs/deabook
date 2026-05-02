@@ -25,7 +25,7 @@
     
     
       
-        <title>第八章：CNLS/StoNED 随机前沿分析（碳排放效率） - deabook</title>
+        <title>第八章：基于松弛测度的效率模型（SBM） - deabook</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#cnlsstoned" class="md-skip">
+        <a href="#sbm" class="md-skip">
           Skip to content
         </a>
       
@@ -116,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              第八章：CNLS/StoNED 随机前沿分析（碳排放效率）
+              第八章：基于松弛测度的效率模型（SBM）
             
           </span>
         </div>
@@ -668,66 +668,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#_1" class="md-nav__link">
+  <a href="#deabook" class="md-nav__link">
     <span class="md-ellipsis">
       
-        导入
+        deabook 包介绍与安装
       
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#sent" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        sent 公式格式
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#cnlssdweak-shephard" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        第一部分：CNLSSDweak — Shephard 距离函数
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="第一部分：CNLSSDweak — Shephard 距离函数">
+    <nav class="md-nav" aria-label="deabook 包介绍与安装">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1crs" class="md-nav__link">
+  <a href="#_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        模型 1：CRS
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2vrs1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        模型 2：VRS1
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3vrs2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        模型 3：VRS2
+        安装
       
     </span>
   </a>
@@ -738,7 +694,7 @@
   <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        参数详解
+        本章需要的导入
       
     </span>
   </a>
@@ -749,68 +705,7 @@
   <a href="#_3" class="md-nav__link">
     <span class="md-ellipsis">
       
-        返回值
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#te" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        TE 计算方式
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#cnlsddfweak" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        第二部分：CNLSDDFweak — 方向距离函数
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="第二部分：CNLSDDFweak — 方向距离函数">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#4crs" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        模型 4：CRS
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#5vrs1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        模型 5：VRS1
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#6vrs2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        模型 6：VRS2
+        参数详解
       
     </span>
   </a>
@@ -821,7 +716,7 @@
   <a href="#_4" class="md-nav__link">
     <span class="md-ellipsis">
       
-        参数详解
+        返回值
       
     </span>
   </a>
@@ -832,7 +727,7 @@
   <a href="#_5" class="md-nav__link">
     <span class="md-ellipsis">
       
-        返回值
+        辅助方法
       
     </span>
   </a>
@@ -840,10 +735,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#te-ratio" class="md-nav__link">
+  <a href="#sbm-dea" class="md-nav__link">
     <span class="md-ellipsis">
       
-        TE ratio 计算方式（按导向）
+        SBM 与径向 DEA 的区别
       
     </span>
   </a>
@@ -856,10 +751,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#cnlssdweak-vs-cnlsddfweak" class="md-nav__link">
+  <a href="#1-sbm-crs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        CNLSSDweak vs CNLSDDFweak 区别
+        模型 1：投入导向 SBM — CRS
       
     </span>
   </a>
@@ -867,38 +762,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#stoned" class="md-nav__link">
+  <a href="#2-sbm-vrs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        StoNED 完整方法列表
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="StoNED 完整方法列表">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#method" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        method 参数
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#cnlssdweak" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        CNLSSDweak 完整参数列表
+        模型 2：投入导向 SBM — VRS
       
     </span>
   </a>
@@ -906,10 +773,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#cnlsddfweak_1" class="md-nav__link">
+  <a href="#3-sbm-crs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        CNLSDDFweak 完整参数列表
+        模型 3：期望产出导向 SBM — CRS
       
     </span>
   </a>
@@ -917,10 +784,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#cnlssdweak_1" class="md-nav__link">
+  <a href="#4-sbm-vrs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        CNLSSDweak 方法列表
+        模型 4：期望产出导向 SBM — VRS
       
     </span>
   </a>
@@ -928,10 +795,65 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#cnlsddfweak_2" class="md-nav__link">
+  <a href="#5-sbm-crs" class="md-nav__link">
     <span class="md-ellipsis">
       
-        CNLSDDFweak 方法列表
+        模型 5：投入与期望产出综合 SBM — CRS
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-sbm-vrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        模型 6：投入与期望产出综合 SBM — VRS
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-sbm-crs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        模型 7：含非期望产出的非期望产出导向 SBM — CRS
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-sbm-vrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        模型 8：含非期望产出的非期望产出导向 SBM — VRS
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-sbm-crs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        模型 9：含非期望产出的全方向综合 SBM — CRS
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-sbm-vrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        模型 10：含非期望产出的全方向综合 SBM — VRS
       
     </span>
   </a>
@@ -942,7 +864,18 @@
   <a href="#_6" class="md-nav__link">
     <span class="md-ellipsis">
       
-        求解器说明
+        数据要求
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        本章说明
       
     </span>
   </a>
@@ -972,646 +905,440 @@
   
 
 
-<h1 id="cnlsstoned">第八章：CNLS/StoNED 随机前沿分析（碳排放效率）<a class="headerlink" href="#cnlsstoned" title="Permanent link">&para;</a></h1>
-<p><strong>主题</strong>：使用 CNLS（凸非参数最小二乘）和 StoNED（随机半非参数估计）测量碳排放效率。</p>
+<h1 id="sbm">第八章：基于松弛测度的效率模型（SBM）<a class="headerlink" href="#sbm" title="Permanent link">&para;</a></h1>
+<p><strong>主题</strong>：使用 SBM（Slacks-Based Measure）模型测量非径向效率，包含投入导向、产出导向、非期望产出导向和综合非导向 SBM。</p>
 <p><strong>数据文件</strong>：
-- <code>china data.xlsx</code>（30个中国省份，2016-2019）</p>
+- <code>oecd data.xlsx</code>（示例数据，含 K, L, E, Y, CO2, year 列）</p>
 <p><strong>变量含义</strong>：
-- <code>K</code>：资本, <code>L</code>：劳动, <code>E</code>：能源, <code>Y</code>：产出(GDP), <code>CO2</code>：碳排放（非期望产出）</p>
+- <code>K</code>：资本, <code>L</code>：劳动, <code>E</code>：能源, <code>Y</code>：产出（期望产出）, <code>CO2</code>：碳排放（非期望产出）</p>
 <hr />
-<h2 id="_1">导入<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<h2 id="deabook">deabook 包介绍与安装<a class="headerlink" href="#deabook" title="Permanent link">&para;</a></h2>
+<p>deabook 是一个用于数据包络分析（DEA）的 Python 包，提供径向 DEA、方向距离函数（DDF）、Malmquist 指数、弱可处置性模型、物质平衡分解、CNLS 随机前沿、SBM 等功能。</p>
+<h3 id="_1">安装<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>deabook
+</code></pre></div></td></tr></table></div>
+<h3 id="_2">本章需要的导入<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">deabook</span><span class="w"> </span><span class="kn">import</span> <span class="n">CNLSSDFDDFweak</span><span class="p">,</span> <span class="n">StoNED</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">deabook.constant</span><span class="w"> </span><span class="kn">import</span> <span class="n">FUN_PROD</span><span class="p">,</span> <span class="n">OPT_LOCAL</span><span class="p">,</span> <span class="n">RTS_VRS1</span><span class="p">,</span> <span class="n">RTS_VRS2</span><span class="p">,</span> <span class="n">RTS_CRS</span><span class="p">,</span> <span class="n">CET_ADDI</span><span class="p">,</span> <span class="n">CET_MULT</span><span class="p">,</span> <span class="n">RED_QLE</span><span class="p">,</span> <span class="n">RED_MOM</span><span class="p">,</span> <span class="n">RED_KDE</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">deabook.SBM</span><span class="w"> </span><span class="kn">import</span> <span class="n">SBM</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">deabook.constant</span><span class="w"> </span><span class="kn">import</span> <span class="n">RTS_CRS</span><span class="p">,</span> <span class="n">RTS_VRS1</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 </code></pre></div></td></tr></table></div>
-<p><strong>导入说明</strong>：
-- <code>CNLSSDFDDFweak</code>：CNLS 模块，包含 <code>CNLSSDweak</code>（Shephard 距离函数）和 <code>CNLSDDFweak</code>（方向距离函数）
-- <code>StoNED</code>：随机半非参数效率估计模块
-- <code>CET_MULT</code>：乘法复合误差项（CNLSSDweak 必须使用）
-- <code>FUN_PROD</code>：生产前沿
-- <code>RED_QLE</code>：准似然估计残差分解方法
-- <code>RED_MOM</code>：矩方法残差分解
-- <code>RED_KDE</code>：核密度估计残差分解</p>
+<blockquote>
+<p>各常量的含义与可选值见下方<a href="#参数详解">参数详解</a>表。</p>
+</blockquote>
 <hr />
-<h2 id="sent">sent 公式格式<a class="headerlink" href="#sent" title="Permanent link">&para;</a></h2>
-<p>与弱可处置性模型相同：</p>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>&quot;K L E=Y:CO2&quot;
-</code></pre></div></td></tr></table></div>
-<hr />
-<h2 id="cnlssdweak-shephard">第一部分：CNLSSDweak — Shephard 距离函数<a class="headerlink" href="#cnlssdweak-shephard" title="Permanent link">&para;</a></h2>
-<p>CNLSSDweak 使用乘法复合误差项（<code>cet=CET_MULT</code>），求解器为 <strong>knitro</strong>（非线性规划）。</p>
-<h3 id="1crs">模型 1：CRS<a class="headerlink" href="#1crs" title="Permanent link">&para;</a></h3>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span>
-<span class="normal">8</span>
-<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">CNLSSDFDDFweak</span><span class="o">.</span><span class="n">CNLSSDweak</span><span class="p">(</span>
-    <span class="n">data</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L E=Y:CO2&quot;</span><span class="p">,</span>
-    <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">gb</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-    <span class="n">cet</span><span class="o">=</span><span class="n">CET_MULT</span><span class="p">,</span> <span class="n">rts</span><span class="o">=</span><span class="n">RTS_CRS</span><span class="p">,</span> <span class="n">fun</span><span class="o">=</span><span class="n">FUN_PROD</span>
-<span class="p">)</span>
-<span class="n">model</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;knitro&quot;</span><span class="p">)</span>
-
-<span class="n">rd</span> <span class="o">=</span> <span class="n">StoNED</span><span class="o">.</span><span class="n">StoNED</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-<span class="n">res</span> <span class="o">=</span> <span class="n">rd</span><span class="o">.</span><span class="n">get_technical_efficiency</span><span class="p">(</span><span class="n">RED_QLE</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-<h3 id="2vrs1">模型 2：VRS1<a class="headerlink" href="#2vrs1" title="Permanent link">&para;</a></h3>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span>
-<span class="normal">8</span>
-<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">CNLSSDFDDFweak</span><span class="o">.</span><span class="n">CNLSSDweak</span><span class="p">(</span>
-    <span class="n">data</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L E=Y:CO2&quot;</span><span class="p">,</span>
-    <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">gb</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-    <span class="n">cet</span><span class="o">=</span><span class="n">CET_MULT</span><span class="p">,</span> <span class="n">rts</span><span class="o">=</span><span class="n">RTS_VRS1</span><span class="p">,</span> <span class="n">fun</span><span class="o">=</span><span class="n">FUN_PROD</span>
-<span class="p">)</span>
-<span class="n">model</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;knitro&quot;</span><span class="p">)</span>
-
-<span class="n">rd</span> <span class="o">=</span> <span class="n">StoNED</span><span class="o">.</span><span class="n">StoNED</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-<span class="n">res</span> <span class="o">=</span> <span class="n">rd</span><span class="o">.</span><span class="n">get_technical_efficiency</span><span class="p">(</span><span class="n">RED_QLE</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-<h3 id="3vrs2">模型 3：VRS2<a class="headerlink" href="#3vrs2" title="Permanent link">&para;</a></h3>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span>
-<span class="normal">8</span>
-<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">CNLSSDFDDFweak</span><span class="o">.</span><span class="n">CNLSSDweak</span><span class="p">(</span>
-    <span class="n">data</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L E=Y:CO2&quot;</span><span class="p">,</span>
-    <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">gb</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-    <span class="n">cet</span><span class="o">=</span><span class="n">CET_MULT</span><span class="p">,</span> <span class="n">rts</span><span class="o">=</span><span class="n">RTS_VRS2</span><span class="p">,</span> <span class="n">fun</span><span class="o">=</span><span class="n">FUN_PROD</span>
-<span class="p">)</span>
-<span class="n">model</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;knitro&quot;</span><span class="p">)</span>
-
-<span class="n">rd</span> <span class="o">=</span> <span class="n">StoNED</span><span class="o">.</span><span class="n">StoNED</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-<span class="n">res</span> <span class="o">=</span> <span class="n">rd</span><span class="o">.</span><span class="n">get_technical_efficiency</span><span class="p">(</span><span class="n">RED_QLE</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-<h3 id="_2">参数详解<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
+<h3 id="_3">参数详解<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
 <th>参数</th>
-<th>值</th>
+<th>类型</th>
+<th>可选值</th>
 <th>含义</th>
 </tr>
 </thead>
 <tbody>
+<tr>
+<td><code>data</code></td>
+<td>DataFrame</td>
+<td>—</td>
+<td>包含 sent 中指定列的数据</td>
+</tr>
 <tr>
 <td><code>sent</code></td>
+<td>str</td>
+<td><code>"K L=Y"</code></td>
+<td>不含非期望产出：<code>=</code> 左边为投入，<code>=</code> 右边为期望产出</td>
+</tr>
+<tr>
+<td></td>
+<td>str</td>
 <td><code>"K L E=Y:CO2"</code></td>
-<td>含非期望产出的公式</td>
+<td>含非期望产出：<code>:</code> 后为非期望产出</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
 </tr>
 <tr>
 <td><code>gy</code></td>
+<td>list[int]</td>
 <td><code>[0]</code></td>
 <td>不调整期望产出</td>
 </tr>
 <tr>
+<td></td>
+<td>list[int]</td>
+<td><code>[1]</code></td>
+<td>沿期望产出方向扩大（松弛进入目标函数）</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
 <td><code>gx</code></td>
-<td><code>[0,0,0]</code></td>
+<td>list[int]</td>
+<td><code>[0,0]</code></td>
 <td>不调整投入</td>
 </tr>
 <tr>
-<td><code>gb</code></td>
-<td><code>[1]</code></td>
-<td>沿非期望产出方向调整（碳排放导向）</td>
+<td></td>
+<td>list[int]</td>
+<td><code>[1,0]</code></td>
+<td>仅第一个投入允许松弛</td>
 </tr>
 <tr>
-<td><code>cet</code></td>
-<td><code>CET_MULT</code></td>
-<td>乘法复合误差项（<strong>必须</strong>，设为其他值会报错）</td>
+<td></td>
+<td>list[int]</td>
+<td><code>[1,1]</code></td>
+<td>所有投入允许松弛</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>gb</code></td>
+<td>list[int]</td>
+<td><code>[0]</code></td>
+<td>不调整非期望产出</td>
+</tr>
+<tr>
+<td></td>
+<td>list[int]</td>
+<td><code>[1]</code></td>
+<td>沿非期望产出方向缩减（松弛进入目标函数）</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>gy/gx/gb 组合</strong></td>
+<td><strong>方向模式</strong></td>
+<td><strong>条件</strong></td>
+<td><strong>说明</strong></td>
+</tr>
+<tr>
+<td></td>
+<td><code>input_oriented</code></td>
+<td>gx≥1, gy\==0, gb==0</td>
+<td>投入导向 SBM（仅投入松弛进入目标函数）</td>
+</tr>
+<tr>
+<td></td>
+<td><code>output_oriented</code></td>
+<td>gy≥1, gx\==0, gb==0</td>
+<td>期望产出导向 SBM</td>
+</tr>
+<tr>
+<td></td>
+<td><code>unoutput_oriented</code></td>
+<td>gb≥1, gx\==0, gy==0</td>
+<td>非期望产出导向 SBM</td>
+</tr>
+<tr>
+<td></td>
+<td><code>hyper_orientedyx</code></td>
+<td>gx≥1, gy≥1, gb==0</td>
+<td>投入+期望产出综合 SBM</td>
+</tr>
+<tr>
+<td></td>
+<td><code>hyper_orientedyb</code></td>
+<td>gb≥1, gy≥1, gx==0</td>
+<td>期望产出+非期望产出综合 SBM</td>
+</tr>
+<tr>
+<td></td>
+<td><code>hyper_orientedxb</code></td>
+<td>gx≥1, gb≥1, gy==0</td>
+<td>投入+非期望产出综合 SBM</td>
+</tr>
+<tr>
+<td></td>
+<td><code>hyper_orientedyxb</code></td>
+<td>gx≥1, gy≥1, gb≥1</td>
+<td>全方向综合 SBM</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
 </tr>
 <tr>
 <td><code>rts</code></td>
-<td><code>RTS_CRS</code>/<code>RTS_VRS1</code>/<code>RTS_VRS2</code></td>
-<td>规模报酬</td>
+<td>str</td>
+<td><code>RTS_CRS</code></td>
+<td>不变规模报酬</td>
 </tr>
 <tr>
-<td><code>fun</code></td>
-<td><code>FUN_PROD</code></td>
-<td>生产前沿</td>
+<td></td>
+<td>str</td>
+<td><code>RTS_VRS1</code></td>
+<td>可变规模报酬</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>baseindex</code></td>
+<td>str</td>
+<td><code>None</code></td>
+<td>被评价 DMU 筛选条件，如 <code>"t=[1,2,3]"</code></td>
+</tr>
+<tr>
+<td><code>refindex</code></td>
+<td>str</td>
+<td><code>None</code></td>
+<td>参考 DMU 筛选条件，如 <code>"t=[1,2,3]"</code></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
 </tr>
 <tr>
 <td><code>solver</code></td>
-<td><code>"knitro"</code></td>
-<td>非线性求解器（CNLS 必须用 knitro）</td>
+<td>str</td>
+<td><code>"mosek"</code></td>
+<td>商业求解器</td>
+</tr>
+<tr>
+<td></td>
+<td>str</td>
+<td><code>"glpk"</code></td>
+<td>开源求解器</td>
 </tr>
 </tbody>
 </table>
-<h3 id="_3">返回值<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
-<ul>
-<li><code>get_technical_efficiency(RED_QLE)</code> → numpy array：每个 DMU 的技术效率 TE（0-1，越大越好）</li>
-</ul>
-<h3 id="te">TE 计算方式<a class="headerlink" href="#te" title="Permanent link">&para;</a></h3>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>TE = exp(-technical_inefficiency)
-</code></pre></div></td></tr></table></div>
-<p>通过 StoNED 残差分解（QLE/矩方法/核密度）估计无效率项 u，再取指数变换得到 TE。</p>
-<hr />
-<h2 id="cnlsddfweak">第二部分：CNLSDDFweak — 方向距离函数<a class="headerlink" href="#cnlsddfweak" title="Permanent link">&para;</a></h2>
-<p>CNLSDDFweak 不需要指定 <code>cet</code> 参数（内部使用加法模型），求解器为 <strong>mosek</strong>（线性规划）。</p>
-<h3 id="4crs">模型 4：CRS<a class="headerlink" href="#4crs" title="Permanent link">&para;</a></h3>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span>
-<span class="normal">8</span>
-<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">CNLSSDFDDFweak</span><span class="o">.</span><span class="n">CNLSDDFweak</span><span class="p">(</span>
-    <span class="n">data</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L E=Y:CO2&quot;</span><span class="p">,</span>
-    <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">gb</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-    <span class="n">fun</span><span class="o">=</span><span class="n">FUN_PROD</span><span class="p">,</span> <span class="n">rts</span><span class="o">=</span><span class="n">RTS_CRS</span>
-<span class="p">)</span>
-<span class="n">model</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;mosek&quot;</span><span class="p">)</span>
-
-<span class="n">rd</span> <span class="o">=</span> <span class="n">StoNED</span><span class="o">.</span><span class="n">StoNED</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-<span class="n">res</span> <span class="o">=</span> <span class="n">rd</span><span class="o">.</span><span class="n">get_technical_efficiency_ratio</span><span class="p">(</span><span class="n">RED_QLE</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-<h3 id="5vrs1">模型 5：VRS1<a class="headerlink" href="#5vrs1" title="Permanent link">&para;</a></h3>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span>
-<span class="normal">8</span>
-<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">CNLSSDFDDFweak</span><span class="o">.</span><span class="n">CNLSDDFweak</span><span class="p">(</span>
-    <span class="n">data</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L E=Y:CO2&quot;</span><span class="p">,</span>
-    <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">gb</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-    <span class="n">fun</span><span class="o">=</span><span class="n">FUN_PROD</span><span class="p">,</span> <span class="n">rts</span><span class="o">=</span><span class="n">RTS_VRS1</span>
-<span class="p">)</span>
-<span class="n">model</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;mosek&quot;</span><span class="p">)</span>
-
-<span class="n">rd</span> <span class="o">=</span> <span class="n">StoNED</span><span class="o">.</span><span class="n">StoNED</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-<span class="n">res</span> <span class="o">=</span> <span class="n">rd</span><span class="o">.</span><span class="n">get_technical_efficiency_ratio</span><span class="p">(</span><span class="n">RED_QLE</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-<h3 id="6vrs2">模型 6：VRS2<a class="headerlink" href="#6vrs2" title="Permanent link">&para;</a></h3>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span>
-<span class="normal">8</span>
-<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">CNLSSDFDDFweak</span><span class="o">.</span><span class="n">CNLSDDFweak</span><span class="p">(</span>
-    <span class="n">data</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L E=Y:CO2&quot;</span><span class="p">,</span>
-    <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">gb</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-    <span class="n">fun</span><span class="o">=</span><span class="n">FUN_PROD</span><span class="p">,</span> <span class="n">rts</span><span class="o">=</span><span class="n">RTS_VRS2</span>
-<span class="p">)</span>
-<span class="n">model</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;mosek&quot;</span><span class="p">)</span>
-
-<span class="n">rd</span> <span class="o">=</span> <span class="n">StoNED</span><span class="o">.</span><span class="n">StoNED</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-<span class="n">res</span> <span class="o">=</span> <span class="n">rd</span><span class="o">.</span><span class="n">get_technical_efficiency_ratio</span><span class="p">(</span><span class="n">RED_QLE</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-<h3 id="_4">参数详解<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<h3 id="_4">返回值<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<p><code>optimize()</code> 返回 DataFrame，列结构取决于 <strong>方向模式</strong> 和 <strong>模型类型</strong>：</p>
 <table>
 <thead>
 <tr>
-<th>参数</th>
-<th>值</th>
+<th>模型类型</th>
+<th>触发条件</th>
+<th>返回列</th>
+<th>效率公式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ratio</code></td>
+<td>gx≥1 且 (gy≥1 或 gb≥1)</td>
+<td><code>optimization_status</code>, <code>direction</code>, <code>objective_value</code>, <code>rho</code>, <code>t</code></td>
+<td><code>rho = τ*</code>（Charnes-Cooper 变换后目标值）</td>
+</tr>
+<tr>
+<td><code>input_only</code></td>
+<td>gx≥1, gy\==0, gb==0</td>
+<td><code>optimization_status</code>, <code>direction</code>, <code>objective_value</code>, <code>rho</code></td>
+<td><code>rho = 1 - avg(s⁻/x₀)</code></td>
+</tr>
+<tr>
+<td><code>output_bad_only</code></td>
+<td>gx==0, (gy≥1 或 gb≥1)</td>
+<td><code>optimization_status</code>, <code>direction</code>, <code>objective_value</code>, <code>rho</code>, <code>phi</code></td>
+<td><code>phi = 1 + avg(s⁺/y₀)</code>, <code>rho = 1/phi</code></td>
+</tr>
+</tbody>
+</table>
+<p>所有方向均追加松弛列：</p>
+<table>
+<thead>
+<tr>
+<th>列</th>
 <th>含义</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>gy</code></td>
-<td><code>[0]</code></td>
-<td>不调整期望产出</td>
+<td><code>slack_x_变量名</code></td>
+<td>投入冗余（如 <code>slack_x_K</code>, <code>slack_x_L</code>）</td>
 </tr>
 <tr>
-<td><code>gx</code></td>
-<td><code>[0,0,0]</code></td>
-<td>不调整投入</td>
+<td><code>slack_y_变量名</code></td>
+<td>期望产出不足（如 <code>slack_y_Y</code>）</td>
 </tr>
 <tr>
-<td><code>gb</code></td>
-<td><code>[1]</code></td>
-<td>沿非期望产出方向调整</td>
-</tr>
-<tr>
-<td><code>fun</code></td>
-<td><code>FUN_PROD</code></td>
-<td>生产前沿</td>
-</tr>
-<tr>
-<td><code>rts</code></td>
-<td><code>RTS_CRS</code>/<code>RTS_VRS1</code>/<code>RTS_VRS2</code></td>
-<td>规模报酬</td>
-</tr>
-<tr>
-<td><code>solver</code></td>
-<td><code>"mosek"</code></td>
-<td>线性求解器</td>
+<td><code>slack_b_变量名</code></td>
+<td>非期望产出过剩（如 <code>slack_b_CO2</code>）</td>
 </tr>
 </tbody>
 </table>
-<h3 id="_5">返回值<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
-<ul>
-<li><code>get_technical_efficiency_ratio(RED_QLE)</code> → numpy array：每个 DMU 的效率比率 TE</li>
-</ul>
-<h3 id="te-ratio">TE ratio 计算方式（按导向）<a class="headerlink" href="#te-ratio" title="Permanent link">&para;</a></h3>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span>
-<span class="normal">7</span>
-<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code>gb≥1（非期望产出导向）：
-    TE = (-basexy + epsilon) / (-basexy + epsilon + ddfhat)
-
-gy≥1（产出导向）：
-    TE = basexy / (basexy + ddfhat)
-
-gx≥1（投入导向）：
-    TE = (-basexy + epsilon) / (-basexy + epsilon + ddfhat)
-</code></pre></div></td></tr></table></div>
-<hr />
-<h2 id="cnlssdweak-vs-cnlsddfweak">CNLSSDweak vs CNLSDDFweak 区别<a class="headerlink" href="#cnlssdweak-vs-cnlsddfweak" title="Permanent link">&para;</a></h2>
+<h3 id="_5">辅助方法<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>返回值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>get_rho()</code></td>
+<td>SBM 效率值 Series</td>
+</tr>
+<tr>
+<td><code>get_slacks()</code></td>
+<td>所有松弛变量 DataFrame</td>
+</tr>
+<tr>
+<td><code>get_lamda()</code></td>
+<td>强度变量（λ）DataFrame</td>
+</tr>
+<tr>
+<td><code>get_status()</code></td>
+<td>求解状态 Series</td>
+</tr>
+<tr>
+<td><code>info(dmu="all")</code></td>
+<td>打印指定 DMU 的 Pyomo 模型详情</td>
+</tr>
+</tbody>
+</table>
+<h3 id="sbm-dea">SBM 与径向 DEA 的区别<a class="headerlink" href="#sbm-dea" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
 <th>特征</th>
-<th>CNLSSDweak</th>
-<th>CNLSDDFweak</th>
+<th>径向 DEA / DDF</th>
+<th>SBM</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>类型</td>
-<td>Shephard 距离函数</td>
-<td>方向距离函数</td>
+<td>调整方式</td>
+<td>按统一比例因子同时收缩/扩张</td>
+<td>每个变量独立松弛</td>
 </tr>
 <tr>
-<td>cet 参数</td>
-<td><strong>必须</strong> <code>CET_MULT</code></td>
-<td>无（内部加法）</td>
+<td>松弛处理</td>
+<td>松弛不影响效率值</td>
+<td>松弛直接进入效率值</td>
 </tr>
 <tr>
-<td>求解器</td>
-<td><code>"knitro"</code>（非线性）</td>
-<td><code>"mosek"</code>（线性）</td>
+<td>效率值范围</td>
+<td>投入导向 0-1</td>
+<td>0-1（更严格，通常 ≤ 径向效率）</td>
 </tr>
 <tr>
-<td>目标函数</td>
-<td>最小化残差平方和（log 域）</td>
-<td>最小化残差平方和</td>
-</tr>
-<tr>
-<td>StoNED 方法</td>
-<td><code>get_technical_efficiency()</code></td>
-<td><code>get_technical_efficiency_ratio()</code></td>
-</tr>
-<tr>
-<td>返回值</td>
-<td>TE = exp(-u)</td>
-<td>TE = ratio 公式</td>
+<td>适用场景</td>
+<td>比例性改进</td>
+<td>存在非比例性冗余/不足时</td>
 </tr>
 </tbody>
 </table>
 <hr />
-<h2 id="stoned">StoNED 完整方法列表<a class="headerlink" href="#stoned" title="Permanent link">&para;</a></h2>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">rd</span> <span class="o">=</span> <span class="n">StoNED</span><span class="o">.</span><span class="n">StoNED</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<h2 id="1-sbm-crs">模型 1：投入导向 SBM — CRS<a class="headerlink" href="#1-sbm-crs" title="Permanent link">&para;</a></h2>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">SBM</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L=Y&quot;</span><span class="p">,</span> <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">rts</span><span class="o">=</span><span class="n">RTS_CRS</span><span class="p">,</span>
+            <span class="n">baseindex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">refindex</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;mosek&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-<table>
-<thead>
-<tr>
-<th>方法</th>
-<th>返回值</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>get_technical_efficiency(method)</code></td>
-<td>numpy array</td>
-<td>技术效率（CNLSSDweak 用）</td>
-</tr>
-<tr>
-<td><code>get_technical_efficiency_ratio(method)</code></td>
-<td>numpy array</td>
-<td>效率比率（CNLSDDFweak 用）</td>
-</tr>
-<tr>
-<td><code>get_technical_inefficiency(method)</code></td>
-<td>numpy array</td>
-<td>技术无效率值</td>
-</tr>
-<tr>
-<td><code>get_mean_of_inefficiency(method)</code></td>
-<td>float</td>
-<td>无效率均值 μ</td>
-</tr>
-</tbody>
-</table>
-<h3 id="method">method 参数<a class="headerlink" href="#method" title="Permanent link">&para;</a></h3>
-<table>
-<thead>
-<tr>
-<th>值</th>
-<th>全称</th>
-<th>含义</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>RED_MOM</code></td>
-<td>Method of Moments</td>
-<td>矩方法（默认）</td>
-</tr>
-<tr>
-<td><code>RED_QLE</code></td>
-<td>Quasi-Likelihood Estimation</td>
-<td>准似然估计</td>
-</tr>
-<tr>
-<td><code>RED_KDE</code></td>
-<td>Kernel Density Estimation</td>
-<td>核密度估计（含 Richardson-Lucy 盲反卷积）</td>
-</tr>
-</tbody>
-</table>
 <hr />
-<h2 id="cnlssdweak">CNLSSDweak 完整参数列表<a class="headerlink" href="#cnlssdweak" title="Permanent link">&para;</a></h2>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">CNLSSDFDDFweak</span><span class="o">.</span><span class="n">CNLSSDweak</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sent</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">gb</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">cet</span><span class="o">=</span><span class="n">CET_MULT</span><span class="p">,</span> <span class="n">fun</span><span class="o">=</span><span class="n">FUN_PROD</span><span class="p">,</span> <span class="n">rts</span><span class="o">=</span><span class="n">RTS_VRS1</span><span class="p">)</span>
+<h2 id="2-sbm-vrs">模型 2：投入导向 SBM — VRS<a class="headerlink" href="#2-sbm-vrs" title="Permanent link">&para;</a></h2>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">SBM</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L=Y&quot;</span><span class="p">,</span> <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">rts</span><span class="o">=</span><span class="n">RTS_VRS1</span><span class="p">,</span>
+            <span class="n">baseindex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">refindex</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;mosek&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-<table>
-<thead>
-<tr>
-<th>参数</th>
-<th>类型</th>
-<th>默认值</th>
-<th>含义</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>data</code></td>
-<td>DataFrame</td>
-<td>必填</td>
-<td>数据</td>
-</tr>
-<tr>
-<td><code>sent</code></td>
-<td>str</td>
-<td>必填</td>
-<td><code>"K L E=Y:CO2"</code></td>
-</tr>
-<tr>
-<td><code>z</code></td>
-<td>list</td>
-<td><code>None</code></td>
-<td>上下文变量</td>
-</tr>
-<tr>
-<td><code>gy</code></td>
-<td>list</td>
-<td><code>[1]</code></td>
-<td>期望产出方向向量</td>
-</tr>
-<tr>
-<td><code>gx</code></td>
-<td>list</td>
-<td><code>[0]</code></td>
-<td>投入方向向量</td>
-</tr>
-<tr>
-<td><code>gb</code></td>
-<td>list</td>
-<td><code>[0]</code></td>
-<td>非期望产出方向向量</td>
-</tr>
-<tr>
-<td><code>cet</code></td>
-<td>str</td>
-<td><code>CET_MULT</code></td>
-<td>误差类型（<strong>必须 CET_MULT</strong>）</td>
-</tr>
-<tr>
-<td><code>fun</code></td>
-<td>str</td>
-<td><code>FUN_PROD</code></td>
-<td>前沿类型：<code>FUN_PROD</code>/<code>FUN_COST</code></td>
-</tr>
-<tr>
-<td><code>rts</code></td>
-<td>str</td>
-<td><code>RTS_VRS1</code></td>
-<td>规模报酬：<code>RTS_CRS</code>/<code>RTS_VRS1</code>/<code>RTS_VRS2</code></td>
-</tr>
-</tbody>
-</table>
-<h2 id="cnlsddfweak_1">CNLSDDFweak 完整参数列表<a class="headerlink" href="#cnlsddfweak_1" title="Permanent link">&para;</a></h2>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">CNLSSDFDDFweak</span><span class="o">.</span><span class="n">CNLSDDFweak</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sent</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">gb</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">fun</span><span class="o">=</span><span class="n">FUN_PROD</span><span class="p">,</span> <span class="n">rts</span><span class="o">=</span><span class="n">RTS_VRS1</span><span class="p">,</span> <span class="n">deltap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gammap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">kappap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">epsilonp</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<p>与模型 1 唯一区别：<code>rts=RTS_VRS1</code>（可变规模报酬，增加凸性约束 $\sum_n \lambda_n = 1$）。</p>
+<hr />
+<h2 id="3-sbm-crs">模型 3：期望产出导向 SBM — CRS<a class="headerlink" href="#3-sbm-crs" title="Permanent link">&para;</a></h2>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">SBM</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L=Y&quot;</span><span class="p">,</span> <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">rts</span><span class="o">=</span><span class="n">RTS_CRS</span><span class="p">,</span>
+            <span class="n">baseindex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">refindex</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;mosek&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
-<table>
-<thead>
-<tr>
-<th>参数</th>
-<th>类型</th>
-<th>默认值</th>
-<th>含义</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>data</code></td>
-<td>DataFrame</td>
-<td>必填</td>
-<td>数据</td>
-</tr>
-<tr>
-<td><code>sent</code></td>
-<td>str</td>
-<td>必填</td>
-<td><code>"K L E=Y:CO2"</code></td>
-</tr>
-<tr>
-<td><code>z</code></td>
-<td>list</td>
-<td><code>None</code></td>
-<td>上下文变量</td>
-</tr>
-<tr>
-<td><code>gy</code></td>
-<td>list</td>
-<td><code>[1]</code></td>
-<td>期望产出方向向量</td>
-</tr>
-<tr>
-<td><code>gx</code></td>
-<td>list</td>
-<td><code>[1]</code></td>
-<td>投入方向向量</td>
-</tr>
-<tr>
-<td><code>gb</code></td>
-<td>list</td>
-<td><code>[1]</code></td>
-<td>非期望产出方向向量</td>
-</tr>
-<tr>
-<td><code>fun</code></td>
-<td>str</td>
-<td><code>FUN_PROD</code></td>
-<td>前沿类型</td>
-</tr>
-<tr>
-<td><code>rts</code></td>
-<td>str</td>
-<td><code>RTS_VRS1</code></td>
-<td>规模报酬</td>
-</tr>
-<tr>
-<td><code>deltap</code></td>
-<td>tuple</td>
-<td><code>None</code></td>
-<td>delta 变量 bounds <code>(min, max)</code></td>
-</tr>
-<tr>
-<td><code>gammap</code></td>
-<td>tuple</td>
-<td><code>None</code></td>
-<td>gamma 变量 bounds <code>(min, max)</code></td>
-</tr>
-<tr>
-<td><code>kappap</code></td>
-<td>tuple</td>
-<td><code>None</code></td>
-<td>kappa 变量 bounds <code>(min, max)</code></td>
-</tr>
-<tr>
-<td><code>epsilonp</code></td>
-<td>tuple</td>
-<td><code>None</code></td>
-<td>epsilon 变量 bounds <code>(min, max)</code></td>
-</tr>
-</tbody>
-</table>
 <hr />
-<h2 id="cnlssdweak_1">CNLSSDweak 方法列表<a class="headerlink" href="#cnlssdweak_1" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>方法</th>
-<th>返回值</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>optimize(email, solver)</code></td>
-<td>—</td>
-<td>求解模型</td>
-</tr>
-<tr>
-<td><code>display_status()</code></td>
-<td>打印</td>
-<td>求解状态</td>
-</tr>
-<tr>
-<td><code>display_alpha()</code></td>
-<td>打印</td>
-<td>alpha 值（VRS）</td>
-</tr>
-<tr>
-<td><code>display_delta()</code></td>
-<td>打印</td>
-<td>delta 值（投入系数）</td>
-</tr>
-<tr>
-<td><code>display_gamma()</code></td>
-<td>打印</td>
-<td>gamma 值（产出系数）</td>
-</tr>
-<tr>
-<td><code>display_kappa()</code></td>
-<td>打印</td>
-<td>kappa 值（非期望产出系数）</td>
-</tr>
-<tr>
-<td><code>display_residual()</code></td>
-<td>打印</td>
-<td>残差值</td>
-</tr>
-<tr>
-<td><code>get_status()</code></td>
-<td>int</td>
-<td>求解状态</td>
-</tr>
-<tr>
-<td><code>get_alpha()</code></td>
-<td>array</td>
-<td>alpha 值</td>
-</tr>
-<tr>
-<td><code>get_delta()</code></td>
-<td>DataFrame</td>
-<td>delta 值</td>
-</tr>
-<tr>
-<td><code>get_gamma()</code></td>
-<td>DataFrame</td>
-<td>gamma 值</td>
-</tr>
-<tr>
-<td><code>get_kappa()</code></td>
-<td>DataFrame</td>
-<td>kappa 值</td>
-</tr>
-<tr>
-<td><code>get_residual()</code></td>
-<td>array</td>
-<td>残差值</td>
-</tr>
-<tr>
-<td><code>get_adjusted_residual()</code></td>
-<td>array</td>
-<td>调整后残差</td>
-</tr>
-</tbody>
-</table>
-<h2 id="cnlsddfweak_2">CNLSDDFweak 方法列表<a class="headerlink" href="#cnlsddfweak_2" title="Permanent link">&para;</a></h2>
-<p>与 CNLSSDweak 类似，额外支持 <code>deltap</code>/<code>gammap</code>/<code>kappap</code> bounds 参数。</p>
+<h2 id="4-sbm-vrs">模型 4：期望产出导向 SBM — VRS<a class="headerlink" href="#4-sbm-vrs" title="Permanent link">&para;</a></h2>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">SBM</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L=Y&quot;</span><span class="p">,</span> <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">rts</span><span class="o">=</span><span class="n">RTS_VRS1</span><span class="p">,</span>
+            <span class="n">baseindex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">refindex</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;mosek&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
 <hr />
-<h2 id="_6">求解器说明<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>求解器</th>
-<th>适用场景</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>"knitro"</code></td>
-<td>CNLSSDweak（非线性）</td>
-<td>商业非线性求解器，必须用于 CET_MULT 模型</td>
-</tr>
-<tr>
-<td><code>"mosek"</code></td>
-<td>CNLSDDFweak（线性）</td>
-<td>商业线性求解器，速度快</td>
-</tr>
-</tbody>
-</table>
+<h2 id="5-sbm-crs">模型 5：投入与期望产出综合 SBM — CRS<a class="headerlink" href="#5-sbm-crs" title="Permanent link">&para;</a></h2>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">SBM</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L=Y&quot;</span><span class="p">,</span> <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">rts</span><span class="o">=</span><span class="n">RTS_CRS</span><span class="p">,</span>
+            <span class="n">baseindex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">refindex</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;mosek&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p>此方向对应 <code>hyper_orientedyx</code>，同时考虑投入冗余和产出不足，返回 <code>rho</code>（分式 SBM 效率）和 <code>t</code>（Charnes-Cooper 变换变量）。</p>
+<hr />
+<h2 id="6-sbm-vrs">模型 6：投入与期望产出综合 SBM — VRS<a class="headerlink" href="#6-sbm-vrs" title="Permanent link">&para;</a></h2>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">SBM</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L=Y&quot;</span><span class="p">,</span> <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">rts</span><span class="o">=</span><span class="n">RTS_VRS1</span><span class="p">,</span>
+            <span class="n">baseindex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">refindex</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;mosek&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="7-sbm-crs">模型 7：含非期望产出的非期望产出导向 SBM — CRS<a class="headerlink" href="#7-sbm-crs" title="Permanent link">&para;</a></h2>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">SBM</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L E=Y:CO2&quot;</span><span class="p">,</span> <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">gb</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">rts</span><span class="o">=</span><span class="n">RTS_CRS</span><span class="p">,</span>
+            <span class="n">baseindex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">refindex</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;mosek&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p>仅非期望产出松弛进入目标函数，衡量污染物可削减空间。</p>
+<hr />
+<h2 id="8-sbm-vrs">模型 8：含非期望产出的非期望产出导向 SBM — VRS<a class="headerlink" href="#8-sbm-vrs" title="Permanent link">&para;</a></h2>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">SBM</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L E=Y:CO2&quot;</span><span class="p">,</span> <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">gb</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">rts</span><span class="o">=</span><span class="n">RTS_VRS1</span><span class="p">,</span>
+            <span class="n">baseindex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">refindex</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;mosek&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="9-sbm-crs">模型 9：含非期望产出的全方向综合 SBM — CRS<a class="headerlink" href="#9-sbm-crs" title="Permanent link">&para;</a></h2>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">SBM</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L E=Y:CO2&quot;</span><span class="p">,</span> <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">gb</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">rts</span><span class="o">=</span><span class="n">RTS_CRS</span><span class="p">,</span>
+            <span class="n">baseindex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">refindex</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;mosek&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p>对应 <code>hyper_orientedyxb</code>，投入、期望产出和非期望产出的松弛全部进入目标函数。</p>
+<hr />
+<h2 id="10-sbm-vrs">模型 10：含非期望产出的全方向综合 SBM — VRS<a class="headerlink" href="#10-sbm-vrs" title="Permanent link">&para;</a></h2>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">model</span> <span class="o">=</span> <span class="n">SBM</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sent</span><span class="o">=</span><span class="s2">&quot;K L E=Y:CO2&quot;</span><span class="p">,</span> <span class="n">gy</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">gx</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">gb</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">rts</span><span class="o">=</span><span class="n">RTS_VRS1</span><span class="p">,</span>
+            <span class="n">baseindex</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">refindex</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">solver</span><span class="o">=</span><span class="s2">&quot;mosek&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="_6">数据要求<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<p>SBM 的目标函数中存在 $s/x_0$、$s/y_0$、$s/b_0$ 等相对松弛比率，因此所有投入、期望产出和非期望产出变量<strong>必须为严格正数</strong>（&gt; 0）。若数据中存在 0 或负数，需先进行平移或重新定义变量。</p>
+<hr />
+<p><strong>参考文献</strong>：
+- Tone, K. (2001). A slacks-based measure of efficiency in data envelopment analysis. <em>European Journal of Operational Research</em>, 130(3), 498-509.
+- Tone, K. (2004). Dealing with undesirable outputs in DEA: A slacks-based measure (SBM) approach. <em>GRIPS Research Report Series</em>.</p>
+<hr />
+<h2 id="_7">本章说明<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<p>本章介绍了 SBM 模型的数学原理、参数设定和 Python 实现。通过 <code>deabook.SBM</code> 模块，可以灵活设置投入导向、产出导向、非期望产出导向和综合非导向 SBM 模型。</p>
 
 
 
@@ -1634,7 +1361,7 @@ gx≥1（投入导向）：
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="April 28, 2026 14:08:16 UTC"><span class="timeago" datetime="2026-04-28T14:08:16+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="April 28, 2026 14:08:16 UTC">2026-04-28</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago" title="May 2, 2026 14:15:47 UTC"><span class="timeago" datetime="2026-05-02T14:15:47+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date" title="May 2, 2026 14:15:47 UTC">2026-05-02</span>
   </span>
 
     
