@@ -60,6 +60,8 @@ class MQDEAweak:
         self.undesirable_oriented = sum(self.gb) >= 1 and sum(self.gx) == 0 and sum(self.gy) == 0
         self.hyper_orientedyx = sum(self.gx) >= 1 and sum(self.gy) >= 1 and sum(self.gb) == 0
         self.hyper_orientedyb = sum(self.gb) >= 1 and sum(self.gy) >= 1 and sum(self.gx) == 0
+        self.hyper_orientedxb = sum(self.gx) >= 1 and sum(self.gb) >= 1 and sum(self.gy) == 0
+        self.hyper_orientedyxb = sum(self.gx) >= 1 and sum(self.gb) >= 1 and sum(self.gy) >= 1
 
         # Create a copy of the original data to add results columns
         self.datazz = data.copy()
@@ -106,14 +108,15 @@ class MQDEAweak:
 
         # Determine which columns to expect and how to process based on orientation and RTS
         if self.input_oriented or self.output_oriented or self.undesirable_oriented \
-            or (self.hyper_orientedyx and self.rts == RTS_CRS) or (self.hyper_orientedyb and self.rts == RTS_CRS):
+            or (self.hyper_orientedyx and self.rts == RTS_CRS) or (self.hyper_orientedyb and self.rts == RTS_CRS) \
+            or (self.hyper_orientedxb and self.rts == RTS_CRS) or (self.hyper_orientedyxb and self.rts == RTS_CRS):
             # Standard case: Expect 'te' and calculate a single 'D11'
             expected_cols = ['te']
             output_cols = ['D11']
             process_type = 'single_d11'
 
         elif (self.hyper_orientedyb and self.rts == RTS_VRS1) or (self.hyper_orientedyb and self.rts == RTS_VRS2) :
-            # Hyper + VRS case: Expect 'tei' and 'teo' and keep them separate
+            # Hyper + VRS case: Expect 'teuo' and 'teo' and keep them separate
             expected_cols = ['teuo', 'teo']
             output_cols = ['D11_teuo', 'D11_teo'] # Renaming for clarity
             process_type = 'separate_teuo_teo'
@@ -123,6 +126,18 @@ class MQDEAweak:
             expected_cols = ['tei', 'teo']
             output_cols = ['D11_tei', 'D11_teo'] # Renaming for clarity
             process_type = 'separate_tei_teo'
+
+        elif (self.hyper_orientedxb and self.rts == RTS_VRS2):
+            # Hyper xb + VRS2: Expect 'tei' and 'teuo'
+            expected_cols = ['tei', 'teuo']
+            output_cols = ['D11_tei', 'D11_teuo']
+            process_type = 'separate_tei_teuo'
+
+        elif (self.hyper_orientedyxb and self.rts == RTS_VRS2):
+            # Hyper yxb + VRS2: Expect 'tei', 'teuo' and 'teo'
+            expected_cols = ['tei', 'teuo', 'teo']
+            output_cols = ['D11_tei', 'D11_teuo', 'D11_teo']
+            process_type = 'separate_tei_teuo_teo'
 
         else:
             raise ValueError(f"Unsupported orientation/RTS combination: input={self.input_oriented}, output={self.output_oriented}, hyper={self.hyper_oriented}, rts={self.rts}")
@@ -156,6 +171,10 @@ class MQDEAweak:
                 data11_component = data11_results[expected_cols].rename(columns={'tei': 'D11_tei', 'teo': 'D11_teo'})
             elif process_type == 'separate_teuo_teo':
                 data11_component = data11_results[expected_cols].rename(columns={'teuo': 'D11_teuo', 'teo': 'D11_teo'})
+            elif process_type == 'separate_tei_teuo':
+                data11_component = data11_results[expected_cols].rename(columns={'tei': 'D11_tei', 'teuo': 'D11_teuo'})
+            elif process_type == 'separate_tei_teuo_teo':
+                data11_component = data11_results[expected_cols].rename(columns={'tei': 'D11_tei', 'teuo': 'D11_teuo', 'teo': 'D11_teo'})
             # Ensure the index matches the actual DMU index from DEA2 results
             # Assuming data11_results' index is the actual DMU identifier
             data11_component.index = data11_results.index
@@ -269,6 +288,49 @@ class MQDEAweak:
                 # Drop the intermediate columns
                 self.datazz.drop(columns = [f'{calc_cols[0]}_prev', f'{calc_cols[1]}_prev'], inplace=True)
 
+        elif process_type == 'separate_tei_teuo':
+            calc_cols = ['D11_tei', 'D11_teuo']
+            result_cols = ['mqpi_tei', 'mqpi_teuo']
+
+            if (
+                self.datazz.empty or
+                not all(col in self.datazz.columns for col in calc_cols) or
+                (self.datazz[calc_cols[0]].isnull().all() and self.datazz[calc_cols[1]].isnull().all())
+            ):
+                print(f"Warning: {', '.join(calc_cols)} calculation resulted in no valid data.")
+                self.datazz[result_cols[0]] = np.nan
+                self.datazz[result_cols[1]] = np.nan
+            else:
+                self.datazz[calc_cols[0]] = pd.to_numeric(self.datazz[calc_cols[0]], errors='coerce')
+                self.datazz[calc_cols[1]] = pd.to_numeric(self.datazz[calc_cols[1]], errors='coerce')
+                self.datazz[f'{calc_cols[0]}_prev'] = self.datazz.groupby(id)[calc_cols[0]].transform(lambda x: x.shift(1))
+                self.datazz[f'{calc_cols[1]}_prev'] = self.datazz.groupby(id)[calc_cols[1]].transform(lambda x: x.shift(1))
+                self.datazz[result_cols[0]] = self.datazz[calc_cols[0]] / self.datazz[f'{calc_cols[0]}_prev']
+                self.datazz[result_cols[1]] = self.datazz[calc_cols[1]] / self.datazz[f'{calc_cols[1]}_prev']
+                self.datazz.drop(columns = [f'{calc_cols[0]}_prev', f'{calc_cols[1]}_prev'], inplace=True)
+
+        elif process_type == 'separate_tei_teuo_teo':
+            calc_cols = ['D11_tei', 'D11_teuo', 'D11_teo']
+            result_cols = ['mqpi_tei', 'mqpi_teuo', 'mqpi_teo']
+
+            if (
+                self.datazz.empty or
+                not all(col in self.datazz.columns for col in calc_cols) or
+                (self.datazz[calc_cols[0]].isnull().all() and self.datazz[calc_cols[1]].isnull().all() and self.datazz[calc_cols[2]].isnull().all())
+            ):
+                print(f"Warning: {', '.join(calc_cols)} calculation resulted in no valid data.")
+                self.datazz[result_cols[0]] = np.nan
+                self.datazz[result_cols[1]] = np.nan
+                self.datazz[result_cols[2]] = np.nan
+            else:
+                for col in calc_cols:
+                    self.datazz[col] = pd.to_numeric(self.datazz[col], errors='coerce')
+                for col in calc_cols:
+                    self.datazz[f'{col}_prev'] = self.datazz.groupby(id)[col].transform(lambda x: x.shift(1))
+                for i, col in enumerate(calc_cols):
+                    self.datazz[result_cols[i]] = self.datazz[col] / self.datazz[f'{col}_prev']
+                self.datazz.drop(columns = [f'{col}_prev' for col in calc_cols], inplace=True)
+
         # The function modifies self.datazz in place. It doesn't explicitly return datazz.
         # If the calling code expects a return value, uncomment the line below:
         # return self.datazz
@@ -292,7 +354,8 @@ class MQDEAweak:
 
         # Determine which columns to expect and how to process based on orientation and RTS
         if self.input_oriented or self.output_oriented or self.undesirable_oriented \
-            or (self.hyper_orientedyx and self.rts == RTS_CRS) or (self.hyper_orientedyb and self.rts == RTS_CRS):
+            or (self.hyper_orientedyx and self.rts == RTS_CRS) or (self.hyper_orientedyb and self.rts == RTS_CRS) \
+            or (self.hyper_orientedxb and self.rts == RTS_CRS) or (self.hyper_orientedyxb and self.rts == RTS_CRS):
             # D11: Current period tech, current period frontier (Efficiency change component)
             dataz11_list = []  # List to store D11 results (or components) for each year
             expected_cols = ['te']
@@ -853,6 +916,215 @@ class MQDEAweak:
 
             print("CONTEMPORARY tech (Hyperbolic  yb) calculation finished.")
 
+        elif (self.hyper_orientedxb and self.rts == RTS_VRS2):
+            # Hyper xb + VRS2: Expect 'tei' and 'teuo'
+            # D11
+            dataz11_list = []
+            expected_cols = ['tei', 'teuo']
+            output_cols = ['D11_tei', 'D11_teuo']
+            for tindex in self.tlt.index:
+                current_year = self.tlt.iloc[tindex]
+                print(f"  Evaluating year {current_year} against year {current_year} (D11 component)...")
+                model = DEAweak2(data=data, sent=sent, gy=self.gy, gx=self.gx, gb=self.gb,
+                                rts=self.rts, baseindex=f"{year}=[{current_year}]",
+                                refindex=f"{year}=[{current_year}]")
+                data11_results = model.optimize(self.email, self.solver)
+                if not all(col in data11_results.columns for col in expected_cols):
+                    raise KeyError(f"DEAweak2 results for year {current_year} missing columns '{expected_cols}'. Available: {list(data11_results.columns)}")
+                data11_component = data11_results[expected_cols].rename(
+                    columns={expected_cols[0]: output_cols[0], expected_cols[1]: output_cols[1]})
+                data11_component.index = data11_results.index
+                dataz11_list.append(data11_component)
+            dataz11 = pd.concat(dataz11_list)
+            self.datazz = self.datazz.join(dataz11, how='left')
+
+            # D12
+            dataz12_list = []
+            expected_cols = ['tei', 'teuo']
+            output_cols = ['D12_tei', 'D12_teuo']
+            for tindex in self.tlt.index[1:]:
+                current_year = self.tlt.iloc[tindex]
+                previous_year = self.tlt.iloc[tindex - 1]
+                print(f"  Evaluating year {current_year} against year {previous_year} (D12 component)...")
+                model = DEAweak2(data=data, sent=sent, gy=self.gy, gx=self.gx, gb=self.gb,
+                                rts=self.rts, baseindex=f"{year}=[{current_year}]",
+                                refindex=f"{year}=[{previous_year}]")
+                data12_results = model.optimize(self.email, self.solver)
+                if not all(col in data12_results.columns for col in expected_cols):
+                    raise KeyError(f"DEAweak2 results for year {current_year} missing columns '{expected_cols}'. Available: {list(data12_results.columns)}")
+                data12_component = data12_results[expected_cols].rename(
+                    columns={expected_cols[0]: output_cols[0], expected_cols[1]: output_cols[1]})
+                data12_component.index = data12_results.index
+                dataz12_list.append(data12_component)
+            dataz12 = pd.concat(dataz12_list)
+            self.datazz = self.datazz.join(dataz12, how='left')
+
+            # D21
+            dataz21_list = []
+            expected_cols = ['tei', 'teuo']
+            output_cols = ['D21_tei', 'D21_teuo']
+            for tindex in self.tlt.index[:-1]:
+                current_year = self.tlt.iloc[tindex]
+                next_year = self.tlt.iloc[tindex + 1]
+                print(f"  Evaluating year {current_year} against year {next_year} (D21 component)...")
+                model = DEAweak2(data=data, sent=sent, gy=self.gy, gx=self.gx, gb=self.gb,
+                                rts=self.rts, baseindex=f"{year}=[{current_year}]",
+                                refindex=f"{year}=[{next_year}]")
+                data21_results = model.optimize(self.email, self.solver)
+                if not all(col in data21_results.columns for col in expected_cols):
+                    raise KeyError(f"DEAweak2 results for year {current_year} missing columns '{expected_cols}'. Available: {list(data21_results.columns)}")
+                data21_component = data21_results[expected_cols].rename(
+                    columns={expected_cols[0]: output_cols[0], expected_cols[1]: output_cols[1]})
+                data21_component.index = data21_results.index
+                dataz21_list.append(data21_component)
+            dataz21 = pd.concat(dataz21_list)
+            self.datazz = self.datazz.join(dataz21, how='left')
+
+            # --- Calculate Malmquist Indices for hyper xb VRS2 ---
+            cols_to_numeric = ['D11_tei', 'D11_teuo', 'D12_tei', 'D12_teuo', 'D21_tei', 'D21_teuo']
+            for col in cols_to_numeric:
+                if col in self.datazz.columns:
+                    self.datazz[col] = pd.to_numeric(self.datazz[col], errors='coerce')
+
+            self.datazz['D11_tei_上一期'] = self.datazz.groupby(id)['D11_tei'].transform(lambda x: x.shift(1))
+            self.datazz['D11_teuo_上一期'] = self.datazz.groupby(id)['D11_teuo'].transform(lambda x: x.shift(1))
+            self.datazz['D21_tei_上一期'] = self.datazz.groupby(id)['D21_tei'].transform(lambda x: x.shift(1))
+            self.datazz['D21_teuo_上一期'] = self.datazz.groupby(id)['D21_teuo'].transform(lambda x: x.shift(1))
+
+            # MQ
+            ratio1_tei = (self.datazz['D12_tei'] / self.datazz['D11_tei_上一期']).replace([np.inf, -np.inf], np.nan)
+            ratio2_tei = (self.datazz['D11_tei'] / self.datazz['D21_tei_上一期']).replace([np.inf, -np.inf], np.nan)
+            self.datazz['product_of_ratios_tei'] = ratio1_tei * ratio2_tei
+            self.datazz["MQ_tei"] = np.sqrt(self.datazz['product_of_ratios_tei'].clip(lower=0))
+
+            ratio1_teuo = (self.datazz['D12_teuo'] / self.datazz['D11_teuo_上一期']).replace([np.inf, -np.inf], np.nan)
+            ratio2_teuo = (self.datazz['D11_teuo'] / self.datazz['D21_teuo_上一期']).replace([np.inf, -np.inf], np.nan)
+            self.datazz['product_of_ratios_teuo'] = ratio1_teuo * ratio2_teuo
+            self.datazz["MQ_teuo"] = np.sqrt(self.datazz['product_of_ratios_teuo'].clip(lower=0))
+
+            # MEFFCH
+            self.datazz["MEFFCH_tei"] = (self.datazz["D11_tei"] / self.datazz['D11_tei_上一期']).replace([np.inf, -np.inf], np.nan)
+            self.datazz["MEFFCH_teuo"] = (self.datazz["D11_teuo"] / self.datazz['D11_teuo_上一期']).replace([np.inf, -np.inf], np.nan)
+
+            # MTECHCH
+            ratio3_tei = (self.datazz["D12_tei"] / self.datazz["D11_tei"]).replace([np.inf, -np.inf], np.nan)
+            ratio4_tei = (self.datazz['D11_tei_上一期'] / self.datazz['D21_tei_上一期']).replace([np.inf, -np.inf], np.nan)
+            self.datazz["MTECHCH_tei"] = np.sqrt((ratio3_tei * ratio4_tei).clip(lower=0))
+
+            ratio3_teuo = (self.datazz["D12_teuo"] / self.datazz["D11_teuo"]).replace([np.inf, -np.inf], np.nan)
+            ratio4_teuo = (self.datazz['D11_teuo_上一期'] / self.datazz['D21_teuo_上一期']).replace([np.inf, -np.inf], np.nan)
+            self.datazz["MTECHCH_teuo"] = np.sqrt((ratio3_teuo * ratio4_teuo).clip(lower=0))
+
+            intermediate_cols_to_drop = [
+                'D11_tei_上一期', 'D11_teuo_上一期', 'D21_tei_上一期', 'D21_teuo_上一期',
+                'product_of_ratios_tei', 'product_of_ratios_teuo'
+            ]
+            self.datazz.drop(columns=intermediate_cols_to_drop, inplace=True, errors='ignore')
+
+            print("CONTEMPORARY tech (Hyperbolic xb) calculation finished.")
+
+        elif (self.hyper_orientedyxb and self.rts == RTS_VRS2):
+            # Hyper yxb + VRS2: Expect 'tei', 'teuo' and 'teo'
+            # D11
+            dataz11_list = []
+            expected_cols = ['tei', 'teuo', 'teo']
+            output_cols = ['D11_tei', 'D11_teuo', 'D11_teo']
+            for tindex in self.tlt.index:
+                current_year = self.tlt.iloc[tindex]
+                print(f"  Evaluating year {current_year} against year {current_year} (D11 component)...")
+                model = DEAweak2(data=data, sent=sent, gy=self.gy, gx=self.gx, gb=self.gb,
+                                rts=self.rts, baseindex=f"{year}=[{current_year}]",
+                                refindex=f"{year}=[{current_year}]")
+                data11_results = model.optimize(self.email, self.solver)
+                if not all(col in data11_results.columns for col in expected_cols):
+                    raise KeyError(f"DEAweak2 results for year {current_year} missing columns '{expected_cols}'. Available: {list(data11_results.columns)}")
+                data11_component = data11_results[expected_cols].rename(
+                    columns={expected_cols[0]: output_cols[0], expected_cols[1]: output_cols[1], expected_cols[2]: output_cols[2]})
+                data11_component.index = data11_results.index
+                dataz11_list.append(data11_component)
+            dataz11 = pd.concat(dataz11_list)
+            self.datazz = self.datazz.join(dataz11, how='left')
+
+            # D12
+            dataz12_list = []
+            expected_cols = ['tei', 'teuo', 'teo']
+            output_cols = ['D12_tei', 'D12_teuo', 'D12_teo']
+            for tindex in self.tlt.index[1:]:
+                current_year = self.tlt.iloc[tindex]
+                previous_year = self.tlt.iloc[tindex - 1]
+                print(f"  Evaluating year {current_year} against year {previous_year} (D12 component)...")
+                model = DEAweak2(data=data, sent=sent, gy=self.gy, gx=self.gx, gb=self.gb,
+                                rts=self.rts, baseindex=f"{year}=[{current_year}]",
+                                refindex=f"{year}=[{previous_year}]")
+                data12_results = model.optimize(self.email, self.solver)
+                if not all(col in data12_results.columns for col in expected_cols):
+                    raise KeyError(f"DEAweak2 results for year {current_year} missing columns '{expected_cols}'. Available: {list(data12_results.columns)}")
+                data12_component = data12_results[expected_cols].rename(
+                    columns={expected_cols[0]: output_cols[0], expected_cols[1]: output_cols[1], expected_cols[2]: output_cols[2]})
+                data12_component.index = data12_results.index
+                dataz12_list.append(data12_component)
+            dataz12 = pd.concat(dataz12_list)
+            self.datazz = self.datazz.join(dataz12, how='left')
+
+            # D21
+            dataz21_list = []
+            expected_cols = ['tei', 'teuo', 'teo']
+            output_cols = ['D21_tei', 'D21_teuo', 'D21_teo']
+            for tindex in self.tlt.index[:-1]:
+                current_year = self.tlt.iloc[tindex]
+                next_year = self.tlt.iloc[tindex + 1]
+                print(f"  Evaluating year {current_year} against year {next_year} (D21 component)...")
+                model = DEAweak2(data=data, sent=sent, gy=self.gy, gx=self.gx, gb=self.gb,
+                                rts=self.rts, baseindex=f"{year}=[{current_year}]",
+                                refindex=f"{year}=[{next_year}]")
+                data21_results = model.optimize(self.email, self.solver)
+                if not all(col in data21_results.columns for col in expected_cols):
+                    raise KeyError(f"DEAweak2 results for year {current_year} missing columns '{expected_cols}'. Available: {list(data21_results.columns)}")
+                data21_component = data21_results[expected_cols].rename(
+                    columns={expected_cols[0]: output_cols[0], expected_cols[1]: output_cols[1], expected_cols[2]: output_cols[2]})
+                data21_component.index = data21_results.index
+                dataz21_list.append(data21_component)
+            dataz21 = pd.concat(dataz21_list)
+            self.datazz = self.datazz.join(dataz21, how='left')
+
+            # --- Calculate Malmquist Indices for hyper yxb VRS2 ---
+            cols_to_numeric = ['D11_tei', 'D11_teuo', 'D11_teo', 'D12_tei', 'D12_teuo', 'D12_teo', 'D21_tei', 'D21_teuo', 'D21_teo']
+            for col in cols_to_numeric:
+                if col in self.datazz.columns:
+                    self.datazz[col] = pd.to_numeric(self.datazz[col], errors='coerce')
+
+            self.datazz['D11_tei_上一期'] = self.datazz.groupby(id)['D11_tei'].transform(lambda x: x.shift(1))
+            self.datazz['D11_teuo_上一期'] = self.datazz.groupby(id)['D11_teuo'].transform(lambda x: x.shift(1))
+            self.datazz['D11_teo_上一期'] = self.datazz.groupby(id)['D11_teo'].transform(lambda x: x.shift(1))
+            self.datazz['D21_tei_上一期'] = self.datazz.groupby(id)['D21_tei'].transform(lambda x: x.shift(1))
+            self.datazz['D21_teuo_上一期'] = self.datazz.groupby(id)['D21_teuo'].transform(lambda x: x.shift(1))
+            self.datazz['D21_teo_上一期'] = self.datazz.groupby(id)['D21_teo'].transform(lambda x: x.shift(1))
+
+            # MQ
+            for suffix in ['tei', 'teuo', 'teo']:
+                r1 = (self.datazz[f'D12_{suffix}'] / self.datazz[f'D11_{suffix}_上一期']).replace([np.inf, -np.inf], np.nan)
+                r2 = (self.datazz[f'D11_{suffix}'] / self.datazz[f'D21_{suffix}_上一期']).replace([np.inf, -np.inf], np.nan)
+                self.datazz[f'product_of_ratios_{suffix}'] = r1 * r2
+                self.datazz[f"MQ_{suffix}"] = np.sqrt(self.datazz[f'product_of_ratios_{suffix}'].clip(lower=0))
+
+            # MEFFCH
+            for suffix in ['tei', 'teuo', 'teo']:
+                self.datazz[f"MEFFCH_{suffix}"] = (self.datazz[f"D11_{suffix}"] / self.datazz[f'D11_{suffix}_上一期']).replace([np.inf, -np.inf], np.nan)
+
+            # MTECHCH
+            for suffix in ['tei', 'teuo', 'teo']:
+                r3 = (self.datazz[f"D12_{suffix}"] / self.datazz[f"D11_{suffix}"]).replace([np.inf, -np.inf], np.nan)
+                r4 = (self.datazz[f'D11_{suffix}_上一期'] / self.datazz[f'D21_{suffix}_上一期']).replace([np.inf, -np.inf], np.nan)
+                self.datazz[f"MTECHCH_{suffix}"] = np.sqrt((r3 * r4).clip(lower=0))
+
+            intermediate_cols_to_drop = [
+                'D11_tei_上一期', 'D11_teuo_上一期', 'D11_teo_上一期',
+                'D21_tei_上一期', 'D21_teuo_上一期', 'D21_teo_上一期',
+                'product_of_ratios_tei', 'product_of_ratios_teuo', 'product_of_ratios_teo'
+            ]
+            self.datazz.drop(columns=intermediate_cols_to_drop, inplace=True, errors='ignore')
+
+            print("CONTEMPORARY tech (Hyperbolic yxb) calculation finished.")
 
         else:
             raise ValueError(f"Unsupported orientation/RTS combination: input={self.input_oriented}, output={self.output_oriented}, hyper={self.hyper_oriented}, rts={self.rts}")

@@ -1,284 +1,168 @@
-# 第十三章：SBM、DDF、NDDF、MPI 从零实现
+# 第十三章：影子价格与对偶模型
 
-**主题**：使用 Pyomo 从零实现 SBM、DDF、NDDF、Malmquist 指数和 Malmquist-Luenberger 指数。
+**主题**：使用 Pyomo 构建 SBM 和 NDDF 的对偶模型，估计投入、产出和非期望产出的影子价格。
 
 **数据文件**：
-- `Ex4.dta`（K, L, Y, CO2）
-- `Ex5.dta`（labor, capital, energy, gdp, co2）
+- `Ex4.dta`（30个中国省份，3期，含 K,L,Y,CO2）
+- `Ex5.dta`（含 labor,capital,energy,gdp,co2）
 
-**说明**：本章不使用 deabook 包，所有函数为 notebook 内自定义实现。
+**变量含义**：
+- `K`：资本, `L`：劳动, `Y`：产出(GDP), `CO2`：碳排放（非期望产出）
+- `labor`：劳动, `capital`：资本, `energy`：能源, `gdp`：GDP, `co2`：CO2
 
 ---
 
-## 导入
+## 安装与导入
+
+本章所有模型使用 Pyomo 从零构建对偶模型，不依赖 deabook 包。
+
+```bash
+pip install pyomo mosek
+```
 
 ```python
+from pyomo.environ import *
 import pandas as pd
 import numpy as np
-from pyomo.environ import ConcreteModel, Set, Var, Objective, Constraint, Reals, minimize, maximize
+import re
+import warnings
+warnings.filterwarnings("ignore")
 ```
 
 ---
 
-## 公式语法
+## 对偶模型概念
 
-与 dea8 相同，使用 `"Y~K L"` 格式，扩展支持非期望产出：
+对偶模型（影子价格模型）是 SBM/NDDF 原始模型的对偶问题，通过求解对偶问题获得各变量的边际价值（影子价格）：
 
-```
-"Y~K L"           # 无非期望产出
-"Y:CO2~K L"       # 含非期望产出（: 分隔）
-```
-
-- `~` 左边 `:` 前：期望产出（Y）
-- `~` 左边 `:` 后：非期望产出（CO2）
-- `~` 右边：投入（K, L，空格分隔）
+| 模型 | 原始问题 | 对偶问题 |
+|------|---------|---------|
+| SBM | 最小化效率损失 | 最大化 pomega |
+| NDDF | 最大化方向距离 | 最小化总成本 |
 
 ---
 
-## 函数 1：sbm — SBM 模型（无非期望产出）
+### 参数详解
 
-```python
-def sbm(formula, dataframe, evaquery=None, refquery=None):
-    ...
-```
+#### SBM 对偶系列
 
-### 示例
+| 参数 | 类型 | 可选值 | 含义 |
+|------|------|--------|------|
+| `dataframe` | DataFrame | — | DMU 数据（sbmdual / sbmdual2） |
+| `varname` | list | `["K","L","Y","CO2"]` | 变量名列表 |
+| `P` | int | `2` | 投入变量个数 |
+| `Q` | int | `1` | 期望产出变量个数 |
+| `formula` | str | `"Y:CO2=K L"` | 公式语法（仅 sbmdual3） |
+| `evaquery` | str | `"t==[1,2]"` | 评价 DMU 筛选 |
+| `refquery` | str | `"t==[1,2,3]"` | 参考集 DMU 筛选 |
 
-```python
-res = sbm("Y~K L", data)
-```
+#### NDDF 对偶系列
 
-### 参数
+| 参数 | 类型 | 可选值 | 含义 |
+|------|------|--------|------|
+| `dataframe` | DataFrame | — | DMU 数据（nddfdual） |
+| `varname` | list | `["labor","capital","energy","gdp","co2"]` | 变量名列表 |
+| `P` | int | `3` | 投入变量个数 |
+| `Q` | int | `1` | 期望产出变量个数 |
+| `formula` | str | `"gdp:co2=labor capital energy"` | 公式语法（仅 nddfdual2） |
+| `gx` | list | `[-1,-1,-1]` | 投入方向向量 |
+| `gy` | list | `[1]` | 期望产出方向向量 |
+| `gb` | list | `[-1]` | 非期望产出方向向量 |
+| `weight` | list | `None` | 权重矩阵 |
+| `evaquery` | str | `None` | 评价 DMU 筛选 |
+| `refquery` | str | `None` | 参考集 DMU 筛选 |
 
-| 参数 | 含义 |
-|------|------|
-| `formula` | `"Y~K L"` |
-| `dataframe` | DataFrame |
-| `evaquery` | 评价 DMU 筛选 |
-| `refquery` | 参考 DMU 筛选 |
+---
 
 ### 返回值
 
-DataFrame，包含效率值。
+#### SBM 对偶
+
+| 返回列 | 含义 |
+|--------|------|
+| `obj` | 目标函数值 |
+| `shadow price K`, `shadow price L` 等 | 投入影子价格 |
+| `shadow price Y` 等 | 期望产出影子价格 |
+| `shadow price CO2` 等 | 非期望产出影子价格 |
+
+#### NDDF 对偶
+
+| 返回列 | 含义 |
+|--------|------|
+| `obj` | 目标函数值 |
+| `shadow price labor`, `shadow price capital` 等 | 投入影子价格 |
+| `shadow price gdp` 等 | 期望产出影子价格 |
+| `shadow price co2` 等 | 非期望产出影子价格 |
+
+### 影子价格解释
+
+| 影子价格 | 含义 |
+|---------|------|
+| `px`（投入） | 增加一单位投入的边际成本 |
+| `py`（期望产出） | 增加一单位期望产出的边际收益 |
+| `pb`（非期望产出） | 减少一单位非期望产出的边际成本（即排放成本） |
 
 ---
 
-## 函数 2：sbm2 — SBM 模型（含非期望产出）
+## SBM 对偶 vs NDDF 对偶
 
-```python
-def sbm2(formula, dataframe, evaquery=None, refquery=None):
-    ...
-```
-
-### 示例
-
-```python
-res = sbm2("Y:CO2~K L", data)
-```
-
-### 参数
-
-| 参数 | 含义 |
-|------|------|
-| `formula` | `"Y:CO2~K L"`（含非期望产出） |
-| `dataframe` | DataFrame |
-| `evaquery` | 评价 DMU 筛选 |
-| `refquery` | 参考 DMU 筛选 |
-
-### 返回值
-
-DataFrame，包含效率值。
-
-### sbm vs sbm2
-
-| 特征 | sbm | sbm2 |
-|------|-----|------|
-| 非期望产出 | 不支持 | 支持 |
-| formula | `"Y~K L"` | `"Y:CO2~K L"` |
-| 松弛变量 | 仅投入/产出 | 额外包含非期望产出松弛 |
+| 特征 | SBM 对偶 | NDDF 对偶 |
+|------|---------|-----------|
+| 目标函数 | maximize pomega | minimize sum(px*x) - sum(py*y) + sum(pb*b) + pomega |
+| 权重 | 无 | 使用 weight 参数 |
+| 方向向量 | 无 | 使用 gx/gy/gb |
+| 约束数 | 5 类 | 4 类 |
 
 ---
 
-## 函数 3：ddf — 方向距离函数
+## 模型 1：sbmdual — 基于列名
 
 ```python
-def ddf(formula, dataframe, gx=None, gy=None, gb=None, evaquery=None, refquery=None):
-    ...
-```
-
-### 示例
-
-```python
-res = ddf("Y:CO2~K L", data, gx=[1,1], gy=[1], gb=[1])
-```
-
-### 参数
-
-| 参数 | 含义 |
-|------|------|
-| `formula` | `"Y:CO2~K L"` |
-| `gx` | 投入方向向量（如 `[1,1]`） |
-| `gy` | 期望产出方向向量（如 `[1]`） |
-| `gb` | 非期望产出方向向量（如 `[1]`） |
-| `evaquery` | 评价 DMU 筛选 |
-| `refquery` | 参考 DMU 筛选 |
-
-### 返回值
-
-DataFrame，包含方向距离函数值。
-
----
-
-## 函数 4：nddf — 非径向方向距离函数
-
-```python
-def nddf(formula, dataframe, gx=None, gy=None, gb=None, weight=None, evaquery=None, refquery=None):
-    ...
-```
-
-### 示例
-
-```python
-res = nddf("Y:CO2~K L", data, gx=[1,1], gy=[1], gb=[1], weight=[1/5,1/5,1/5,1/5,1/5])
-```
-
-### 参数
-
-| 参数 | 含义 |
-|------|------|
-| `formula` | `"Y:CO2~K L"` |
-| `gx` | 投入方向向量 |
-| `gy` | 期望产出方向向量 |
-| `gb` | 非期望产出方向向量 |
-| `weight` | 各变量权重向量（长度 = 投入数 + 产出数 + 非期望产出数） |
-| `evaquery` | 评价 DMU 筛选 |
-| `refquery` | 参考 DMU 筛选 |
-
-### nddf vs ddf 区别
-
-| 特征 | ddf | nddf |
-|------|-----|------|
-| 类型 | 径向 DDF | 非径向 DDF |
-| 效率度量 | 单一 theta | 逐变量独立 rho |
-| 权重 | 无 | `weight` 参数 |
-| 返回粒度 | 整体效率 | 每个变量的独立效率 |
-
----
-
-## 函数 5：dea8 — DEA 完整版
-
-同第十二章的 `dea8`，此处作为 MPI 计算的底层模型。
-
-```python
-res = dea8("Y~K L", data, rts="crs", orient="oo")
+ex4 = pd.read_stata("Ex4.dta")
+data = sbmdual(ex4, ["K","L","Y","CO2"], 2, 1)
 ```
 
 ---
 
-## 函数 6：mpi — Malmquist 指数
+## 模型 2：sbmdual2 — 支持筛选
 
 ```python
-def mpi(formula, data, id, t):
-    ...
+data = sbmdual2(ex4, ["K","L","Y","CO2"], 2, 1, "t==[1,2]", "t==[1,2,3]")
 ```
-
-### 示例
-
-```python
-res = mpi("Y~K L", data, id="province", t="year")
-```
-
-### 参数
-
-| 参数 | 含义 |
-|------|------|
-| `formula` | `"Y~K L"` |
-| `data` | 面板数据 DataFrame |
-| `id` | DMU 标识列名 |
-| `t` | 时间列名 |
-
-### 返回值
-
-DataFrame，包含：
-- `D11`：当期效率
-- `MQ`：Malmquist 指数
-- `MEFFCH`：效率变化
-- `MTECHCH`：技术变化
 
 ---
 
-## 函数 7：mpi2 — 增强版 Malmquist（多种技术选项）
+## 模型 3：sbmdual3 — formula 语法
 
 ```python
-def mpi2(formula, data, id, t, tech=None):
-    ...
+data = sbmdual3("Y:CO2=K L", ex4, "t==[1,2]", "t==[1,2,3]")
 ```
-
-### tech 参数
-
-| 值 | 含义 |
-|----|------|
-| `None` | 默认技术 |
-| `"com"` | 当期技术（Contemporary） |
-| `"seq"` | 顺序技术（Sequential） |
-| `"window N"` | 窗口技术，N 为窗口大小，如 `"window 3"` |
 
 ---
 
-## 函数 8：mpi3 — 增强版 Malmquist（增加 global 技术）
+## 模型 4：nddfdual — 基于列名
 
 ```python
-def mpi3(formula, data, id, t, tech=None):
-    ...
+ex5 = pd.read_stata("Ex5.dta")
+data = nddfdual(ex5, ["labor","capital","energy","gdp","co2"], 3, 1)
 ```
-
-### tech 参数
-
-在 mpi2 基础上增加：
-
-| 值 | 含义 |
-|----|------|
-| `"global"` | 全局技术（所有期 DMU 构成统一参考集） |
-| 其余同 mpi2 | `"com"`, `"seq"`, `"window N"` |
 
 ---
 
-## 函数 9：mlpi — Malmquist-Luenberger 指数
+## 模型 5：nddfdual2 — formula + 方向向量
 
 ```python
-def mlpi(formula, data, id, t, tech=None):
-    ...
+data = nddfdual2("gdp:co2=labor capital energy", ex5, gx=[-1,-1,-1], gy=[1], gb=[-1])
 ```
 
-### 示例
+---
 
-```python
-res = mlpi("Y:CO2~K L", data, id="province", t="year")
-```
+## 函数速查表
 
-### 参数
-
-| 参数 | 含义 |
-|------|------|
-| `formula` | `"Y:CO2~K L"`（含非期望产出） |
-| `data` | 面板数据 |
-| `id` | DMU 标识列名 |
-| `t` | 时间列名 |
-| `tech` | 技术选项（同 mpi2） |
-
-### mlpi vs mpi 区别
-
-| 特征 | mpi | mlpi |
-|------|-----|------|
-| 底层模型 | dea8（DEA） | ddf（方向距离函数） |
-| 非期望产出 | 不支持 | 支持 |
-| formula | `"Y~K L"` | `"Y:CO2~K L"` |
-| 效率距离 | DEA 径向 | DDF 方向距离 |
-
-### 返回值
-
-DataFrame，包含：
-- `D11`：当期距离函数值
-- `MLPI`：Malmquist-Luenberger 指数
-- `MEFFCH`：效率变化
-- `MTECHCH`：技术变化
+| 函数 | 输入格式 | 特点 |
+|------|---------|------|
+| `sbmdual` | varname 列表 + P, Q | SBM 对偶，全样本 |
+| `sbmdual2` | varname 列表 + P, Q + evaquery/refquery | SBM 对偶，支持筛选 |
+| `sbmdual3` | formula 字符串 | SBM 对偶，公式语法 |
+| `nddfdual` | varname 列表 + P, Q | NDDF 对偶，全样本 |
+| `nddfdual2` | formula + gx/gy/gb/weight | NDDF 对偶，完整参数 |

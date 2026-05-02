@@ -247,16 +247,19 @@ class DEAweak2(DEA2):
         self.num_outputs = len(self.y[0])
         self.num_unoutputs = len(self.b[0])
         # print(self.gx,self.gy,")))))))))))))")
-        # Determine orientation based on gx/gy vectors
+        # Determine orientation based on gx/gy/gb vectors
         self.input_oriented = sum(self.gx) >= 1 and sum(self.gy) == 0 and sum(self.gb) == 0
         self.output_oriented = sum(self.gy) >= 1 and sum(self.gx) == 0 and sum(self.gb) == 0
         self.unoutput_oriented = sum(self.gb) >= 1 and sum(self.gx) == 0 and sum(self.gy) == 0
         self.hyper_orientedyx = sum(self.gx) >= 1 and sum(self.gy) >= 1 and sum(self.gb) == 0
         self.hyper_orientedyb = sum(self.gb) >= 1 and sum(self.gy) >= 1 and sum(self.gx) == 0
+        self.hyper_orientedxb = sum(self.gb) >= 1 and sum(self.gx) >= 1 and sum(self.gy) == 0
+        self.hyper_orientedyxb = sum(self.gb) >= 1 and sum(self.gx) >= 1 and sum(self.gy) >= 1
 
         if not (self.input_oriented or self.output_oriented or self.unoutput_oriented \
-                or self.hyper_orientedyx or self.hyper_orientedyb):
-             raise ValueError("gx and gy must represent either input or output or hyperyx or hyperyb orientation.")
+                or self.hyper_orientedyx or self.hyper_orientedyb \
+                or self.hyper_orientedxb or self.hyper_orientedyxb):
+             raise ValueError("gx and gy must represent either input or output or hyperyx or hyperyb or hyperxb or hyperyxb orientation.")
         if (self.input_oriented and self.output_oriented)   \
             or (self.input_oriented and self.unoutput_oriented) or (self.output_oriented and self.unoutput_oriented):
              # Original code structure suggests one or the other dominates based on the if/elif.
@@ -316,7 +319,7 @@ class DEAweak2(DEA2):
                 elif self.rts == RTS_VRS2:
                     model.rho = Var(bounds=(1, None), doc=f'efficiency for DMU {actual_index}')
                     model.mu = Var(model.R, bounds=(0.0, None),doc='emission reduction factor2')
-            elif self.hyper_orientedyx or self.hyper_orientedyb: # Hyper orientation, rho can be any value, 但正常<1
+            elif self.hyper_orientedyx or self.hyper_orientedyb or self.hyper_orientedxb or self.hyper_orientedyxb: # Hyper orientation, rho can be any value, 但正常<1
                 if self.rts == RTS_CRS: # Hyper orientation with CRS, rho efficiency <= 1
                     model.rho = Var(bounds=(0, 1), doc=f'efficiency for DMU {actual_index}')  
                     model.theta = Var(bounds=(0.0, 1.0),doc='emission reduction factor')
@@ -338,11 +341,11 @@ class DEAweak2(DEA2):
                 model.objective = Objective(rule=lambda m: m.rho, sense=minimize, doc='objective function')
             elif self.output_oriented:
                 model.objective = Objective(rule=lambda m: m.rho, sense=maximize, doc='objective function')
-            elif self.hyper_orientedyx or self.hyper_orientedyb:
+            elif self.hyper_orientedyx or self.hyper_orientedyb or self.hyper_orientedxb or self.hyper_orientedyxb:
                 if self.rts == RTS_CRS:
                     model.objective = Objective(rule=lambda m: m.rho, sense=minimize, doc='objective function')
                 elif self.rts == RTS_VRS1 or self.rts == RTS_VRS2:
-                    # Hyper orientation with CRS, minimize rho
+                    # Hyper orientation with VRS, maximize rho (DDF-style beta)
                     model.objective = Objective(rule=lambda m: m.rho, sense=maximize, doc='objective function')
                 else:
                     raise ValueError("Invalid RTS configuration for hyper orientation.")
@@ -447,7 +450,36 @@ class DEAweak2(DEA2):
                     # Input is not scaled by theta in input orientation
                     return sum((model.lamda[r]+model.mu[r])* self.xref[r][j] for r in model.R) <= \
                         self.x[current_dmu_range_index][j]
-      
+        elif self.hyper_orientedxb:
+            if self.rts == RTS_CRS:
+                def input_rule(model, j):
+                    # Hyper xb: Input is scaled by rho if gx[j]==1, else theta
+                    if self.gx[j] == 1:
+                        return sum(model.lamda[r]*self.xref[r][j] for r in model.R) <= model.rho*self.x[current_dmu_range_index][j]
+                    else:
+                        return sum(model.lamda[r]*self.xref[r][j] for r in model.R) <= model.theta*self.x[current_dmu_range_index][j]
+            elif self.rts == RTS_VRS1:
+                raise ValueError("RTS_VRS1 not supported for hyperxb orientation.")
+            elif self.rts == RTS_VRS2:
+                def input_rule(model, j):
+                    # Input is scaled by rho via DDF-style
+                    return sum((model.lamda[r]+model.mu[r])*self.xref[r][j] for r in model.R) <= \
+                        self.x[current_dmu_range_index][j] - model.rho*self.gx[j]*self.x[current_dmu_range_index][j]
+        elif self.hyper_orientedyxb:
+            if self.rts == RTS_CRS:
+                def input_rule(model, j):
+                    # Hyper yxb: Input is scaled by rho if gx[j]==1, else theta
+                    if self.gx[j] == 1:
+                        return sum(model.lamda[r]*self.xref[r][j] for r in model.R) <= model.rho*self.x[current_dmu_range_index][j]
+                    else:
+                        return sum(model.lamda[r]*self.xref[r][j] for r in model.R) <= model.theta*self.x[current_dmu_range_index][j]
+            elif self.rts == RTS_VRS1:
+                raise ValueError("RTS_VRS1 not supported for hyperyxb orientation.")
+            elif self.rts == RTS_VRS2:
+                def input_rule(model, j):
+                    # Input is scaled by rho via DDF-style
+                    return sum((model.lamda[r]+model.mu[r])*self.xref[r][j] for r in model.R) <= \
+                        self.x[current_dmu_range_index][j] - model.rho*self.gx[j]*self.x[current_dmu_range_index][j]
 
         else:
             # Should not be reached
@@ -517,6 +549,29 @@ class DEAweak2(DEA2):
                     # Output is not scaled by rho in input orientation
                     return sum(model.lamda[r]*self.yref[r][k] for r in model.R) >= \
                         self.y[current_dmu_range_index][k] + model.rho*self.gy[k]*self.y[current_dmu_range_index][k]
+        elif self.hyper_orientedxb:
+            if self.rts == RTS_CRS:
+                def output_rule(model, k):
+                    # Hyper xb: Output is not scaled (gy==0)
+                    return sum(model.lamda[r] * self.yref[r][k] for r in model.R) >= self.y[current_dmu_range_index][k]
+            elif self.rts == RTS_VRS1:
+                raise ValueError("RTS_VRS1 not supported for hyperxb orientation.")
+            elif self.rts == RTS_VRS2:
+                def output_rule(model, k):
+                    # Output is not scaled (gy==0)
+                    return sum(model.lamda[r]*self.yref[r][k] for r in model.R) >= self.y[current_dmu_range_index][k]
+        elif self.hyper_orientedyxb:
+            if self.rts == RTS_CRS:
+                def output_rule(model, k):
+                    # Hyper yxb: Output is not scaled by rho in CRS hyperbolic
+                    return sum(model.lamda[r] * self.yref[r][k] for r in model.R) >= self.y[current_dmu_range_index][k]
+            elif self.rts == RTS_VRS1:
+                raise ValueError("RTS_VRS1 not supported for hyperyxb orientation.")
+            elif self.rts == RTS_VRS2:
+                def output_rule(model, k):
+                    # Output is scaled by rho via DDF-style
+                    return sum(model.lamda[r]*self.yref[r][k] for r in model.R) >= \
+                        self.y[current_dmu_range_index][k] + model.rho*self.gy[k]*self.y[current_dmu_range_index][k]
         else:
              # Should not be reached
              def output_rule(model, k):
@@ -583,6 +638,36 @@ class DEAweak2(DEA2):
             elif self.rts == RTS_VRS2:
                 def unoutput_rule(model, l):
                     # Output is not scaled by rho in input orientation
+                    return sum(model.lamda[r]*self.bref[r][l] for r in model.R) == \
+                        self.b[current_dmu_range_index][l] - model.rho*self.gb[l]*self.b[current_dmu_range_index][l]
+        elif self.hyper_orientedxb:
+            if self.rts == RTS_CRS:
+                def unoutput_rule(model, l):
+                    # Hyper xb: Non-desirable output is scaled by rho if gb[l]==1, else theta
+                    if self.gb[l] == 1:
+                        return sum(model.lamda[r] * self.bref[r][l] for r in model.R) == model.rho * self.b[current_dmu_range_index][l]
+                    else:
+                        return sum(model.lamda[r] * self.bref[r][l] for r in model.R) == model.theta * self.b[current_dmu_range_index][l]
+            elif self.rts == RTS_VRS1:
+                raise ValueError("RTS_VRS1 not supported for hyperxb orientation.")
+            elif self.rts == RTS_VRS2:
+                def unoutput_rule(model, l):
+                    # Non-desirable output is scaled by rho via DDF-style
+                    return sum(model.lamda[r]*self.bref[r][l] for r in model.R) == \
+                        self.b[current_dmu_range_index][l] - model.rho*self.gb[l]*self.b[current_dmu_range_index][l]
+        elif self.hyper_orientedyxb:
+            if self.rts == RTS_CRS:
+                def unoutput_rule(model, l):
+                    # Hyper yxb: Non-desirable output is scaled by rho if gb[l]==1, else theta
+                    if self.gb[l] == 1:
+                        return sum(model.lamda[r] * self.bref[r][l] for r in model.R) == model.rho * self.b[current_dmu_range_index][l]
+                    else:
+                        return sum(model.lamda[r] * self.bref[r][l] for r in model.R) == model.theta * self.b[current_dmu_range_index][l]
+            elif self.rts == RTS_VRS1:
+                raise ValueError("RTS_VRS1 not supported for hyperyxb orientation.")
+            elif self.rts == RTS_VRS2:
+                def unoutput_rule(model, l):
+                    # Non-desirable output is scaled by rho via DDF-style
                     return sum(model.lamda[r]*self.bref[r][l] for r in model.R) == \
                         self.b[current_dmu_range_index][l] - model.rho*self.gb[l]*self.b[current_dmu_range_index][l]
         else:
@@ -773,6 +858,23 @@ class DEAweak2(DEA2):
                 results_df['teo'] = results_df['rho'].apply(lambda x: 1/(1+x) if pd.notna(x) else np.nan)
             elif self.rts == RTS_VRS2:
                 # Avoid  NaN    
+                results_df['teuo'] = results_df['rho'].apply(lambda x: (1-x) if pd.notna(x) else np.nan)
+                results_df['teo'] = results_df['rho'].apply(lambda x: 1/(1+x) if pd.notna(x) else np.nan)
+        elif self.hyper_orientedxb:
+            if self.rts == RTS_CRS:
+                results_df['te'] = results_df['rho'].apply(lambda x: np.sqrt(x) if pd.notna(x) else np.nan)
+            elif self.rts == RTS_VRS1:
+                raise ValueError("RTS_VRS1 not supported for hyperxb orientation.")
+            elif self.rts == RTS_VRS2:
+                results_df['tei'] = results_df['rho'].apply(lambda x: (1-x) if pd.notna(x) else np.nan)
+                results_df['teuo'] = results_df['rho'].apply(lambda x: (1-x) if pd.notna(x) else np.nan)
+        elif self.hyper_orientedyxb:
+            if self.rts == RTS_CRS:
+                results_df['te'] = results_df['rho'].apply(lambda x: np.sqrt(x) if pd.notna(x) else np.nan)
+            elif self.rts == RTS_VRS1:
+                raise ValueError("RTS_VRS1 not supported for hyperyxb orientation.")
+            elif self.rts == RTS_VRS2:
+                results_df['tei'] = results_df['rho'].apply(lambda x: (1-x) if pd.notna(x) else np.nan)
                 results_df['teuo'] = results_df['rho'].apply(lambda x: (1-x) if pd.notna(x) else np.nan)
                 results_df['teo'] = results_df['rho'].apply(lambda x: 1/(1+x) if pd.notna(x) else np.nan)
         return results_df

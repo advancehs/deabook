@@ -1,298 +1,234 @@
-# 第八章：CNLS/StoNED 随机前沿分析（碳排放效率）
+# 第八章：基于松弛测度的效率模型（SBM）
 
-**主题**：使用 CNLS（凸非参数最小二乘）和 StoNED（随机半非参数估计）测量碳排放效率。
+**主题**：使用 SBM（Slacks-Based Measure）模型测量非径向效率，包含投入导向、产出导向、非期望产出导向和综合非导向 SBM。
 
 **数据文件**：
-- `china data.xlsx`（30个中国省份，2016-2019）
+- `oecd data.xlsx`（示例数据，含 K, L, E, Y, CO2, year 列）
 
 **变量含义**：
-- `K`：资本, `L`：劳动, `E`：能源, `Y`：产出(GDP), `CO2`：碳排放（非期望产出）
+- `K`：资本, `L`：劳动, `E`：能源, `Y`：产出（期望产出）, `CO2`：碳排放（非期望产出）
 
 ---
 
-## 导入
+## deabook 包介绍与安装
+
+deabook 是一个用于数据包络分析（DEA）的 Python 包，提供径向 DEA、方向距离函数（DDF）、Malmquist 指数、弱可处置性模型、物质平衡分解、CNLS 随机前沿、SBM 等功能。
+
+### 安装
+
+```bash
+pip install deabook
+```
+
+### 本章需要的导入
 
 ```python
-from deabook import CNLSSDFDDFweak, StoNED
-from deabook.constant import FUN_PROD, OPT_LOCAL, RTS_VRS1, RTS_VRS2, RTS_CRS, CET_ADDI, CET_MULT, RED_QLE, RED_MOM, RED_KDE
+from deabook.SBM import SBM
+from deabook.constant import RTS_CRS, RTS_VRS1
 import pandas as pd
 ```
 
-**导入说明**：
-- `CNLSSDFDDFweak`：CNLS 模块，包含 `CNLSSDweak`（Shephard 距离函数）和 `CNLSDDFweak`（方向距离函数）
-- `StoNED`：随机半非参数效率估计模块
-- `CET_MULT`：乘法复合误差项（CNLSSDweak 必须使用）
-- `FUN_PROD`：生产前沿
-- `RED_QLE`：准似然估计残差分解方法
-- `RED_MOM`：矩方法残差分解
-- `RED_KDE`：核密度估计残差分解
+> 各常量的含义与可选值见下方[参数详解](#参数详解)表。
+
+
 
 ---
-
-## sent 公式格式
-
-与弱可处置性模型相同：
-
-```
-"K L E=Y:CO2"
-```
-
----
-
-## 第一部分：CNLSSDweak — Shephard 距离函数
-
-CNLSSDweak 使用乘法复合误差项（`cet=CET_MULT`），求解器为 **knitro**（非线性规划）。
-
-### 模型 1：CRS
-
-```python
-model = CNLSSDFDDFweak.CNLSSDweak(
-    data, sent="K L E=Y:CO2",
-    gy=[0], gx=[0,0,0], gb=[1],
-    cet=CET_MULT, rts=RTS_CRS, fun=FUN_PROD
-)
-model.optimize(solver="knitro")
-
-rd = StoNED.StoNED(model)
-res = rd.get_technical_efficiency(RED_QLE)
-```
-
-### 模型 2：VRS1
-
-```python
-model = CNLSSDFDDFweak.CNLSSDweak(
-    data, sent="K L E=Y:CO2",
-    gy=[0], gx=[0,0,0], gb=[1],
-    cet=CET_MULT, rts=RTS_VRS1, fun=FUN_PROD
-)
-model.optimize(solver="knitro")
-
-rd = StoNED.StoNED(model)
-res = rd.get_technical_efficiency(RED_QLE)
-```
-
-### 模型 3：VRS2
-
-```python
-model = CNLSSDFDDFweak.CNLSSDweak(
-    data, sent="K L E=Y:CO2",
-    gy=[0], gx=[0,0,0], gb=[1],
-    cet=CET_MULT, rts=RTS_VRS2, fun=FUN_PROD
-)
-model.optimize(solver="knitro")
-
-rd = StoNED.StoNED(model)
-res = rd.get_technical_efficiency(RED_QLE)
-```
 
 ### 参数详解
 
-| 参数 | 值 | 含义 |
-|------|----|------|
-| `sent` | `"K L E=Y:CO2"` | 含非期望产出的公式 |
-| `gy` | `[0]` | 不调整期望产出 |
-| `gx` | `[0,0,0]` | 不调整投入 |
-| `gb` | `[1]` | 沿非期望产出方向调整（碳排放导向） |
-| `cet` | `CET_MULT` | 乘法复合误差项（**必须**，设为其他值会报错） |
-| `rts` | `RTS_CRS`/`RTS_VRS1`/`RTS_VRS2` | 规模报酬 |
-| `fun` | `FUN_PROD` | 生产前沿 |
-| `solver` | `"knitro"` | 非线性求解器（CNLS 必须用 knitro） |
+| 参数 | 类型 | 可选值 | 含义 |
+|------|------|--------|------|
+| `data` | DataFrame | — | 包含 sent 中指定列的数据 |
+| `sent` | str | `"K L=Y"` | 不含非期望产出：`=` 左边为投入，`=` 右边为期望产出 |
+| | str | `"K L E=Y:CO2"` | 含非期望产出：`:` 后为非期望产出 |
+| | | | |
+| `gy` | list[int] | `[0]` | 不调整期望产出 |
+| | list[int] | `[1]` | 沿期望产出方向扩大（松弛进入目标函数） |
+| | | | |
+| `gx` | list[int] | `[0,0]` | 不调整投入 |
+| | list[int] | `[1,0]` | 仅第一个投入允许松弛 |
+| | list[int] | `[1,1]` | 所有投入允许松弛 |
+| | | | |
+| `gb` | list[int] | `[0]` | 不调整非期望产出 |
+| | list[int] | `[1]` | 沿非期望产出方向缩减（松弛进入目标函数） |
+| | | | |
+| **gy/gx/gb 组合** | **方向模式** | **条件** | **说明** |
+| | `input_oriented` | gx≥1, gy\==0, gb==0 | 投入导向 SBM（仅投入松弛进入目标函数） |
+| | `output_oriented` | gy≥1, gx\==0, gb==0 | 期望产出导向 SBM |
+| | `unoutput_oriented` | gb≥1, gx\==0, gy==0 | 非期望产出导向 SBM |
+| | `hyper_orientedyx` | gx≥1, gy≥1, gb==0 | 投入+期望产出综合 SBM |
+| | `hyper_orientedyb` | gb≥1, gy≥1, gx==0 | 期望产出+非期望产出综合 SBM |
+| | `hyper_orientedxb` | gx≥1, gb≥1, gy==0 | 投入+非期望产出综合 SBM |
+| | `hyper_orientedyxb` | gx≥1, gy≥1, gb≥1 | 全方向综合 SBM |
+| | | | |
+| `rts` | str | `RTS_CRS` | 不变规模报酬 |
+| | str | `RTS_VRS1` | 可变规模报酬 |
+| | | | |
+| `baseindex` | str | `None` | 被评价 DMU 筛选条件，如 `"t=[1,2,3]"` |
+| `refindex` | str | `None` | 参考 DMU 筛选条件，如 `"t=[1,2,3]"` |
+| | | | |
+| `solver` | str | `"mosek"` | 商业求解器 |
+| | str | `"glpk"` | 开源求解器 |
 
 ### 返回值
 
-- `get_technical_efficiency(RED_QLE)` → numpy array：每个 DMU 的技术效率 TE（0-1，越大越好）
+`optimize()` 返回 DataFrame，列结构取决于 **方向模式** 和 **模型类型**：
 
-### TE 计算方式
+| 模型类型 | 触发条件 | 返回列 | 效率公式 |
+|----------|----------|--------|---------|
+| `ratio` | gx≥1 且 (gy≥1 或 gb≥1) | `optimization_status`, `direction`, `objective_value`, `rho`, `t` | `rho = τ*`（Charnes-Cooper 变换后目标值） |
+| `input_only` | gx≥1, gy\==0, gb==0 | `optimization_status`, `direction`, `objective_value`, `rho` | `rho = 1 - avg(s⁻/x₀)` |
+| `output_bad_only` | gx==0, (gy≥1 或 gb≥1) | `optimization_status`, `direction`, `objective_value`, `rho`, `phi` | `phi = 1 + avg(s⁺/y₀)`, `rho = 1/phi` |
 
-```
-TE = exp(-technical_inefficiency)
-```
+所有方向均追加松弛列：
 
-通过 StoNED 残差分解（QLE/矩方法/核密度）估计无效率项 u，再取指数变换得到 TE。
+| 列 | 含义 |
+|----|------|
+| `slack_x_变量名` | 投入冗余（如 `slack_x_K`, `slack_x_L`） |
+| `slack_y_变量名` | 期望产出不足（如 `slack_y_Y`） |
+| `slack_b_变量名` | 非期望产出过剩（如 `slack_b_CO2`） |
+
+### 辅助方法
+
+| 方法 | 返回值 |
+|------|--------|
+| `get_rho()` | SBM 效率值 Series |
+| `get_slacks()` | 所有松弛变量 DataFrame |
+| `get_lamda()` | 强度变量（λ）DataFrame |
+| `get_status()` | 求解状态 Series |
+| `info(dmu="all")` | 打印指定 DMU 的 Pyomo 模型详情 |
+
+### SBM 与径向 DEA 的区别
+
+| 特征 | 径向 DEA / DDF | SBM |
+|------|----------------|-----|
+| 调整方式 | 按统一比例因子同时收缩/扩张 | 每个变量独立松弛 |
+| 松弛处理 | 松弛不影响效率值 | 松弛直接进入效率值 |
+| 效率值范围 | 投入导向 0-1 | 0-1（更严格，通常 ≤ 径向效率） |
+| 适用场景 | 比例性改进 | 存在非比例性冗余/不足时 |
 
 ---
 
-## 第二部分：CNLSDDFweak — 方向距离函数
-
-CNLSDDFweak 不需要指定 `cet` 参数（内部使用加法模型），求解器为 **mosek**（线性规划）。
-
-### 模型 4：CRS
+## 模型 1：投入导向 SBM — CRS
 
 ```python
-model = CNLSSDFDDFweak.CNLSDDFweak(
-    data, sent="K L E=Y:CO2",
-    gy=[0], gx=[0,0,0], gb=[1],
-    fun=FUN_PROD, rts=RTS_CRS
-)
-model.optimize(solver="mosek")
-
-rd = StoNED.StoNED(model)
-res = rd.get_technical_efficiency_ratio(RED_QLE)
-```
-
-### 模型 5：VRS1
-
-```python
-model = CNLSSDFDDFweak.CNLSDDFweak(
-    data, sent="K L E=Y:CO2",
-    gy=[0], gx=[0,0,0], gb=[1],
-    fun=FUN_PROD, rts=RTS_VRS1
-)
-model.optimize(solver="mosek")
-
-rd = StoNED.StoNED(model)
-res = rd.get_technical_efficiency_ratio(RED_QLE)
-```
-
-### 模型 6：VRS2
-
-```python
-model = CNLSSDFDDFweak.CNLSDDFweak(
-    data, sent="K L E=Y:CO2",
-    gy=[0], gx=[0,0,0], gb=[1],
-    fun=FUN_PROD, rts=RTS_VRS2
-)
-model.optimize(solver="mosek")
-
-rd = StoNED.StoNED(model)
-res = rd.get_technical_efficiency_ratio(RED_QLE)
-```
-
-### 参数详解
-
-| 参数 | 值 | 含义 |
-|------|----|------|
-| `gy` | `[0]` | 不调整期望产出 |
-| `gx` | `[0,0,0]` | 不调整投入 |
-| `gb` | `[1]` | 沿非期望产出方向调整 |
-| `fun` | `FUN_PROD` | 生产前沿 |
-| `rts` | `RTS_CRS`/`RTS_VRS1`/`RTS_VRS2` | 规模报酬 |
-| `solver` | `"mosek"` | 线性求解器 |
-
-### 返回值
-
-- `get_technical_efficiency_ratio(RED_QLE)` → numpy array：每个 DMU 的效率比率 TE
-
-### TE ratio 计算方式（按导向）
-
-```
-gb≥1（非期望产出导向）：
-    TE = (-basexy + epsilon) / (-basexy + epsilon + ddfhat)
-
-gy≥1（产出导向）：
-    TE = basexy / (basexy + ddfhat)
-
-gx≥1（投入导向）：
-    TE = (-basexy + epsilon) / (-basexy + epsilon + ddfhat)
+model = SBM(data, sent="K L=Y", gy=[0], gx=[1,1], rts=RTS_CRS,
+            baseindex=None, refindex=None)
+res = model.optimize(solver="mosek")
 ```
 
 ---
 
-## CNLSSDweak vs CNLSDDFweak 区别
-
-| 特征 | CNLSSDweak | CNLSDDFweak |
-|------|-----------|-------------|
-| 类型 | Shephard 距离函数 | 方向距离函数 |
-| cet 参数 | **必须** `CET_MULT` | 无（内部加法） |
-| 求解器 | `"knitro"`（非线性） | `"mosek"`（线性） |
-| 目标函数 | 最小化残差平方和（log 域） | 最小化残差平方和 |
-| StoNED 方法 | `get_technical_efficiency()` | `get_technical_efficiency_ratio()` |
-| 返回值 | TE = exp(-u) | TE = ratio 公式 |
-
----
-
-## StoNED 完整方法列表
+## 模型 2：投入导向 SBM — VRS
 
 ```python
-rd = StoNED.StoNED(model)
+model = SBM(data, sent="K L=Y", gy=[0], gx=[1,1], rts=RTS_VRS1,
+            baseindex=None, refindex=None)
+res = model.optimize(solver="mosek")
 ```
 
-| 方法 | 返回值 | 说明 |
-|------|--------|------|
-| `get_technical_efficiency(method)` | numpy array | 技术效率（CNLSSDweak 用） |
-| `get_technical_efficiency_ratio(method)` | numpy array | 效率比率（CNLSDDFweak 用） |
-| `get_technical_inefficiency(method)` | numpy array | 技术无效率值 |
-| `get_mean_of_inefficiency(method)` | float | 无效率均值 μ |
-
-### method 参数
-
-| 值 | 全称 | 含义 |
-|----|------|------|
-| `RED_MOM` | Method of Moments | 矩方法（默认） |
-| `RED_QLE` | Quasi-Likelihood Estimation | 准似然估计 |
-| `RED_KDE` | Kernel Density Estimation | 核密度估计（含 Richardson-Lucy 盲反卷积） |
+与模型 1 唯一区别：`rts=RTS_VRS1`（可变规模报酬，增加凸性约束 $\sum_n \lambda_n = 1$）。
 
 ---
 
-## CNLSSDweak 完整参数列表
+## 模型 3：期望产出导向 SBM — CRS
 
 ```python
-CNLSSDFDDFweak.CNLSSDweak(data, sent, z=None, gy=[1], gx=[0], gb=[0], cet=CET_MULT, fun=FUN_PROD, rts=RTS_VRS1)
+model = SBM(data, sent="K L=Y", gy=[1], gx=[0,0], rts=RTS_CRS,
+            baseindex=None, refindex=None)
+res = model.optimize(solver="mosek")
 ```
 
-| 参数 | 类型 | 默认值 | 含义 |
-|------|------|--------|------|
-| `data` | DataFrame | 必填 | 数据 |
-| `sent` | str | 必填 | `"K L E=Y:CO2"` |
-| `z` | list | `None` | 上下文变量 |
-| `gy` | list | `[1]` | 期望产出方向向量 |
-| `gx` | list | `[0]` | 投入方向向量 |
-| `gb` | list | `[0]` | 非期望产出方向向量 |
-| `cet` | str | `CET_MULT` | 误差类型（**必须 CET_MULT**） |
-| `fun` | str | `FUN_PROD` | 前沿类型：`FUN_PROD`/`FUN_COST` |
-| `rts` | str | `RTS_VRS1` | 规模报酬：`RTS_CRS`/`RTS_VRS1`/`RTS_VRS2` |
+---
 
-## CNLSDDFweak 完整参数列表
+## 模型 4：期望产出导向 SBM — VRS
 
 ```python
-CNLSSDFDDFweak.CNLSDDFweak(data, sent, z=None, gy=[1], gx=[1], gb=[1], fun=FUN_PROD, rts=RTS_VRS1, deltap=None, gammap=None, kappap=None, epsilonp=None)
+model = SBM(data, sent="K L=Y", gy=[1], gx=[0,0], rts=RTS_VRS1,
+            baseindex=None, refindex=None)
+res = model.optimize(solver="mosek")
 ```
 
-| 参数 | 类型 | 默认值 | 含义 |
-|------|------|--------|------|
-| `data` | DataFrame | 必填 | 数据 |
-| `sent` | str | 必填 | `"K L E=Y:CO2"` |
-| `z` | list | `None` | 上下文变量 |
-| `gy` | list | `[1]` | 期望产出方向向量 |
-| `gx` | list | `[1]` | 投入方向向量 |
-| `gb` | list | `[1]` | 非期望产出方向向量 |
-| `fun` | str | `FUN_PROD` | 前沿类型 |
-| `rts` | str | `RTS_VRS1` | 规模报酬 |
-| `deltap` | tuple | `None` | delta 变量 bounds `(min, max)` |
-| `gammap` | tuple | `None` | gamma 变量 bounds `(min, max)` |
-| `kappap` | tuple | `None` | kappa 变量 bounds `(min, max)` |
-| `epsilonp` | tuple | `None` | epsilon 变量 bounds `(min, max)` |
+---
+
+## 模型 5：投入与期望产出综合 SBM — CRS
+
+```python
+model = SBM(data, sent="K L=Y", gy=[1], gx=[1,1], rts=RTS_CRS,
+            baseindex=None, refindex=None)
+res = model.optimize(solver="mosek")
+```
+
+此方向对应 `hyper_orientedyx`，同时考虑投入冗余和产出不足，返回 `rho`（分式 SBM 效率）和 `t`（Charnes-Cooper 变换变量）。
 
 ---
 
-## CNLSSDweak 方法列表
+## 模型 6：投入与期望产出综合 SBM — VRS
 
-| 方法 | 返回值 | 说明 |
-|------|--------|------|
-| `optimize(email, solver)` | — | 求解模型 |
-| `display_status()` | 打印 | 求解状态 |
-| `display_alpha()` | 打印 | alpha 值（VRS） |
-| `display_delta()` | 打印 | delta 值（投入系数） |
-| `display_gamma()` | 打印 | gamma 值（产出系数） |
-| `display_kappa()` | 打印 | kappa 值（非期望产出系数） |
-| `display_residual()` | 打印 | 残差值 |
-| `get_status()` | int | 求解状态 |
-| `get_alpha()` | array | alpha 值 |
-| `get_delta()` | DataFrame | delta 值 |
-| `get_gamma()` | DataFrame | gamma 值 |
-| `get_kappa()` | DataFrame | kappa 值 |
-| `get_residual()` | array | 残差值 |
-| `get_adjusted_residual()` | array | 调整后残差 |
-
-## CNLSDDFweak 方法列表
-
-与 CNLSSDweak 类似，额外支持 `deltap`/`gammap`/`kappap` bounds 参数。
+```python
+model = SBM(data, sent="K L=Y", gy=[1], gx=[1,1], rts=RTS_VRS1,
+            baseindex=None, refindex=None)
+res = model.optimize(solver="mosek")
+```
 
 ---
 
-## 求解器说明
+## 模型 7：含非期望产出的非期望产出导向 SBM — CRS
 
-| 求解器 | 适用场景 | 说明 |
-|--------|---------|------|
-| `"knitro"` | CNLSSDweak（非线性） | 商业非线性求解器，必须用于 CET_MULT 模型 |
-| `"mosek"` | CNLSDDFweak（线性） | 商业线性求解器，速度快 |
+```python
+model = SBM(data, sent="K L E=Y:CO2", gy=[0], gx=[0,0,0], gb=[1], rts=RTS_CRS,
+            baseindex=None, refindex=None)
+res = model.optimize(solver="mosek")
+```
+
+仅非期望产出松弛进入目标函数，衡量污染物可削减空间。
+
+---
+
+## 模型 8：含非期望产出的非期望产出导向 SBM — VRS
+
+```python
+model = SBM(data, sent="K L E=Y:CO2", gy=[0], gx=[0,0,0], gb=[1], rts=RTS_VRS1,
+            baseindex=None, refindex=None)
+res = model.optimize(solver="mosek")
+```
+
+---
+
+## 模型 9：含非期望产出的全方向综合 SBM — CRS
+
+```python
+model = SBM(data, sent="K L E=Y:CO2", gy=[1], gx=[1,1,1], gb=[1], rts=RTS_CRS,
+            baseindex=None, refindex=None)
+res = model.optimize(solver="mosek")
+```
+
+对应 `hyper_orientedyxb`，投入、期望产出和非期望产出的松弛全部进入目标函数。
+
+---
+
+## 模型 10：含非期望产出的全方向综合 SBM — VRS
+
+```python
+model = SBM(data, sent="K L E=Y:CO2", gy=[1], gx=[1,1,1], gb=[1], rts=RTS_VRS1,
+            baseindex=None, refindex=None)
+res = model.optimize(solver="mosek")
+```
+
+---
+
+## 数据要求
+
+SBM 的目标函数中存在 $s/x_0$、$s/y_0$、$s/b_0$ 等相对松弛比率，因此所有投入、期望产出和非期望产出变量**必须为严格正数**（> 0）。若数据中存在 0 或负数，需先进行平移或重新定义变量。
+
+---
+
+**参考文献**：
+- Tone, K. (2001). A slacks-based measure of efficiency in data envelopment analysis. *European Journal of Operational Research*, 130(3), 498-509.
+- Tone, K. (2004). Dealing with undesirable outputs in DEA: A slacks-based measure (SBM) approach. *GRIPS Research Report Series*.
+
+---
+
+## 本章说明
+
+本章介绍了 SBM 模型的数学原理、参数设定和 Python 实现。通过 `deabook.SBM` 模块，可以灵活设置投入导向、产出导向、非期望产出导向和综合非导向 SBM 模型。

@@ -19,9 +19,10 @@ from . import MQDEA
 from . import DEAweak
 from . import MQDEAweak
 from . import MB
+from . import SBM
 # from . import FDH
 # from . import plot
-# from . import StoNED
+from . import StoNED
 # from . import weakCNLS
 # from . import weakCNLSb
 # from . import weakCNLSbG
@@ -47,9 +48,10 @@ __all__ = [
     'DEAweak',  
     'MQDEAweak',
     'MB',
+    'SBM',
     # 'FDH',
     # 'plot',
-    # 'StoNED',
+    'StoNED',
     # 'weakCNLS',
     # 'weakCNLSb',
     # 'weakCNLSbG',

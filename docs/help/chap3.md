@@ -1,162 +1,166 @@
-# 第三章：Malmquist 生产率指数（动态产出效率）
+# 第三章：DEA 静态效率分析（资本效率 / 能源效率）
 
-**主题**：使用 Malmquist 指数分解生产率变动（MEFFCH + MTECHCH）。
+**主题**：使用径向 DEA、超效率 DEA 和 DDF 测量静态效率。
 
 **数据文件**：
 - `oecd data.xlsx`（33个OECD国家，2016-2019）
 - `china data.xlsx`（30个中国省份，2016-2019）
 
 **变量含义**：
-- `K`：资本, `L`：劳动, `E`：能源, `Y`：产出(GDP)
+- `K`：资本 (Capital)
+- `L`：劳动 (Labor)
+- `E`：能源 (Energy)
+- `Y`：产出 (GDP)
+- `CO2`：二氧化碳排放（非期望产出，本章不使用）
 
 ---
 
-## 导入
+## deabook 包介绍与安装
+
+deabook 是一个用于数据包络分析（DEA）的 Python 包，提供径向 DEA、方向距离函数（DDF）、Malmquist 指数、弱可处置性模型、物质平衡分解、CNLS 随机前沿等功能。
+
+### 安装
+
+```bash
+pip install deabook
+```
+
+### 本章需要的导入
 
 ```python
-from deabook import MQDEA
-from deabook.constant import RTS_VRS1, RTS_CRS, OPT_LOCAL, TOTAL, CONTEMPORARY
+from deabook import DEA
+from deabook.constant import RTS_VRS1, RTS_CRS, OPT_LOCAL
 import pandas as pd
+import numpy as np
 ```
 
-**导入说明**：
-- `MQDEA`：Malmquist 指数模块，包含 `MQDEA`（基于 DEA2）和 `MQDDF`（基于 DDF2）
-- `CONTEMPORARY`：当期生产技术（每期效率基于当期参考集）
-- `TOTAL`：全局生产技术（所有 DMU 构成统一参考集）
+> 各常量的含义与可选值见下方[参数详解](#参数详解)表。
 
 ---
-
-## 模型 1：MQDEA 产出导向 — VRS + 当期技术
-
-```python
-model = MQDEA.MQDEA(
-    data, id=dmuname, year='year',
-    sent="K L E=Y",
-    gx=[0,0,0], gy=[1],
-    rts=RTS_VRS1,
-    tech=CONTEMPORARY,
-    email=OPT_LOCAL, solver="mosek"
-)
-res = model.optimize()
-```
 
 ### 参数详解
 
-| 参数 | 值 | 含义 |
-|------|----|------|
-| `data` | DataFrame | 面板数据 |
-| `id` | `"country"` (dmuname) | DMU 标识列名 |
-| `year` | `"year"` | 时间列名 |
-| `sent` | `"K L E=Y"` | 投入=产出 |
-| `gx` | `[0,0,0]` | 投入方向全0 → 不缩减投入（产出导向） |
-| `gy` | `[1]` | 产出方向为1 → 扩大产出 |
-| `rts` | `RTS_VRS1` | 可变规模报酬 |
-| `tech` | `CONTEMPORARY` | 当期生产技术 |
-| `email` | `OPT_LOCAL` | 本地求解 |
-| `solver` | `"mosek"` | 求解器 |
-
-### 返回值
-
-`res` 为 DataFrame，包含列：
-- `D11`：当期效率距离值
-- `MQ`：Malmquist 指数（>1 表示生产率提升）
-- `MEFFCH`：效率变化（技术效率追赶效应）
-- `MTECHCH`：技术变化（前沿移动效应）
-- **分解关系**：`MQ = MEFFCH × MTECHCH`
-
-### tech 参数说明
-
-| 值 | 含义 | 参考集 |
-|----|------|--------|
-| `CONTEMPORARY` | 当期技术 | 每期仅用当期 DMU 做参考 |
-| `TOTAL` | 全局技术 | 所有时期 DMU 构成统一参考集，额外返回 `mqpi` 列 |
-
-### gx/gy 方向与产出/投入导向
-
-| 导向 | gx | gy | 说明 |
-|------|----|----|------|
-| 产出导向 | `[0,0,0]` | `[1]` | 扩大产出 |
-| 投入导向 | `[1,0,0]` | `[0]` | 缩减资本 |
-
----
-
-## 模型 2：MQDDF 产出导向 — VRS + 当期技术
-
-```python
-model = MQDEA.MQDDF(
-    data, id=dmuname, year='year',
-    sent="K L E=Y",
-    gx=[0,0,0], gy=[1],
-    rts=RTS_VRS1,
-    tech=CONTEMPORARY,
-    email=OPT_LOCAL, solver="mosek"
-)
-res = model.optimize()
-```
-
-### MQDEA vs MQDDF 区别
-
-| 特征 | MQDEA | MQDDF |
-|------|-------|-------|
-| 底层模型 | DEA2（径向） | DDF2（方向距离函数） |
-| 距离函数 | 径向比率 | DDF 距离 |
-| 效率指标 | 基于 DEA 的 te | 基于 DDF 的 tei/teo |
-
-### 返回值
-
-产出导向时：`D11`, `MQ`, `MEFFCH`, `MTECHCH`（使用 DDF 的 `teo` 效率值）
-
----
-
-## 模型 3：MQDEA 投入导向 — VRS + 当期技术
-
-```python
-model = MQDEA.MQDEA(
-    data, id=dmuname, year='year',
-    sent="K L E=Y",
-    gx=[1,0,0], gy=[0],
-    rts=RTS_VRS1,
-    tech=CONTEMPORARY,
-    email=OPT_LOCAL, solver="mosek"
-)
-res = model.optimize()
-```
-
-投入导向时使用 `tei` 效率值计算 Malmquist 指数。返回列结构相同。
-
----
-
-## MQDEA 完整参数列表
-
-```python
-MQDEA.MQDEA(data, id, year, sent, gy=[1], gx=[0], rts=RTS_VRS1, tech=TOTAL, email=OPT_LOCAL, solver=OPT_DEFAULT)
-```
-
-| 参数 | 类型 | 默认值 | 含义 |
+| 参数 | 类型 | 可选值 | 含义 |
 |------|------|--------|------|
-| `data` | DataFrame | 必填 | 面板数据 |
-| `id` | str | 必填 | DMU 标识列名 |
-| `year` | str | 必填 | 时间列名 |
-| `sent` | str | `"inputvar=outputvar"` | 投入产出公式 |
-| `gy` | list | `[1]` | 产出方向向量 |
-| `gx` | list | `[0]` | 投入方向向量 |
-| `rts` | str | `RTS_VRS1` | 规模报酬：`RTS_VRS1`, `RTS_CRS` |
-| `tech` | str | `TOTAL` | 生产技术：`TOTAL` 或 `CONTEMPORARY` |
-| `email` | str | `OPT_LOCAL` | 求解邮箱 |
-| `solver` | str | `OPT_DEFAULT` | 求解器 |
+| `data` | DataFrame | — | 包含 sent 中指定列的数据，如K, L, E, Y  |
+| `sent` | str | `"投入1 投入2 ...=产出1 产出2 ..."` | `=` 左边为投入变量，`=`右边为产出变量 |
+| | | | |
+| `gy` | list[int] | `[0]` | 不沿该产出方向调整 |
+| | list[int] | `[1]` | 沿该产出方向扩大产出；与 `gx`≥1 同时使用时（Hyper 模式），表示沿产出方向同步扩大 |
+| | | | |
+| `gx` | list[int] | `[0]` | 不沿该投入方向调整 |
+| | list[int] | `[1]` | 沿该投入方向缩减 |
+| | | | |
+| **gy/gx 组合** | **判断规则** | **`sum(gx)>=1`** | 至少缩减一个投入 |
+| | | **`sum(gy)>=1`** | 至少扩大一个产出 |
+| | | | |
+| | **组合** | ✗ ✓ → 产出导向 | 不缩减投入，只扩大产出 |
+| | | ✓ ✗ → 投入导向 | 缩减投入中 gx=1 对应的变量 |
+| | | ✓ ✓ → 超效率(Hyper) | 同时缩减投入、扩大产出 |
+| | | | |
+| `rts` | str | `RTS_CRS` | 不变规模报酬 |
+| | str | `RTS_VRS1` | 可变规模报酬 |
+| | | | |
+| `baseindex` | str | `None` | 被评价 DMU 筛选条件，如 `"t==2019"`，`None` 表示全部评价 |
+| | str | `"t=[2017,2018,2019]"` | 仅评价指定时期 |
+| | | | |
+| `refindex` | str | `None` | 参考技术筛选条件，如 `"t==2019"`，`None` 表示使用全部 DMU 构建前沿 |
+| | str | `"t=[2017,2018,2019]"` | 仅用指定时期构建参考前沿 |
+| | | | |
+| `email` | str | `OPT_LOCAL` | 本地求解 |
+| | str | 邮箱地址 | 远程求解通知 |
+| | | | |
+| `solver` | str | `"mosek"` | 商业求解器，速度快、精度高 |
+| | str | `"glpk"` | 开源求解器 |
+| | str | `"cbc"` | 开源求解器 |
 
-## MQDDF 完整参数列表
+### 返回值
+
+`optimize()` 返回 DataFrame，列结构取决于 **gy/gx 导向** 和 **rts**：
+
+#### DEA2 返回值
+
+| 情况 | 返回列 | 效率公式 |
+|------|--------|---------|
+| 投入导向（gx≥1, gy==0） | `optimization_status`, `rho`, `te` | `te = rho`（范围 0-1，1 表示有效） |
+| 产出导向（gy≥1, gx==0） | `optimization_status`, `rho`, `te` | `te = 1/rho` |
+| 超效率 + CRS（gx≥1, gy≥1） | `optimization_status`, `rho`, `te` | `te = sqrt(rho)` |
+| 超效率 + VRS（gx≥1, gy≥1） | `optimization_status`, `rho`, `tei`, `teo` | `tei = 1 - rho`（投入端），`teo = 1/(1+rho)`（产出端） |
+
+> **Hyper 不是只能搭配 VRS**：CRS 和 VRS 都支持 Hyper。区别在于 CRS 返回单一 `te = sqrt(rho)`，VRS 返回 `tei` + `teo` 双列。
+
+#### DDF2 返回值
+
+| 情况 | 返回列 | 效率公式 |
+|------|--------|---------|
+| 投入导向 | `optimization_status`, `rho`, `tei` | `tei = 1 - rho` |
+| 产出导向 | `optimization_status`, `rho`, `teo` | `teo = 1/(1+rho)` |
+| 超效率 | `optimization_status`, `rho`, `tei`, `teo` | 同上 |
+
+#### DEA2 vs DDF2 对比
+
+| 特征 | DEA2 | DDF2 |
+|------|------|------|
+| 类型 | 径向 DEA | 方向距离函数 |
+| 投入导向效率 | `te = rho` | `tei = 1 - rho` |
+| 产出导向效率 | `te = 1/rho` | `teo = 1/(1+rho)` |
+
+---
+
+## 模型 1：投入导向 DEA — CRS（纯资本效率 PEO）
 
 ```python
-MQDEA.MQDDF(data, id, year, sent, gy=[1], gx=[0], rts=RTS_VRS1, tech=TOTAL, email=OPT_LOCAL, solver=OPT_DEFAULT)
+model = DEA.DEA2(data, sent="K L E=Y", gy=[0], gx=[1,0,0], rts=RTS_CRS)
+res = model.optimize(solver="mosek")
 ```
 
-参数与 MQDEA 完全相同。
+---
 
-### 方法
+## 模型 2：投入导向 DEA — VRS（纯资本效率 PEO）
 
-| 方法 | 返回值 | 说明 |
-|------|--------|------|
-| `optimize()` | DataFrame | 返回 Malmquist 指数及分解 |
+```python
+model = DEA.DEA2(data, sent="K L E=Y", gy=[0], gx=[1,0,0], rts=RTS_VRS1)
+res = model.optimize(solver="mosek")
+```
 
-注意：MQDEA/MQDDF 的 `optimize()` 无参数（求解在 `__init__` 中完成）。
+与模型 1 唯一区别：`rts=RTS_VRS1`（可变规模报酬）。
+
+---
+
+## 模型 3：超效率 DEA (Hyperbolic) — CRS
+
+```python
+model = DEA.DEA2(data, sent="K L E=Y", gy=[1], gx=[1,0,0], rts=RTS_CRS)
+res = model.optimize(solver="mosek")
+```
+
+---
+
+## 模型 4：超效率 DEA (Hyperbolic) — VRS
+
+```python
+model = DEA.DEA2(data, sent="K L E=Y", gy=[1], gx=[1,0,0], rts=RTS_VRS1)
+res = model.optimize(solver="mosek")
+```
+
+---
+
+## 模型 5：DDF 投入导向 — CRS
+
+```python
+model = DEA.DDF2(data, sent="K L E=Y", gy=[0], gx=[1,0,0], rts=RTS_CRS)
+res = model.optimize(solver="mosek")
+```
+
+---
+
+## 模型 6：DDF 投入导向 — VRS
+
+```python
+model = DEA.DDF2(data, sent="K L E=Y", gy=[0], gx=[1,0,0], rts=RTS_VRS1)
+res = model.optimize(solver="mosek")
+```
+
+与模型 5 唯一区别：`rts=RTS_VRS1`（可变规模报酬）。
+
+---

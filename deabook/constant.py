@@ -129,7 +129,7 @@ TOTAL = "Global production technology"
     sequential                  use sequential production technology
     TOTAL:  Global production technology.
 """
-CONTEMPORARY = "Contemporary production technolog"
+CONTEMPORARY = "Contemporary production technology"
 """
 CONTEMPORARY:  Contemporary production technology.
 """
