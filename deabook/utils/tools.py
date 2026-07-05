@@ -3,6 +3,7 @@ from re import compile
 import ast
 from os import environ
 import numpy as np
+import pandas as pd
 import pyomo.environ as pyo
 from pyomo.opt import SolverFactory, SolverManagerFactory, check_available_solvers
 from ..constant import CET_ADDI, CET_MULT, CET_Model_Categories, OPT_LOCAL, OPT_DEFAULT, RTS_CRS
@@ -240,6 +241,8 @@ def optimize_model3(model, solver=OPT_DEFAULT):
 
 
 def trans_list(li):
+    if hasattr(li, "to_numpy"):
+        return li.to_numpy().tolist()
     if type(li) == list:
         return li
     return li.tolist()
@@ -2029,12 +2032,16 @@ def assert_CNLSDDF(data, sent, z, gy=[1], gx=[0]):
     return y, x, z, gy, gx, basexy
 
 def assert_CNLSDDF1(y, x, z=None, gy=[1], gx=[1]):
-    y = trans_list(y)
-    x = trans_list(x)
+    """Validate and translate DDF data with a unified anchor rule.
 
-    y = to_2d_list(y)
-    x = to_2d_list(x)
-
+    The ordinary DDF uses the same anchor convention as CNLSDDFweak:
+    choose the first positive gy as the scalar output anchor; if no gy is
+    active, choose the first positive gx as the input anchor.  The translated
+    data satisfy y' = y - base * gy and x' = x + base * gx.  This supports
+    joint gy+gx directions and positive direction values other than exactly 1.
+    """
+    y = to_2d_list(trans_list(y))
+    x = to_2d_list(trans_list(x))
     gy = to_1d_list(gy)
     gx = to_1d_list(gx)
 
@@ -2042,54 +2049,32 @@ def assert_CNLSDDF1(y, x, z=None, gy=[1], gx=[1]):
     x_shape = np.asarray(x).shape
 
     if y_shape[0] != x_shape[0]:
-        raise ValueError(
-            "Number of DMUs must be the same in x and y.")
-
+        raise ValueError("Number of DMUs must be the same in x and y.")
     if y_shape[1] != len(gy):
         raise ValueError("Number of outputs must be the same in y and gy.")
-
     if x_shape[1] != len(gx):
         raise ValueError("Number of inputs must be the same in x and gx.")
 
     if type(z) != type(None):
-        z = trans_list(z)
-        z = to_2d_list(z)
+        z = to_2d_list(trans_list(z))
         z_shape = np.asarray(z).shape
         if y_shape[0] != z_shape[0]:
-            raise ValueError(
-                "Number of DMUs must be the same in y and z.")
+            raise ValueError("Number of DMUs must be the same in y and z.")
 
-    if sum(gy) >= 1:
-        print(y,"#########")
-        print(x,"#########")
-        # 找到第一个为 1 的索引
-        index = gy.index(1)
-        # 提取 aa 中对应索引的元素
-        basexy = [sublist[index] for sublist in y]
-        y = [[elem - basexy[i]*gy[j] for j, elem in enumerate(sublist)] for i, sublist in enumerate(y)]
-        x = [[elem + basexy[i]*gx[j] for j, elem in enumerate(sublist)] for i, sublist in enumerate(x)]
-
-        print(basexy)
-        print(y,"#########")
-        print(x,"#########")
-
-    elif sum(gx) >= 1:
-        print(y,"#########")
-        print(x,"#########")
-        index = gx.index(1)
-        basexy = [-sublist[index] for sublist in x]
-        print(basexy)
-
-        y = [[elem - basexy[i]*gy[j] for j, elem in enumerate(sublist)] for i, sublist in enumerate(y)]
-        x = [[elem + basexy[i]*gx[j] for j, elem in enumerate(sublist)] for i, sublist in enumerate(x)]
-
-        print(y,"#########")
-        print(x,"#########")
+    if any(v > 0 for v in gy):
+        index = next(i for i, v in enumerate(gy) if v > 0)
+        basexy = [row[index] / gy[index] for row in y]
+    elif any(v > 0 for v in gx):
+        index = next(i for i, v in enumerate(gx) if v > 0)
+        basexy = [-row[index] / gx[index] for row in x]
     else:
-        raise ValueError(
-            "gx and gy must either be 1")
+        raise ValueError("At least one element of gy or gx must be positive.")
+
+    y = [[elem - basexy[i] * gy[j] for j, elem in enumerate(row)] for i, row in enumerate(y)]
+    x = [[elem + basexy[i] * gx[j] for j, elem in enumerate(row)] for i, row in enumerate(x)]
 
     return y, x, z, gy, gx, basexy
+
 
 def assert_CNLSDDFweak(data, sent, z, gy=[1], gx=[0], gb=[0]):
     inputvars = sent.split('=')[0].strip(' ').split(' ')
@@ -2113,14 +2098,17 @@ def assert_CNLSDDFweak(data, sent, z, gy=[1], gx=[0], gb=[0]):
     return y, x, b, z, gy, gx, gb, basexy
 
 def assert_CNLSDDFweak1(y, x, b, z=None, gy=[1], gx=[1], gb=[1]):
-    y = trans_list(y)
-    x = trans_list(x)
-    b = trans_list(b)
+    """Validate and translate weak-disposability DDF data.
 
-    y = to_2d_list(y)
-    x = to_2d_list(x)
-    b = to_2d_list(b)
-
+    The directional distance transformation chooses one active direction as the
+    scalar translation anchor and shifts all variables by the same DDF scalar:
+    y' = y - base * gy, x' = x + base * gx, b' = b + base * gb.
+    For output directions base is positive; for input / bad-output directions
+    base is negative. This supports joint directions such as gx+gy+gb.
+    """
+    y = to_2d_list(trans_list(y))
+    x = to_2d_list(trans_list(x))
+    b = to_2d_list(trans_list(b))
     gy = to_1d_list(gy)
     gx = to_1d_list(gx)
     gb = to_1d_list(gb)
@@ -2130,87 +2118,42 @@ def assert_CNLSDDFweak1(y, x, b, z=None, gy=[1], gx=[1], gb=[1]):
     b_shape = np.asarray(b).shape
 
     if y_shape[0] != x_shape[0]:
-        raise ValueError(
-            "Number of DMUs must be the same in x and y.")
+        raise ValueError("Number of DMUs must be the same in x and y.")
     if y_shape[0] != b_shape[0]:
-        raise ValueError(
-            "Number of DMUs must be the same in b and y.")
+        raise ValueError("Number of DMUs must be the same in b and y.")
     if x_shape[0] != b_shape[0]:
-        raise ValueError(
-            "Number of DMUs must be the same in x and b.")
-
+        raise ValueError("Number of DMUs must be the same in x and b.")
     if y_shape[1] != len(gy):
         raise ValueError("Number of outputs must be the same in y and gy.")
-
     if x_shape[1] != len(gx):
         raise ValueError("Number of inputs must be the same in x and gx.")
-
     if b_shape[1] != len(gb):
-        raise ValueError("Number of inputs must be the same in b and gb.")
+        raise ValueError("Number of undesirable outputs must be the same in b and gb.")
 
     if type(z) != type(None):
-        z = trans_list(z)
-        z = to_2d_list(z)
+        z = to_2d_list(trans_list(z))
         z_shape = np.asarray(z).shape
         if y_shape[0] != z_shape[0]:
-            raise ValueError(
-                "Number of DMUs must be the same in y and z.")
+            raise ValueError("Number of DMUs must be the same in y and z.")
 
-    if sum(gy) >= 1:
-        print("y#########",y)
-        print("x#########",x)
-        print("b#########",b)
-        # 找到第一个为 1 的索引
-        index = gy.index(1)
-        # 提取 aa 中对应索引的元素
-        basexyb = [sublist[index] for sublist in y]
-        y = [[elem - basexyb[i]*gy[j] for j, elem in enumerate(sublist)] for i, sublist in enumerate(y)]
-        x = [[elem + basexyb[i]*gx[j] for j, elem in enumerate(sublist)] for i, sublist in enumerate(x)]
-        b = [[elem + basexyb[i]*gb[j] for j, elem in enumerate(sublist)] for i, sublist in enumerate(b)]
-
-        print("#########",basexyb)
-        print("y#########",y)
-        print("x#########",x)
-        print("b#########",b)
-
-    elif sum(gx) >= 1:
-        # print(y,"y#########")
-        # print(x,"x#########")
-        # print(b,"b#########")
-        index = gx.index(1)
-        basexyb = [-sublist[index] for sublist in x]
-        # print(basexyb)
-
-        y = [[elem - basexyb[i]*gy[j] for j, elem in enumerate(sublist)] for i, sublist in enumerate(y)]
-        x = [[elem + basexyb[i]*gx[j] for j, elem in enumerate(sublist)] for i, sublist in enumerate(x)]
-        b = [[elem + basexyb[i]*gb[j] for j, elem in enumerate(sublist)] for i, sublist in enumerate(b)]
-
-        # print('basexybq',basexyb)
-        # print(y,"y#########")
-        # print(x,"x#########")
-        # print(b,"b#########")
-
-    elif sum(gb) >= 1:
-        print(y, "y#########")
-        print(x, "x#########")
-        print(b, "b#########")
-        index = gb.index(1)
-        basexyb = [-sublist[index] for sublist in b]
-        print(basexyb)
-
-        y = [[elem - basexyb[i] * gy[j] for j, elem in enumerate(sublist)] for i, sublist in enumerate(y)]
-        x = [[elem + basexyb[i] * gx[j] for j, elem in enumerate(sublist)] for i, sublist in enumerate(x)]
-        b = [[elem + basexyb[i] * gb[j] for j, elem in enumerate(sublist)] for i, sublist in enumerate(b)]
-
-        print(basexyb)
-        print(y, "y#########")
-        print(x, "x#########")
-        print(b, "b#########")
+    if any(v > 0 for v in gy):
+        index = next(i for i, v in enumerate(gy) if v > 0)
+        basexyb = [row[index] / gy[index] for row in y]
+    elif any(v > 0 for v in gx):
+        index = next(i for i, v in enumerate(gx) if v > 0)
+        basexyb = [-row[index] / gx[index] for row in x]
+    elif any(v > 0 for v in gb):
+        index = next(i for i, v in enumerate(gb) if v > 0)
+        basexyb = [-row[index] / gb[index] for row in b]
     else:
-        raise ValueError(
-            "gx and gy and gb must either be 1")
+        raise ValueError("At least one element of gy, gx, or gb must be positive.")
+
+    y = [[elem - basexyb[i] * gy[j] for j, elem in enumerate(row)] for i, row in enumerate(y)]
+    x = [[elem + basexyb[i] * gx[j] for j, elem in enumerate(row)] for i, row in enumerate(x)]
+    b = [[elem + basexyb[i] * gb[j] for j, elem in enumerate(row)] for i, row in enumerate(b)]
 
     return y, x, b, z, gy, gx, gb, basexyb
+
 
 def assert_CNLSDDFweakmeta(data, sent, z, gddf, gy=[1], gx=[0], gb=[0]):
     inputvars = sent.split('=')[0].strip(' ').split(' ')
@@ -2234,171 +2177,75 @@ def assert_CNLSDDFweakmeta(data, sent, z, gddf, gy=[1], gx=[0], gb=[0]):
     return y, x, b, z, gy, gx, gb, basexy, basexy_old
 
 def assert_CNLSDDFweakmeta1(y, x, b, z, gddf, gy=[1], gx=[1], gb=[1]):
-    y = trans_list(y)
-    x = trans_list(x)
-    b = trans_list(b)
+    """Validate and translate weak-disposability meta-frontier DDF data.
 
-    y = to_2d_list(y)
-    x = to_2d_list(x)
-    b = to_2d_list(b)
-    # gddf = to_2d_list(gddf)
-    print("1dgddf",gddf)
-
-
+    The first-stage group inefficiency gddf is removed along the same direction
+    before fitting the meta-frontier: y^g=y+gddf*gy, x^g=x-gddf*gx,
+    b^g=b-gddf*gb. The translated base is then computed from the adjusted
+    point. basexyb_old keeps the observed-data anchor; basexyb is the adjusted
+    meta-frontier anchor.
+    """
+    y = to_2d_list(trans_list(y))
+    x = to_2d_list(trans_list(x))
+    b = to_2d_list(trans_list(b))
     gy = to_1d_list(gy)
     gx = to_1d_list(gx)
     gb = to_1d_list(gb)
+    gddf = np.asarray(gddf, dtype=float).reshape(-1).tolist()
 
     y_shape = np.asarray(y).shape
     x_shape = np.asarray(x).shape
     b_shape = np.asarray(b).shape
-    gddf_shape = np.asarray(gddf).shape
 
     if y_shape[0] != x_shape[0]:
-        raise ValueError(
-            "Number of DMUs must be the same in x and y.")
+        raise ValueError("Number of DMUs must be the same in x and y.")
     if y_shape[0] != b_shape[0]:
-        raise ValueError(
-            "Number of DMUs must be the same in b and y.")
+        raise ValueError("Number of DMUs must be the same in b and y.")
     if x_shape[0] != b_shape[0]:
-        raise ValueError(
-            "Number of DMUs must be the same in x and b.")
-    if y_shape[0] != gddf_shape[0]:
-        raise ValueError(
-            "Number of DMUs must be the same in y and gddf.")
-
+        raise ValueError("Number of DMUs must be the same in x and b.")
+    if y_shape[0] != len(gddf):
+        raise ValueError("Number of DMUs must be the same in y and gddf.")
     if y_shape[1] != len(gy):
         raise ValueError("Number of outputs must be the same in y and gy.")
-
     if x_shape[1] != len(gx):
         raise ValueError("Number of inputs must be the same in x and gx.")
-
     if b_shape[1] != len(gb):
-        raise ValueError("Number of inputs must be the same in b and gb.")
+        raise ValueError("Number of undesirable outputs must be the same in b and gb.")
 
     if type(z) != type(None):
-        z = trans_list(z)
-        z = to_2d_list(z)
+        z = to_2d_list(trans_list(z))
         z_shape = np.asarray(z).shape
         if y_shape[0] != z_shape[0]:
-            raise ValueError(
-                "Number of DMUs must be the same in y and z.")
+            raise ValueError("Number of DMUs must be the same in y and z.")
 
-    # y2 = [[elem + gddf[i]*gy[j] for j, elem in enumerate(sublist)] for i, sublist in enumerate(y)]
-    # x2 = [[elem - gddf[i]*gx[j] for j, elem in enumerate(sublist)] for i, sublist in enumerate(x)]
-    # b2 = [[elem - gddf[i]*gb[j] for j, elem in enumerate(sublist)] for i, sublist in enumerate(b)]
-    # for i, row in enumerate(x2):
-    #     for j, value in enumerate(row):
-    #         if value < 0:
-    #             print(f"x2[{i}][{j}] = {value} 小于0，将其替换为0")
-    #             x2[i][j] = 1
+    y_old = [row[:] for row in y]
+    x_old = [row[:] for row in x]
+    b_old = [row[:] for row in b]
 
+    y = [[elem + gddf[i] * gy[j] for j, elem in enumerate(row)] for i, row in enumerate(y)]
+    x = [[elem - gddf[i] * gx[j] for j, elem in enumerate(row)] for i, row in enumerate(x)]
+    b = [[elem - gddf[i] * gb[j] for j, elem in enumerate(row)] for i, row in enumerate(b)]
 
-    if sum(gy) >= 1:
-        # print("y#########",y2)
-        # print("x#########",x2)
-        # print("b#########",b2)
-        print("gddf#########",gddf)
-        # 找到第一个为 1 的索引
-        index = gy.index(1)
-        # 提取 aa 中对应索引的元素
-        basexyb = [sublist[index] for sublist in y]
-        y = [[elem - basexyb[i] * gy[j]  for j, elem in enumerate(sublist)] for i, sublist in enumerate(y)]
-        x = [[elem + basexyb[i] * gx[j] for j, elem in enumerate(sublist)] for i, sublist in enumerate(x)]
-        b = [[elem + basexyb[i] * gb[j]  for j, elem in enumerate(sublist)] for i, sublist in enumerate(b)]
-        # for i, row in enumerate(x):
-        #     for j, value in enumerate(row):
-        #         if value < 0:
-        #             # print(f"x[{i}][{j}] = {value} 小于0，将其替换为0")
-        #             x[i][j] = 1
-        # for i, row in enumerate(y):
-        #     for j, value in enumerate(row):
-        #         if value < 0:
-        #             # print(f"y[{i}][{j}] = {value} 小于0，将其替换为0")
-        #             y[i][j] = 1
-        # for i, row in enumerate(b):
-        #     for j, value in enumerate(row):
-        #         if value < 0:
-        #             # print(f"b[{i}][{j}] = {value} 小于0，将其替换为0")
-        #             b[i][j] = 1
-        print("#########",basexyb)
-        print("y#########",y)
-        print("x#########",x)
-        print("b#########",b)
-
-    elif sum(gx) >= 1:
-
-        index = gx.index(1)
-
-        basexyb_old = [-sublist[index] for sublist in x]
-
-        basexyb = [-sublist[index] for sublist in x]
-        print(basexyb)
-
-        # y = [[elem  + gddf[i]*gy[j] for j, elem in enumerate(sublist)] for i, sublist in enumerate(y)]
-        # x = [[elem  - gddf[i]*gx[j] for j, elem in enumerate(sublist)] for i, sublist in enumerate(x)]
-        # b = [[elem  - gddf[i]*gb[j] for j, elem in enumerate(sublist)] for i, sublist in enumerate(b)]
-
-        y = [[elem  for j, elem in enumerate(sublist)] for i, sublist in enumerate(y)]
-        x = [[elem  for j, elem in enumerate(sublist)] for i, sublist in enumerate(x)]
-        b = [[elem  for j, elem in enumerate(sublist)] for i, sublist in enumerate(b)]
-        # for i, row in enumerate(x2):
-        #     for j, value in enumerate(row):
-        #         if value < 0:
-        #             print(f"x2[{i}][{j}] = {value} 小于0，将其替换为0")
-        #             x2[i][j] = 1
-        # for i, row in enumerate(y2):
-        #     for j, value in enumerate(row):
-        #         if value < 0:
-        #             print(f"y2[{i}][{j}] = {value} 小于0，将其替换为0")
-        #             y2[i][j] = 1
-        # for i, row in enumerate(b2):
-        #     for j, value in enumerate(row):
-        #         if value < 0:
-        #             print(f"b2[{i}][{j}] = {value} 小于0，将其替换为0")
-        #             b2[i][j] = 1
-
-
-        print('basexyb',basexyb)
-        print(y,"y#########")
-        print(x,"x#########wwwwwwwwwwwwwwwwwwww")
-        print(b,"b#########")
-
-    elif sum(gb) >= 1:
-        print(y, "y#########")
-        print(x, "x#########")
-        print(b, "b#########")
-        index = gb.index(1)
-        basexyb = [-sublist[index] for sublist in b]
-        print(basexyb)
-
-        y = [[elem - basexyb[i] * gy[j]  for j, elem in enumerate(sublist)] for i, sublist in enumerate(y)]
-        x = [[elem + basexyb[i] * gx[j] for j, elem in enumerate(sublist)] for i, sublist in enumerate(x)]
-        b = [[elem + basexyb[i] * gb[j]  for j, elem in enumerate(sublist)] for i, sublist in enumerate(b)]
-        # for i, row in enumerate(x):
-        #     for j, value in enumerate(row):
-        #         if value < 0:
-        #             # print(f"x[{i}][{j}] = {value} 小于0，将其替换为0")
-        #             x[i][j] = 1
-        # for i, row in enumerate(y):
-        #     for j, value in enumerate(row):
-        #         if value < 0:
-        #             # print(f"y[{i}][{j}] = {value} 小于0，将其替换为0")
-        #             y[i][j] = 1
-        # for i, row in enumerate(b):
-        #     for j, value in enumerate(row):
-        #         if value < 0:
-        #             # print(f"b[{i}][{j}] = {value} 小于0，将其替换为0")
-        #             b[i][j] = 1
-        print('basexyb',basexyb)
-        print("y#########",y)
-        print(x, "x#########")
-        print(b, "b#########")
+    if any(v > 0 for v in gy):
+        index = next(i for i, v in enumerate(gy) if v > 0)
+        basexyb_old = [row[index] / gy[index] for row in y_old]
+        basexyb = [row[index] / gy[index] for row in y]
+    elif any(v > 0 for v in gx):
+        index = next(i for i, v in enumerate(gx) if v > 0)
+        basexyb_old = [-row[index] / gx[index] for row in x_old]
+        basexyb = [-row[index] / gx[index] for row in x]
+    elif any(v > 0 for v in gb):
+        index = next(i for i, v in enumerate(gb) if v > 0)
+        basexyb_old = [-row[index] / gb[index] for row in b_old]
+        basexyb = [-row[index] / gb[index] for row in b]
     else:
-        raise ValueError(
-            "gx and gy and gb must either be 1")
+        raise ValueError("At least one element of gy, gx, or gb must be positive.")
 
-    return y, x, b, z, gy, gx, gb, basexyb,basexyb_old
+    y = [[elem - basexyb[i] * gy[j] for j, elem in enumerate(row)] for i, row in enumerate(y)]
+    x = [[elem + basexyb[i] * gx[j] for j, elem in enumerate(row)] for i, row in enumerate(x)]
+    b = [[elem + basexyb[i] * gb[j] for j, elem in enumerate(row)] for i, row in enumerate(b)]
+
+    return y, x, b, z, gy, gx, gb, basexyb, basexyb_old
 
 
 def assert_valid_direciontal_data_with_z(y, x, b=None,z=None, gy=[1], gx=[1], gb=None):
@@ -2743,26 +2590,27 @@ def assert_valid_yxbz(sent,gy,gx,gb,z=None):
         outputvars = sent.split('=')[1].strip(' ').split(' ')
         unoutputvars = None
 
-    if type(z)!=type(None):
-        zvars = z.strip(' ').split(" ")
-    else:
-        zvars = None
-    if len(outputvars) !=  gy.shape[1]:
+    zvars = z.strip(' ').split(' ') if type(z) != type(None) else None
+
+    gy_values = np.asarray(gy, dtype=float).reshape(-1)
+    gx_values = np.asarray(gx, dtype=float).reshape(-1)
+    if len(outputvars) != len(gy_values):
         raise ValueError("Number of outputs must be the same in y and gy.")
-    if len(inputvars) != gx.shape[1]:
+    if len(inputvars) != len(gx_values):
         raise ValueError("Number of inputs must be the same in x and gx.")
 
+    gy = pd.Series(gy_values, index=outputvars, name='gy')
+    gx = pd.Series(gx_values, index=inputvars, name='gx')
+
     if type(gb) != type(None):
-        if len(unoutputvars) != gb.shape[1]:
-            raise ValueError(
-                "Number of undesirable outputs must be the same in b and gb.")
-        gb.columns = unoutputvars
-    gy.columns,gx.columns ,=outputvars,inputvars,
+        if unoutputvars is None:
+            raise ValueError("Undesirable-output directions gb require undesirable outputs in sent.")
+        gb_values = np.asarray(gb, dtype=float).reshape(-1)
+        if len(unoutputvars) != len(gb_values):
+            raise ValueError("Number of undesirable outputs must be the same in b and gb.")
+        gb = pd.Series(gb_values, index=unoutputvars, name='gb')
+
     return outputvars,inputvars,unoutputvars,zvars,gy,gx,gb
-
-
-
-
 
 def assert_valid_yxb_drf(sent,fenmu,fenzi):
     inputvars = sent.split('=')[0].strip(' ').split(' ')

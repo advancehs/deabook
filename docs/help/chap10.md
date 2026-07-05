@@ -81,7 +81,7 @@ res = rd.get_technical_efficiency(method)  # 3. 获取效率
 | 方法 | 返回值 | 适用模型 | 说明 |
 |------|--------|---------|------|
 | `get_technical_efficiency(method)` | numpy array | CNLSSDweak | 技术效率 TE = exp(-u) |
-| `get_technical_efficiency_ratio(method)` | numpy array | CNLSDDFweak | 效率比率 TE（按导向公式） |
+| `get_technical_efficiency(method)` | numpy array | CNLSDDFweak | 效率比率 TE（按导向公式） |
 | `get_technical_inefficiency(method)` | numpy array | 两者 | 技术无效率值 u |
 | `get_mean_of_inefficiency(method)` | float | 两者 | 无效率均值 μ |
 
@@ -111,7 +111,7 @@ res = rd.get_technical_efficiency(method)  # 3. 获取效率
 | 类型 | Shephard 距离函数 | 方向距离函数 |
 | cet 参数 | **必须** `CET_MULT` | 无（内部加法） |
 | 求解器 | `"knitro"`（非线性） | `"mosek"`（线性） |
-| StoNED 方法 | `get_technical_efficiency()` | `get_technical_efficiency_ratio()` |
+| StoNED 方法 | `get_technical_efficiency()` | `get_technical_efficiency()` |
 | TE 计算 | `exp(-u)` | ratio 公式（按导向） |
 
 ---
@@ -175,7 +175,7 @@ model = CNLSSDFDDFweak.CNLSDDFweak(
 model.optimize(solver="mosek")
 
 rd = StoNED.StoNED(model)
-res = rd.get_technical_efficiency_ratio(RED_QLE)
+res = rd.get_technical_efficiency(RED_QLE)
 ```
 
 ---
@@ -191,7 +191,7 @@ model = CNLSSDFDDFweak.CNLSDDFweak(
 model.optimize(solver="mosek")
 
 rd = StoNED.StoNED(model)
-res = rd.get_technical_efficiency_ratio(RED_QLE)
+res = rd.get_technical_efficiency(RED_QLE)
 ```
 
 ---
@@ -207,5 +207,5 @@ model = CNLSSDFDDFweak.CNLSDDFweak(
 model.optimize(solver="mosek")
 
 rd = StoNED.StoNED(model)
-res = rd.get_technical_efficiency_ratio(RED_QLE)
+res = rd.get_technical_efficiency(RED_QLE)
 ```

@@ -4,9 +4,9 @@
 from pyomo.environ import ConcreteModel, Set, Var, Objective, minimize, maximize, Constraint, Reals
 import numpy as np
 import pandas as pd
-from .constant import CET_ADDI, RTS_VRS1, RTS_CRS,OPT_DEFAULT, OPT_LOCAL
+from .constant import RTS_VRS1, OPT_DEFAULT
 from .utils import tools,MB_
-from .DEA import DEA
+from .core import SolverConfig, solve_pyomo_model
 import ast
 
 
@@ -38,1143 +38,307 @@ class MB():
         self.inputvars_np, self.inputvars_p,self.outputvars_np,\
             self.outputvars_p,self.unoutputvars, self.sx, self.sy,self.level = tools.split_MB(self.sent, sx, sy,level)
 
-    def optimize(self, solver=OPT_DEFAULT,dmu="1"):
+    def _backend_spec(self):
+        """Return the legacy MB backend class and its variable-group arguments."""
+        shared_args = [self.unoutputvars, self.sx, self.sy, self.rts,
+                       self.level, self.baseindex, self.refindex]
+        if self.outputvars_np is not None and self.outputvars_p is not None:
+            return MB_.MB1111, [
+                self.inputvars_np, self.inputvars_p,
+                self.outputvars_np, self.outputvars_p, *shared_args
+            ]
+        if self.outputvars_np is not None:
+            return MB_.MB1110, [
+                self.inputvars_np, self.inputvars_p,
+                self.outputvars_np, *shared_args
+            ]
+        if self.outputvars_p is not None:
+            return MB_.MB1101, [
+                self.inputvars_np, self.inputvars_p,
+                self.outputvars_p, *shared_args
+            ]
+        return MB_.MB1100, [self.inputvars_np, self.inputvars_p, *shared_args]
 
-        if type(self.outputvars_np) != type(None):
-            if type(self.outputvars_p) != type(None):
+    def _make_backend(self):
+        backend_class, args = self._backend_spec()
+        return backend_class(self.data, *args)
 
-                model1111 = MB_.MB1111(  ## K L + E = Y + Y2 : CO2
-                               self.data, self.inputvars_np, self.inputvars_p,self.outputvars_np,self.outputvars_p,\
-                               self.unoutputvars, self.sx, self.sy,self.rts,self.level,self.baseindex,self.refindex)
-                data3 = model1111.optimize(solver=solver)
-                info = model1111.info(dmu=dmu)
-            elif type(self.outputvars_p) == type(None):
-                model1110 = MB_.MB1110(  ## K L + E = Y  : CO2
-                               self.data, self.inputvars_np, self.inputvars_p,self.outputvars_np,\
-                                self.unoutputvars, self.sx, self.sy,self.rts,self.level,self.baseindex,self.refindex)
-                data3 = model1110.optimize(solver=solver)
-                info = model1110.info(dmu=dmu)
-        elif type(self.outputvars_np) == type(None):
-            if type(self.outputvars_p) != type(None):
-                model1101 = MB_.MB1101(  ## K L + E = + Y2 : CO2
-                               self.data, self.inputvars_np, self.inputvars_p,self.outputvars_p,\
-                                self.unoutputvars, self.sx, self.sy,self.rts,self.level,self.baseindex,self.refindex)
-                data3 = model1101.optimize(solver=solver)
-                info = model1101.info(dmu=dmu)
-            elif type(self.outputvars_p) == type(None):
-                model1100 = MB_.MB1100(  ## K L + E =   : CO2
-                               self.data, self.inputvars_np, self.inputvars_p,\
-                                self.unoutputvars, self.sx, self.sy,self.rts,self.level,self.baseindex,self.refindex)
-                data3 = model1100.optimize(solver=solver)
-                info = model1100.info(dmu=dmu)
-        return data3,info
-
-
-
+    def optimize(self, solver=OPT_DEFAULT, dmu="1"):
+        backend = self._make_backend()
+        return backend.optimize(solver=solver), backend.info(dmu=dmu)
 
     def info(self, dmu="all"):
-        if type(self.outputvars_np) != type(None):
-            if type(self.outputvars_p) != type(None):
-                model1111 = MB_.MB1111(
-                               self.data, self.inputvars_np, self.inputvars_p,self.outputvars_np,\
-                               self.outputvars_p,self.unoutputvars, self.sx, self.sy, \
-                                self.rts,self.level,self.baseindex,self.refindex)
-                return model1111.info(dmu=dmu)
-            elif type(self.outputvars_p) == type(None):
-                model1110 = MB_.MB1110(  ## K L + E = Y  : CO2
-                               self.data, self.inputvars_np, self.inputvars_p,self.outputvars_np,\
-                                self.unoutputvars, self.sx, self.sy,self.rts,self.level,self.baseindex,self.refindex)
-                return model1110.info(dmu=dmu)
-        elif type(self.outputvars_np) == type(None):
-            if type(self.outputvars_p) != type(None):
-                model1101 = MB_.MB1101(  ## K L + E = + Y2 : CO2
-                               self.data, self.inputvars_np, self.inputvars_p,self.outputvars_p,\
-                                self.unoutputvars, self.sx, self.sy,self.rts,self.level,self.baseindex,self.refindex)
-                return model1101.info(dmu=dmu)
-            elif type(self.outputvars_p) == type(None):
-                model1100 = MB_.MB1100(  ## K L + E =   : CO2
-                               self.data, self.inputvars_np, self.inputvars_p,\
-                                self.unoutputvars, self.sx, self.sy,self.rts,self.level,self.baseindex,self.refindex)
-                return model1100.info(dmu=dmu)
+        return self._make_backend().info(dmu=dmu)
 
 
 
-class MBx(MB):
-    def __init__(self, data,year,sent = "inputvar=outputvar",  sx=[[1,1,1],[1,1,1]], sy=[[1],[1]], rts=RTS_VRS1, baseindex=None,refindex=None):
-        """DEA: Directional distance function
+class _PanelMBBase(MB):
+    """Shared object-oriented base for panel material-balance models."""
 
-        Args:
-            data (pandas.DataFrame): input pandas.
-            sent (str): inputvars=outputvars[: unoutputvars]. e.g.: "K L = Y : CO2"
-            sx (list): 投入包含污染物质系数. Defaults to [[1,1,1],[1,1,1]].
-            sy (list, optional): 期望产出包含污染物质系数. Defaults to [[1],[1]].
-            rts (String): RTS_VRS1 (variable returns to scale) or RTS_CRS (constant returns to scale)
-            baseindex (String, optional): estimate index. Defaults to None. e.g.: "Year=[2010]"
-            refindex (String, optional): reference index. Defaults to None. e.g.: "Year=[2010]"
-        """
-        # Initialize DEA model
-        self.data=data
+    _has_objx = False
+    _has_objy = False
+    _has_theta = False
+    _objective_sense = minimize
+    _objective_component = "thetab"
+    _include_var_undesirable = False
+    _print_all_info = True
+
+    def __init__(self, data, year, sent="inputvar=outputvar", sx=[[1, 1, 1], [1, 1, 1]],
+                 sy=[[1], [1]], rts=RTS_VRS1, baseindex=None, refindex=None):
+        self.data = data
         self.year = year
         self.sent = sent
-        self.tlt=pd.Series(self.year).drop_duplicates().sort_values()
-        self.inputvars = self.sent.split('=')[0].strip(' ').split(' ')
-        try:
-            self.outputvars = self.sent.split('=')[1]   .split(':')[0].strip(' ').split(' ')
-            self.unoutputvars = self.sent.split('=')[1]   .split(':')[1].strip(' ').split(' ')
-        except:
-            self.outputvars = self.sent.split('=')[1]    .strip(' ').split(' ')
-            self.unoutputvars=None
+        self.tlt = pd.Series(self.year).drop_duplicates().sort_values().reset_index(drop=True)
+        self.inputvars, self.outputvars, self.unoutputvars = self._parse_sent(sent)
         self.sx, self.sy = sx, sy
         self.rts = rts
-        # print(self.sx, self.sy)
-
         self.baseindex = baseindex
-        if type(baseindex) != type(None):
-            self.varname1=self.baseindex.split('=')[0]
-            # print(self.baseindex)
-            self.varvalue1=ast.literal_eval(self.baseindex.split('=')[1])
-            self.y, self.x, self.b = self.data.loc[self.data[self.varname1].isin(self.varvalue1), self.outputvars
-                                        ], self.data.loc[self.data[self.varname1].isin(self.varvalue1), self.inputvars
-                                        ], self.data.loc[self.data[self.varname1].isin(self.varvalue1), self.unoutputvars
-                                        ]if type(self.unoutputvars) != type(None) else None
-
-        else:
-
-            self.y, self.x, self.b = self.data.loc[:, self.outputvars
-                                        ], self.data.loc[:, self.inputvars
-                                        ], self.data.loc[:, self.unoutputvars
-                                        ] if type(self.unoutputvars) != type(None) else None
-
-
-        # print(self.b)
         self.refindex = refindex
-        if type(refindex) != type(None):
-            self.varname=self.refindex.split('=')[0]
-            self.varvalue=ast.literal_eval(self.refindex.split('=')[1])
-
-            self.yref, self.xref, self.bref = self.data.loc[self.data[self.varname].isin(self.varvalue), self.outputvars
-                                                ], self.data.loc[self.data[self.varname].isin(self.varvalue), self.inputvars
-                                                ], self.data.loc[self.data[self.varname].isin(self.varvalue), self.unoutputvars
-                                                ] if type(self.unoutputvars) != type(None) else None
-        else:
-            self.yref, self.xref, self.bref = self.data.loc[:, self.outputvars
-                                        ], self.data.loc[:, self.inputvars
-                                        ], self.data.loc[:, self.unoutputvars
-                                        ] if type(self.unoutputvars) != type(None) else None
-
+        self.y, self.x, self.b = self._select_data(baseindex)
+        self.yref, self.xref, self.bref = self._select_data(refindex)
         self.xcol = self.x.columns
         self.ycol = self.y.columns
-        self.bcol = self.b.columns if type(self.unoutputvars) != type(None) else None
-
-        # print(self.xcol)
-
-        self.I = self.x.index          ## I 是 被评价决策单元的索引
-        self.__modeldict = {}
+        self.bcol = self.b.columns if self.b is not None else None
+        self.I = self.x.index
+        self._models = {}
+        self.__modeldict = self._models
         for i in self.I:
-            # print(i)
-            self.I0 = i                                                 ## I 是 被评价决策单元的数量
+            self.I0 = i
+            self._models[i] = self._build_model()
 
-            self.__model__ = ConcreteModel()
-            # Initialize sets
-            self.__model__.I2 = Set(initialize= self.xref.index)                     ## I2 是 参考决策单元的数量
-            self.__model__.K = Set(initialize=range(len(self.x.iloc[0])))          ## K 是投入个数
-            self.__model__.L = Set(initialize=range(len(self.y.iloc[0])))          ## L 是产出个数 被评价单元和参考单元的K，L一样
+    @staticmethod
+    def _parse_sent(sent):
+        left, right = sent.split('=', 1)
+        inputvars = [item for item in left.strip().split() if item]
+        if ':' in right:
+            output_part, unoutput_part = right.split(':', 1)
+            outputvars = [item for item in output_part.strip().split() if item]
+            unoutputvars = [item for item in unoutput_part.strip().split() if item]
+        else:
+            outputvars = [item for item in right.strip().split() if item]
+            unoutputvars = None
+        return inputvars, outputvars, unoutputvars or None
 
-            if type(self.b) != type(None):
-                self.__model__.B = Set(initialize=range(len(self.b.iloc[0])))      ## B 是 非期望产出个数
+    def _select_data(self, selector):
+        if selector is not None:
+            varname, raw_values = selector.split('=', 1)
+            values = ast.literal_eval(raw_values)
+            if not isinstance(values, (list, tuple, set, pd.Index, np.ndarray)):
+                values = [values]
+            frame = self.data.loc[self.data[varname.strip()].isin(values)]
+        else:
+            frame = self.data
+        y = frame.loc[:, self.outputvars]
+        x = frame.loc[:, self.inputvars]
+        b = frame.loc[:, self.unoutputvars] if self.unoutputvars is not None else None
+        return y, x, b
 
-            # Initialize variable
+    def _build_model(self):
+        model = ConcreteModel()
+        model.I2 = Set(initialize=self.xref.index)
+        model.K = Set(initialize=range(len(self.x.iloc[0])))
+        model.L = Set(initialize=range(len(self.y.iloc[0])))
+        if self.b is not None:
+            model.B = Set(initialize=range(len(self.b.iloc[0])))
+        self._add_variables(model)
+        model.objective = Objective(rule=self._objective_rule(), sense=self._objective_sense,
+                                    doc='objective function')
+        model.input = Constraint(model.K, rule=self._input_rule(), doc='input constraint')
+        model.output = Constraint(model.L, rule=self._output_rule(), doc='output constraint')
+        if self.b is not None:
+            model.undesirable_output = Constraint(
+                model.B, rule=self._undesirable_output_rule(), doc='undesirable output constraint'
+            )
+            model.mb = Constraint(model.B, rule=self._mb_rule(), doc='material balance constraint')
+        if self.rts == RTS_VRS1:
+            model.vrs = Constraint(rule=self._vrs_rule(), doc='various return to scale rule')
+        return model
 
-            self.__model__.objx = Var(self.__model__.K,bounds=(0.0, None), within=Reals,doc='object x')
+    def _add_variables(self, model):
+        if self._has_objx:
+            model.objx = Var(model.K, bounds=(0.0, None), within=Reals, doc='object x')
+        if self._has_objy:
+            model.objy = Var(model.L, bounds=(0.0, None), within=Reals, doc='object y')
+        model.thetax = Var(model.K, bounds=(0.0, None), doc='slack x')
+        model.thetay = Var(model.L, bounds=(0.0, None), doc='slack y')
+        if self.b is not None:
+            model.thetab = Var(model.B, bounds=(0.0, None), doc='slack b')
+            if self._has_theta:
+                model.theta = Var(model.B, bounds=(0.0, None), within=Reals, doc='object b')
+        model.lamda = Var(model.I2, bounds=(0.0, None), within=Reals, doc='intensity variables')
 
-            self.__model__.thetax = Var(self.__model__.K,bounds=(0.0, None), doc='slack x')
-            self.__model__.thetay = Var(self.__model__.L,bounds=(0.0, None), doc='slack y')
-            if type(self.b) != type(None):
-                self.__model__.thetab = Var(self.__model__.B,bounds=(0.0, None), doc='slack b')
-                self.__model__.theta = Var(self.__model__.B,bounds=(0.0, None), within=Reals,doc='object b')
-
-            self.__model__.lamda = Var(self.__model__.I2, bounds=(0.0, None),within=Reals, doc='intensity variables')
-
-
-            # Setup the objective function and constraints
-            self.__model__.objective = Objective(rule=self.__objective_rule(), sense=minimize, doc='objective function')
-            self.__model__.input = Constraint(self.__model__.K,  rule=self.__input_rule(), doc='input constraint')
-            self.__model__.output = Constraint(self.__model__.L,  rule=self.__output_rule(), doc='output constraint')
-
-
-            if type(self.b) != type(None):
-                self.__model__.undesirable_output = Constraint(self.__model__.B, rule=self.__undesirable_output_rule(), \
-                                                               doc='undesirable output constraint')
-                self.__model__.mb = Constraint(self.__model__.B,  rule=self.__mb_rule(), \
-                                                                doc='material balance constraint')
-            if self.rts == RTS_VRS1:
-                self.__model__.vrs = Constraint(rule=self.__vrs_rule(), doc='various return to scale rule')
-
-            self.__modeldict[i] = self.__model__
-
-        # Optimize model
-    def __objective_rule(self):
-        """Return the proper objective function"""
+    def _objective_rule(self):
         def objective_rule(model):
-            return sum(model.theta[b]*1 for b in model.B)
+            component = getattr(model, self._objective_component)
+            return sum(component[b] for b in model.B)
         return objective_rule
 
-    def __input_rule(self):
-        """Return the proper input constraint"""
+    def _input_rhs(self, model, k):
+        return model.objx[k] if self._has_objx else self.x.loc[self.I0, self.xcol[k]]
+
+    def _output_rhs(self, model, l):
+        return model.objy[l] if self._has_objy else self.y.loc[self.I0, self.ycol[l]]
+
+    def _undesirable_rhs(self, model, b):
+        return model.theta[b] if self._has_theta else self.b.loc[self.I0, self.bcol[b]]
+
+    def _input_rule(self):
         def input_rule(model, k):
-            return sum(model.lamda[i2] * self.xref.loc[i2,self.xcol[k]] for i2 in model.I2
-                    ) + model.thetax[k] == model.objx[k]
+            return sum(model.lamda[i2] * self.xref.loc[i2, self.xcol[k]] for i2 in model.I2) \
+                + model.thetax[k] == self._input_rhs(model, k)
         return input_rule
 
-    def __output_rule(self):
-        """Return the proper output constraint"""
+    def _output_rule(self):
         def output_rule(model, l):
-            return sum(model.lamda[i2] * self.yref.loc[i2,self.ycol[l]] for i2 in model.I2
-                    ) - model.thetay[l] == self.y.loc[self.I0,self.ycol[l]]
+            return sum(model.lamda[i2] * self.yref.loc[i2, self.ycol[l]] for i2 in model.I2) \
+                - model.thetay[l] == self._output_rhs(model, l)
         return output_rule
 
-    def __undesirable_output_rule(self):
-        """Return the proper undesirable output constraint"""
+    def _undesirable_output_rule(self):
         def undesirable_output_rule(model, b):
-            return sum(model.lamda[i2] * self.bref.loc[i2,self.bcol[b]] for i2 in model.I2
-                    ) + model.thetab[b] == model.theta[b]*1
+            return sum(model.lamda[i2] * self.bref.loc[i2, self.bcol[b]] for i2 in model.I2) \
+                + model.thetab[b] == self._undesirable_rhs(model, b)
         return undesirable_output_rule
 
-    def __mb_rule(self):
-        """Return the proper undesirable output constraint"""
+    def _x_gap(self, model, k):
+        if self._has_objx:
+            return model.thetax[k] + self.x.loc[self.I0, self.xcol[k]] - model.objx[k]
+        return model.thetax[k]
+
+    def _y_gap(self, model, l):
+        if self._has_objy:
+            return model.thetay[l] + model.objy[l] - self.y.loc[self.I0, self.ycol[l]]
+        return model.thetay[l]
+
+    def _mb_rhs(self, model, b):
+        return model.thetab[b]
+
+    def _mb_rule(self):
         def mb_rule(model, b):
-            return sum(self.sx[b][k] * (model.thetax[k] + self.x.loc[self.I0,self.xcol[k]] - model.objx[k] ) for k in model.K) \
-                    + sum(self.sy[b][l] * model.thetay[l] for l in model.L) \
-                    == self.b.loc[self.I0,self.bcol[b]] - model.theta[b]
+            return sum(self.sx[b][k] * self._x_gap(model, k) for k in model.K) \
+                + sum(self.sy[b][l] * self._y_gap(model, l) for l in model.L) == self._mb_rhs(model, b)
         return mb_rule
 
-    def __vrs_rule(self):
+    def _vrs_rule(self):
         def vrs_rule(model):
-            return sum(model.lamda[ i2] for i2 in model.I2) == 1
-
+            return sum(model.lamda[i2] for i2 in model.I2) == 1
         return vrs_rule
 
-    def optimize(self,  solver=OPT_DEFAULT):
-        """Optimize the function by requested method
-
-        Args:
-            solver (string): The solver chosen for optimization. It will optimize with default solver if OPT_DEFAULT is given.
-        """
-        # TODO(error/warning handling): Check problem status after optimization
-
-        data2,obj,theta,thetax,thetay,thetab,lamda = pd.DataFrame(),{},{},{},{},{},{}
-        for ind, problem in self.__modeldict.items():
-            _, data2.loc[ind,"optimization_status"] = tools.optimize_model(problem, ind, solver)
-
-            if type(self.b) != type(None):
+    def optimize(self, solver=OPT_DEFAULT):
+        data2 = pd.DataFrame()
+        obj, theta, thetax, thetay, thetab, lamda = {}, {}, {}, {}, {}, {}
+        config = SolverConfig(solver=solver)
+        for ind, problem in self._models.items():
+            outcome = solve_pyomo_model(problem, config=config, strict=False)
+            data2.loc[ind, "optimization_status"] = outcome.legacy_status
+            if outcome.ok:
                 obj[ind] = problem.objective()
-                theta[ind], = np.asarray(list(problem.theta[:].value))
-                thetax[ind]= np.asarray(list(problem.thetax[:].value))
-                thetay[ind]= np.asarray(list(problem.thetay[:].value))
-                thetab[ind]= np.asarray(list(problem.thetab[:].value))
-                lamda[ind]= np.asarray(list(problem.lamda[:].value))
+                if self._include_var_undesirable:
+                    theta[ind] = np.asarray(list(problem.theta[:].value))
+                thetax[ind] = np.asarray(list(problem.thetax[:].value))
+                thetay[ind] = np.asarray(list(problem.thetay[:].value))
+                if self.b is not None:
+                    thetab[ind] = np.asarray(list(problem.thetab[:].value))
+                lamda[ind] = np.asarray(list(problem.lamda[:].value))
             else:
-                obj[ind] = problem.objective()
-                theta[ind], = np.asarray(list(problem.theta[:].value))
-                thetax[ind]= np.asarray(list(problem.thetax[:].value))
-                thetay[ind]= np.asarray(list(problem.thetay[:].value))
-                lamda[ind]= np.asarray(list(problem.lamda[:].value))
+                obj[ind] = np.nan
+                if self._include_var_undesirable:
+                    theta[ind] = np.full(len(list(problem.B)), np.nan)
+                thetax[ind] = np.full(len(list(problem.K)), np.nan)
+                thetay[ind] = np.full(len(list(problem.L)), np.nan)
+                if self.b is not None:
+                    thetab[ind] = np.full(len(list(problem.B)), np.nan)
+                lamda[ind] = np.full(len(list(problem.I2)), np.nan)
 
-                # print(list(problem.thetax[:].value ),list(problem.t[:].value ))
-        obj = pd.DataFrame(obj,index=["obj"]).T
-        theta = pd.DataFrame(theta,index=["var Undesirable"]).T
-        thetax = pd.DataFrame(thetax).T
-        thetax.columns = thetax.columns.map(lambda x : "Input"+ str(x)+"'s slack" )
-        thetay = pd.DataFrame(thetay).T
-        thetay.columns = thetay.columns.map(lambda y : "Output"+ str(y)+"'s slack" )
-
-        theta_=pd.concat([theta,thetax],axis=1)
-        theta_=pd.concat([theta_,thetay],axis=1)
-        if type(self.b) != type(None):
-            thetab = pd.DataFrame(thetab).T
-            thetab.columns = thetab.columns.map(lambda b : "Undesirable Output"+ str(b)+"'s slack" )
-            theta_ = pd.concat([theta_,thetab],axis=1)
-
-        lamda =pd.DataFrame(lamda) .T
-        lamda.columns = lamda.columns.map(lambda x : "lamda"+ str(x) )
-        data3 = pd.concat([data2,obj],axis=1)
-        data3 = pd.concat([data3,theta_],axis=1)
-        # data3 = pd.concat([data3,lamda],axis=1)
+        obj_df = pd.DataFrame(obj, index=["obj"]).T
+        pieces = []
+        if self._include_var_undesirable:
+            theta_df = pd.DataFrame(theta).T
+            theta_df.columns = theta_df.columns.map(lambda b: "var Undesirable" if len(theta_df.columns) == 1 else "var Undesirable" + str(b))
+            if len(theta_df.columns) == 1:
+                theta_df.columns = ["var Undesirable"]
+            pieces.append(theta_df)
+        thetax_df = pd.DataFrame(thetax).T
+        thetax_df.columns = thetax_df.columns.map(lambda x: "Input" + str(x) + "'s slack")
+        thetay_df = pd.DataFrame(thetay).T
+        thetay_df.columns = thetay_df.columns.map(lambda y: "Output" + str(y) + "'s slack")
+        pieces.extend([thetax_df, thetay_df])
+        if self.b is not None:
+            thetab_df = pd.DataFrame(thetab).T
+            thetab_df.columns = thetab_df.columns.map(lambda b: "Undesirable Output" + str(b) + "'s slack")
+            pieces.append(thetab_df)
+        theta_all = pd.concat(pieces, axis=1)
+        lamda_df = pd.DataFrame(lamda).T
+        lamda_df.columns = lamda_df.columns.map(lambda x: "lamda" + str(x))
+        data3 = pd.concat([data2, obj_df], axis=1)
+        data3 = pd.concat([data3, theta_all], axis=1)
         return data3
 
-
-    def info(self, dmu = "all"):
-        """Show the infomation of the lp model
-
-        Args:
-            dmu (string): The solver chosen for optimization. Default is "all".
-        """
-        if dmu =="all":
-            for ind, problem in self.__modeldict.items():
-                # print(ind,"\n",problem.pprint())
+    def info(self, dmu="all"):
+        if dmu == "all":
+            if self._print_all_info:
+                for ind, problem in self._models.items():
+                    print(ind, "\n", problem.pprint())
+            return None
+        key = dmu
+        if key not in self._models:
+            try:
+                key = int(dmu)
+            except (TypeError, ValueError):
                 pass
-        print(self.__modeldict[int(dmu)].pprint())
-
-
-class MBx2(MB):
-    def __init__(self, data,year,sent = "inputvar=outputvar",  sx=[[1,1,1],[1,1,1]], sy=[[1],[1]], rts=RTS_VRS1, baseindex=None,refindex=None):
-        """DEA: Directional distance function
-
-        Args:
-            data (pandas.DataFrame): input pandas.
-            sent (str): inputvars=outputvars[: unoutputvars]. e.g.: "K L = Y : CO2"
-            sx (list): 投入包含污染物质系数. Defaults to [[1,1,1],[1,1,1]].
-            sy (list, optional): 期望产出包含污染物质系数. Defaults to [[1],[1]].
-            rts (String): RTS_VRS1 (variable returns to scale) or RTS_CRS (constant returns to scale)
-            baseindex (String, optional): estimate index. Defaults to None. e.g.: "Year=[2010]"
-            refindex (String, optional): reference index. Defaults to None. e.g.: "Year=[2010]"
-        """
-        # Initialize DEA model
-        self.data=data
-        self.year = year
-        self.sent = sent
-        self.tlt=pd.Series(self.year).drop_duplicates().sort_values()
-        self.inputvars = self.sent.split('=')[0].strip(' ').split(' ')
-        try:
-            self.outputvars = self.sent.split('=')[1]   .split(':')[0].strip(' ').split(' ')
-            self.unoutputvars = self.sent.split('=')[1]   .split(':')[1].strip(' ').split(' ')
-        except:
-            self.outputvars = self.sent.split('=')[1]    .strip(' ').split(' ')
-            self.unoutputvars=None
-        self.sx, self.sy = sx, sy
-        self.rts = rts
-        # print(self.sx, self.sy)
-
-        self.baseindex = baseindex
-        if type(baseindex) != type(None):
-            self.varname1=self.baseindex.split('=')[0]
-            # print(self.baseindex)
-            self.varvalue1=ast.literal_eval(self.baseindex.split('=')[1])
-            self.y, self.x, self.b = self.data.loc[self.data[self.varname1].isin(self.varvalue1), self.outputvars
-                                        ], self.data.loc[self.data[self.varname1].isin(self.varvalue1), self.inputvars
-                                        ], self.data.loc[self.data[self.varname1].isin(self.varvalue1), self.unoutputvars
-                                        ]if type(self.unoutputvars) != type(None) else None
-
+        if key in self._models:
+            print(self._models[key].pprint())
         else:
+            print(f"DMU '{dmu}' not found in the evaluated set.")
+        return None
 
-            self.y, self.x, self.b = self.data.loc[:, self.outputvars
-                                        ], self.data.loc[:, self.inputvars
-                                        ], self.data.loc[:, self.unoutputvars
-                                        ] if type(self.unoutputvars) != type(None) else None
 
+class _MBThetaMixin:
+    _has_theta = True
+    _objective_sense = minimize
+    _objective_component = "theta"
+    _include_var_undesirable = True
 
-        # print(self.b)
-        self.refindex = refindex
-        if type(refindex) != type(None):
-            self.varname=self.refindex.split('=')[0]
-            self.varvalue=ast.literal_eval(self.refindex.split('=')[1])
+    def _undesirable_rhs(self, model, b):
+        return model.theta[b]
 
-            self.yref, self.xref, self.bref = self.data.loc[self.data[self.varname].isin(self.varvalue), self.outputvars
-                                                ], self.data.loc[self.data[self.varname].isin(self.varvalue), self.inputvars
-                                                ], self.data.loc[self.data[self.varname].isin(self.varvalue), self.unoutputvars
-                                                ] if type(self.unoutputvars) != type(None) else None
-        else:
-            self.yref, self.xref, self.bref = self.data.loc[:, self.outputvars
-                                        ], self.data.loc[:, self.inputvars
-                                        ], self.data.loc[:, self.unoutputvars
-                                        ] if type(self.unoutputvars) != type(None) else None
+    def _mb_rhs(self, model, b):
+        return self.b.loc[self.I0, self.bcol[b]] - model.theta[b]
 
-        self.xcol = self.x.columns
-        self.ycol = self.y.columns
-        self.bcol = self.b.columns if type(self.unoutputvars) != type(None) else None
 
-        # print(self.xcol)
+class MBx(_MBThetaMixin, _PanelMBBase):
+    """Input-side material-balance panel model."""
+    _has_objx = True
+    _has_objy = False
+    _print_all_info = False
 
-        self.I = self.x.index          ## I 是 被评价决策单元的索引
-        self.__modeldict = {}
-        for i in self.I:
-            # print(i)
-            self.I0 = i                                                 ## I 是 被评价决策单元的数量
 
-            self.__model__ = ConcreteModel()
-            # Initialize sets
-            self.__model__.I2 = Set(initialize= self.xref.index)                     ## I2 是 参考决策单元的数量
-            self.__model__.K = Set(initialize=range(len(self.x.iloc[0])))          ## K 是投入个数
-            self.__model__.L = Set(initialize=range(len(self.y.iloc[0])))          ## L 是产出个数 被评价单元和参考单元的K，L一样
+class MBx2(MBx):
+    """Backward-compatible alias of :class:`MBx`."""
+    _print_all_info = True
 
-            if type(self.b) != type(None):
-                self.__model__.B = Set(initialize=range(len(self.b.iloc[0])))      ## B 是 非期望产出个数
 
-            # Initialize variable
+class MBxy(_MBThetaMixin, _PanelMBBase):
+    """Input-output material-balance panel model with variable bad output target."""
+    _has_objx = True
+    _has_objy = True
 
-            self.__model__.objx = Var(self.__model__.K,bounds=(0.0, None), within=Reals,doc='object x')
+    def _mb_rhs(self, model, b):
+        return model.thetab[b] + self.b.loc[self.I0, self.bcol[b]] - model.theta[b]
 
-            self.__model__.thetax = Var(self.__model__.K,bounds=(0.0, None), doc='slack x')
-            self.__model__.thetay = Var(self.__model__.L,bounds=(0.0, None), doc='slack y')
-            if type(self.b) != type(None):
-                self.__model__.thetab = Var(self.__model__.B,bounds=(0.0, None), doc='slack b')
-                self.__model__.theta = Var(self.__model__.B,bounds=(0.0, None), within=Reals,doc='object b')
 
-            self.__model__.lamda = Var(self.__model__.I2, bounds=(0.0, None),within=Reals, doc='intensity variables')
+class MBxy2(_PanelMBBase):
+    """Input-output material-balance panel model with fixed bad output."""
+    _has_objx = True
+    _has_objy = True
+    _objective_sense = maximize
+    _objective_component = "thetab"
 
 
-            # Setup the objective function and constraints
-            self.__model__.objective = Objective(rule=self.__objective_rule(), sense=minimize, doc='objective function')
-            self.__model__.input = Constraint(self.__model__.K,  rule=self.__input_rule(), doc='input constraint')
-            self.__model__.output = Constraint(self.__model__.L,  rule=self.__output_rule(), doc='output constraint')
-
-
-            if type(self.b) != type(None):
-                self.__model__.undesirable_output = Constraint(self.__model__.B, rule=self.__undesirable_output_rule(), \
-                                                               doc='undesirable output constraint')
-                self.__model__.mb = Constraint(self.__model__.B,  rule=self.__mb_rule(), \
-                                                                doc='material balance constraint')
-            if self.rts == RTS_VRS1:
-                self.__model__.vrs = Constraint(rule=self.__vrs_rule(), doc='various return to scale rule')
-
-            self.__modeldict[i] = self.__model__
-
-        # Optimize model
-    def __objective_rule(self):
-        """Return the proper objective function"""
-        def objective_rule(model):
-            return sum(model.theta[b]*1 for b in model.B)
-        return objective_rule
-
-    def __input_rule(self):
-        """Return the proper input constraint"""
-        def input_rule(model, k):
-            return sum(model.lamda[i2] * self.xref.loc[i2,self.xcol[k]] for i2 in model.I2
-                    ) + model.thetax[k] == model.objx[k]
-        return input_rule
-
-    def __output_rule(self):
-        """Return the proper output constraint"""
-        def output_rule(model, l):
-            return sum(model.lamda[i2] * self.yref.loc[i2,self.ycol[l]] for i2 in model.I2
-                    ) - model.thetay[l] == self.y.loc[self.I0,self.ycol[l]]
-        return output_rule
-
-    def __undesirable_output_rule(self):
-        """Return the proper undesirable output constraint"""
-        def undesirable_output_rule(model, b):
-            return sum(model.lamda[i2] * self.bref.loc[i2,self.bcol[b]] for i2 in model.I2
-                    ) + model.thetab[b] == model.theta[b]*1
-        return undesirable_output_rule
-
-    def __mb_rule(self):
-        """Return the proper undesirable output constraint"""
-        def mb_rule(model, b):
-            return sum(self.sx[b][k] * (model.thetax[k] + self.x.loc[self.I0,self.xcol[k]] - model.objx[k] ) for k in model.K) \
-                    + sum(self.sy[b][l] * model.thetay[l] for l in model.L) \
-                    == self.b.loc[self.I0,self.bcol[b]] - model.theta[b]
-        return mb_rule
-
-    def __vrs_rule(self):
-        def vrs_rule(model):
-            return sum(model.lamda[ i2] for i2 in model.I2) == 1
-
-        return vrs_rule
-
-    def optimize(self,  solver=OPT_DEFAULT):
-        """Optimize the function by requested method
-
-        Args:
-            solver (string): The solver chosen for optimization. It will optimize with default solver if OPT_DEFAULT is given.
-        """
-        # TODO(error/warning handling): Check problem status after optimization
-
-        data2,obj,theta,thetax,thetay,thetab,lamda = pd.DataFrame(),{},{},{},{},{},{}
-        for ind, problem in self.__modeldict.items():
-            _, data2.loc[ind,"optimization_status"] = tools.optimize_model(problem, ind, solver)
-
-            if type(self.b) != type(None):
-                obj[ind] = problem.objective()
-                theta[ind], = np.asarray(list(problem.theta[:].value))
-                thetax[ind]= np.asarray(list(problem.thetax[:].value))
-                thetay[ind]= np.asarray(list(problem.thetay[:].value))
-                thetab[ind]= np.asarray(list(problem.thetab[:].value))
-                lamda[ind]= np.asarray(list(problem.lamda[:].value))
-            else:
-                obj[ind] = problem.objective()
-                theta[ind], = np.asarray(list(problem.theta[:].value))
-                thetax[ind]= np.asarray(list(problem.thetax[:].value))
-                thetay[ind]= np.asarray(list(problem.thetay[:].value))
-                lamda[ind]= np.asarray(list(problem.lamda[:].value))
-
-                # print(list(problem.thetax[:].value ),list(problem.t[:].value ))
-        obj = pd.DataFrame(obj,index=["obj"]).T
-        theta = pd.DataFrame(theta,index=["var Undesirable"]).T
-        thetax = pd.DataFrame(thetax).T
-        thetax.columns = thetax.columns.map(lambda x : "Input"+ str(x)+"'s slack" )
-        thetay = pd.DataFrame(thetay).T
-        thetay.columns = thetay.columns.map(lambda y : "Output"+ str(y)+"'s slack" )
-
-        theta_=pd.concat([theta,thetax],axis=1)
-        theta_=pd.concat([theta_,thetay],axis=1)
-        if type(self.b) != type(None):
-            thetab = pd.DataFrame(thetab).T
-            thetab.columns = thetab.columns.map(lambda b : "Undesirable Output"+ str(b)+"'s slack" )
-            theta_ = pd.concat([theta_,thetab],axis=1)
-
-        lamda =pd.DataFrame(lamda) .T
-        lamda.columns = lamda.columns.map(lambda x : "lamda"+ str(x) )
-        data3 = pd.concat([data2,obj],axis=1)
-        data3 = pd.concat([data3,theta_],axis=1)
-        # data3 = pd.concat([data3,lamda],axis=1)
-        return data3
-
-
-    def info(self, dmu = "all"):
-        """Show the infomation of the lp model
-
-        Args:
-            dmu (string): The solver chosen for optimization. Default is "all".
-        """
-        if dmu =="all":
-            for ind, problem in self.__modeldict.items():
-                print(ind,"\n",problem.pprint())
-
-        print(self.__modeldict[int(dmu)].pprint())
-
-
-class MBxy(MB):
-    def __init__(self, data,year,sent = "inputvar=outputvar",  sx=[[1,1,1],[1,1,1]], sy=[[1],[1]], rts=RTS_VRS1, baseindex=None,refindex=None):
-        """DEA: Directional distance function
-
-        Args:
-            data (pandas.DataFrame): input pandas.
-            sent (str): inputvars=outputvars[: unoutputvars]. e.g.: "K L = Y : CO2"
-            sx (list): 投入包含污染物质系数. Defaults to [[1,1,1],[1,1,1]].
-            sy (list, optional): 期望产出包含污染物质系数. Defaults to [[1],[1]].
-            rts (String): RTS_VRS1 (variable returns to scale) or RTS_CRS (constant returns to scale)
-            baseindex (String, optional): estimate index. Defaults to None. e.g.: "Year=[2010]"
-            refindex (String, optional): reference index. Defaults to None. e.g.: "Year=[2010]"
-        """
-        # Initialize DEA model
-        self.data=data
-        self.year = year
-        self.sent = sent
-        self.tlt=pd.Series(self.year).drop_duplicates().sort_values()
-        self.inputvars = self.sent.split('=')[0].strip(' ').split(' ')
-        try:
-            self.outputvars = self.sent.split('=')[1]   .split(':')[0].strip(' ').split(' ')
-            self.unoutputvars = self.sent.split('=')[1]   .split(':')[1].strip(' ').split(' ')
-        except:
-            self.outputvars = self.sent.split('=')[1]    .strip(' ').split(' ')
-            self.unoutputvars=None
-        self.sx, self.sy = sx, sy
-        self.rts = rts
-        # print(self.sx, self.sy)
-
-        self.baseindex = baseindex
-        if type(baseindex) != type(None):
-            self.varname1=self.baseindex.split('=')[0]
-            # print(self.baseindex)
-            self.varvalue1=ast.literal_eval(self.baseindex.split('=')[1])
-            self.y, self.x, self.b = self.data.loc[self.data[self.varname1].isin(self.varvalue1), self.outputvars
-                                        ], self.data.loc[self.data[self.varname1].isin(self.varvalue1), self.inputvars
-                                        ], self.data.loc[self.data[self.varname1].isin(self.varvalue1), self.unoutputvars
-                                        ]if type(self.unoutputvars) != type(None) else None
-
-        else:
-
-            self.y, self.x, self.b = self.data.loc[:, self.outputvars
-                                        ], self.data.loc[:, self.inputvars
-                                        ], self.data.loc[:, self.unoutputvars
-                                        ] if type(self.unoutputvars) != type(None) else None
-
-
-        # print(self.b)
-        self.refindex = refindex
-        if type(refindex) != type(None):
-            self.varname=self.refindex.split('=')[0]
-            self.varvalue=ast.literal_eval(self.refindex.split('=')[1])
-
-            self.yref, self.xref, self.bref = self.data.loc[self.data[self.varname].isin(self.varvalue), self.outputvars
-                                                ], self.data.loc[self.data[self.varname].isin(self.varvalue), self.inputvars
-                                                ], self.data.loc[self.data[self.varname].isin(self.varvalue), self.unoutputvars
-                                                ] if type(self.unoutputvars) != type(None) else None
-        else:
-            self.yref, self.xref, self.bref = self.data.loc[:, self.outputvars
-                                        ], self.data.loc[:, self.inputvars
-                                        ], self.data.loc[:, self.unoutputvars
-                                        ] if type(self.unoutputvars) != type(None) else None
-
-        self.xcol = self.x.columns
-        self.ycol = self.y.columns
-        self.bcol = self.b.columns if type(self.unoutputvars) != type(None) else None
-
-        # print(self.xcol)
-
-        self.I = self.x.index          ## I 是 被评价决策单元的索引
-        self.__modeldict = {}
-        for i in self.I:
-            # print(i)
-            self.I0 = i                                                 ## I 是 被评价决策单元的数量
-
-            self.__model__ = ConcreteModel()
-            # Initialize sets
-            self.__model__.I2 = Set(initialize= self.xref.index)                     ## I2 是 参考决策单元的数量
-            self.__model__.K = Set(initialize=range(len(self.x.iloc[0])))          ## K 是投入个数
-            self.__model__.L = Set(initialize=range(len(self.y.iloc[0])))          ## L 是产出个数 被评价单元和参考单元的K，L一样
-
-            if type(self.b) != type(None):
-                self.__model__.B = Set(initialize=range(len(self.b.iloc[0])))      ## B 是 非期望产出个数
-
-            # Initialize variable
-
-            self.__model__.objx = Var(self.__model__.K,bounds=(0.0, None), within=Reals,doc='object x')
-            self.__model__.objy = Var(self.__model__.L,bounds=(0.0, None), within=Reals,doc='object y')
-
-            self.__model__.thetax = Var(self.__model__.K,bounds=(0.0, None), doc='slack x')
-            self.__model__.thetay = Var(self.__model__.L,bounds=(0.0, None), doc='slack y')
-            if type(self.b) != type(None):
-                self.__model__.thetab = Var(self.__model__.B,bounds=(0.0, None), doc='slack b')
-                self.__model__.theta = Var(self.__model__.B,bounds=(0.0, None), within=Reals,doc='object b')
-
-            self.__model__.lamda = Var(self.__model__.I2, bounds=(0.0, None),within=Reals, doc='intensity variables')
-
-
-            # Setup the objective function and constraints
-            self.__model__.objective = Objective(rule=self.__objective_rule(), sense=minimize, doc='objective function')
-            self.__model__.input = Constraint(self.__model__.K,  rule=self.__input_rule(), doc='input constraint')
-            self.__model__.output = Constraint(self.__model__.L,  rule=self.__output_rule(), doc='output constraint')
-
-
-            if type(self.b) != type(None):
-                self.__model__.undesirable_output = Constraint(self.__model__.B, rule=self.__undesirable_output_rule(), \
-                                                               doc='undesirable output constraint')
-                self.__model__.mb = Constraint(self.__model__.B,  rule=self.__mb_rule(), \
-                                                                doc='material balance constraint')
-            if self.rts == RTS_VRS1:
-                self.__model__.vrs = Constraint(rule=self.__vrs_rule(), doc='various return to scale rule')
-
-            self.__modeldict[i] = self.__model__
-
-        # Optimize model
-    def __objective_rule(self):
-        """Return the proper objective function"""
-        def objective_rule(model):
-            return sum(model.theta[b]*1 for b in model.B)
-        return objective_rule
-
-    def __input_rule(self):
-        """Return the proper input constraint"""
-        def input_rule(model, k):
-            return sum(model.lamda[i2] * self.xref.loc[i2,self.xcol[k]] for i2 in model.I2
-                    ) + model.thetax[k] == model.objx[k]
-        return input_rule
-
-    def __output_rule(self):
-        """Return the proper output constraint"""
-        def output_rule(model, l):
-            return sum(model.lamda[i2] * self.yref.loc[i2,self.ycol[l]] for i2 in model.I2
-                    ) - model.thetay[l] == model.objy[l]
-        return output_rule
-
-    def __undesirable_output_rule(self):
-        """Return the proper undesirable output constraint"""
-        def undesirable_output_rule(model, b):
-            return sum(model.lamda[i2] * self.bref.loc[i2,self.bcol[b]] for i2 in model.I2
-                    ) + model.thetab[b] == model.theta[b]*1
-        return undesirable_output_rule
-
-    def __mb_rule(self):
-        """Return the proper undesirable output constraint"""
-        def mb_rule(model, b):
-            return sum(self.sx[b][k] * (model.thetax[k] + self.x.loc[self.I0,self.xcol[k]] - model.objx[k]) for k in model.K) \
-                 + sum(self.sy[b][l] * (model.thetay[l] + model.objy[l] - self.y.loc[self.I0,self.ycol[l]]) for l in model.L) \
-                == model.thetab[b]+self.b.loc[self.I0,self.bcol[b]] - model.theta[b]
-        return mb_rule
-
-
-    def __vrs_rule(self):
-        def vrs_rule(model):
-            return sum(model.lamda[i2] for i2 in model.I2) == 1
-
-        return vrs_rule
-
-    def optimize(self,  solver=OPT_DEFAULT):
-        """Optimize the function by requested method
-
-        Args:
-            solver (string): The solver chosen for optimization. It will optimize with default solver if OPT_DEFAULT is given.
-        """
-        # TODO(error/warning handling): Check problem status after optimization
-
-        data2,obj,theta,thetax,thetay,thetab,lamda = pd.DataFrame(),{},{},{},{},{},{}
-        for ind, problem in self.__modeldict.items():
-            _, data2.loc[ind,"optimization_status"] = tools.optimize_model(problem, ind, solver)
-
-            if type(self.b) != type(None):
-                obj[ind] = problem.objective()
-                theta[ind], = np.asarray(list(problem.theta[:].value))
-                thetax[ind]= np.asarray(list(problem.thetax[:].value))
-                thetay[ind]= np.asarray(list(problem.thetay[:].value))
-                thetab[ind]= np.asarray(list(problem.thetab[:].value))
-                lamda[ind]= np.asarray(list(problem.lamda[:].value))
-            else:
-                obj[ind] = problem.objective()
-                theta[ind], = np.asarray(list(problem.theta[:].value))
-                thetax[ind]= np.asarray(list(problem.thetax[:].value))
-                thetay[ind]= np.asarray(list(problem.thetay[:].value))
-                lamda[ind]= np.asarray(list(problem.lamda[:].value))
-
-                # print(list(problem.thetax[:].value ),list(problem.t[:].value ))
-        obj = pd.DataFrame(obj,index=["obj"]).T
-        theta = pd.DataFrame(theta,index=["var Undesirable"]).T
-        thetax = pd.DataFrame(thetax).T
-        thetax.columns = thetax.columns.map(lambda x : "Input"+ str(x)+"'s slack" )
-        thetay = pd.DataFrame(thetay).T
-        thetay.columns = thetay.columns.map(lambda y : "Output"+ str(y)+"'s slack" )
-
-        theta_=pd.concat([theta,thetax],axis=1)
-        theta_=pd.concat([theta_,thetay],axis=1)
-        if type(self.b) != type(None):
-            thetab = pd.DataFrame(thetab).T
-            thetab.columns = thetab.columns.map(lambda b : "Undesirable Output"+ str(b)+"'s slack" )
-            theta_ = pd.concat([theta_,thetab],axis=1)
-
-        lamda =pd.DataFrame(lamda) .T
-        lamda.columns = lamda.columns.map(lambda x : "lamda"+ str(x) )
-        data3 = pd.concat([data2,obj],axis=1)
-        data3 = pd.concat([data3,theta_],axis=1)
-        # data3 = pd.concat([data3,lamda],axis=1)
-        return data3
-
-
-    def info(self, dmu = "all"):
-        """Show the infomation of the lp model
-
-        Args:
-            dmu (string): The solver chosen for optimization. Default is "all".
-        """
-        if dmu =="all":
-            for ind, problem in self.__modeldict.items():
-                print(ind,"\n",problem.pprint())
-
-        print(self.__modeldict[int(dmu)].pprint())
-
-
-
-class MBxy2(MB):
-    def __init__(self, data,year,sent = "inputvar=outputvar",  sx=[[1,1,1],[1,1,1]], sy=[[1],[1]], rts=RTS_VRS1, baseindex=None,refindex=None):
-        """DEA: Directional distance function
-
-        Args:
-            data (pandas.DataFrame): input pandas.
-            sent (str): inputvars=outputvars[: unoutputvars]. e.g.: "K L = Y : CO2"
-            sx (list): 投入包含污染物质系数. Defaults to [[1,1,1],[1,1,1]].
-            sy (list, optional): 期望产出包含污染物质系数. Defaults to [[1],[1]].
-            rts (String): RTS_VRS1 (variable returns to scale) or RTS_CRS (constant returns to scale)
-            baseindex (String, optional): estimate index. Defaults to None. e.g.: "Year=[2010]"
-            refindex (String, optional): reference index. Defaults to None. e.g.: "Year=[2010]"
-        """
-        # Initialize DEA model
-        self.data=data
-        self.year = year
-        self.sent = sent
-        self.tlt=pd.Series(self.year).drop_duplicates().sort_values()
-        self.inputvars = self.sent.split('=')[0].strip(' ').split(' ')
-        try:
-            self.outputvars = self.sent.split('=')[1]   .split(':')[0].strip(' ').split(' ')
-            self.unoutputvars = self.sent.split('=')[1]   .split(':')[1].strip(' ').split(' ')
-        except:
-            self.outputvars = self.sent.split('=')[1]    .strip(' ').split(' ')
-            self.unoutputvars=None
-        self.sx, self.sy = sx, sy
-        self.rts = rts
-        # print(self.sx, self.sy)
-
-        self.baseindex = baseindex
-        if type(baseindex) != type(None):
-            self.varname1=self.baseindex.split('=')[0]
-            # print(self.baseindex)
-            self.varvalue1=ast.literal_eval(self.baseindex.split('=')[1])
-            self.y, self.x, self.b = self.data.loc[self.data[self.varname1].isin(self.varvalue1), self.outputvars
-                                        ], self.data.loc[self.data[self.varname1].isin(self.varvalue1), self.inputvars
-                                        ], self.data.loc[self.data[self.varname1].isin(self.varvalue1), self.unoutputvars
-                                        ]if type(self.unoutputvars) != type(None) else None
-
-        else:
-
-            self.y, self.x, self.b = self.data.loc[:, self.outputvars
-                                        ], self.data.loc[:, self.inputvars
-                                        ], self.data.loc[:, self.unoutputvars
-                                        ] if type(self.unoutputvars) != type(None) else None
-
-
-        # print(self.b)
-        self.refindex = refindex
-        if type(refindex) != type(None):
-            self.varname=self.refindex.split('=')[0]
-            self.varvalue=ast.literal_eval(self.refindex.split('=')[1])
-
-            self.yref, self.xref, self.bref = self.data.loc[self.data[self.varname].isin(self.varvalue), self.outputvars
-                                                ], self.data.loc[self.data[self.varname].isin(self.varvalue), self.inputvars
-                                                ], self.data.loc[self.data[self.varname].isin(self.varvalue), self.unoutputvars
-                                                ] if type(self.unoutputvars) != type(None) else None
-        else:
-            self.yref, self.xref, self.bref = self.data.loc[:, self.outputvars
-                                        ], self.data.loc[:, self.inputvars
-                                        ], self.data.loc[:, self.unoutputvars
-                                        ] if type(self.unoutputvars) != type(None) else None
-
-        self.xcol = self.x.columns
-        self.ycol = self.y.columns
-        self.bcol = self.b.columns if type(self.unoutputvars) != type(None) else None
-
-        # print(self.xcol)
-
-        self.I = self.x.index          ## I 是 被评价决策单元的索引
-        self.__modeldict = {}
-        for i in self.I:
-            # print(i)
-            self.I0 = i                                                 ## I 是 被评价决策单元的数量
-
-            self.__model__ = ConcreteModel()
-            # Initialize sets
-            self.__model__.I2 = Set(initialize= self.xref.index)                     ## I2 是 参考决策单元的数量
-            self.__model__.K = Set(initialize=range(len(self.x.iloc[0])))          ## K 是投入个数
-            self.__model__.L = Set(initialize=range(len(self.y.iloc[0])))          ## L 是产出个数 被评价单元和参考单元的K，L一样
-
-            if type(self.b) != type(None):
-                self.__model__.B = Set(initialize=range(len(self.b.iloc[0])))      ## B 是 非期望产出个数
-
-            # Initialize variable
-
-            self.__model__.objx = Var(self.__model__.K,bounds=(0.0, None), within=Reals,doc='object x')
-            self.__model__.objy = Var(self.__model__.L,bounds=(0.0, None), within=Reals,doc='object y')
-
-            self.__model__.thetax = Var(self.__model__.K,bounds=(0.0, None), doc='slack x')
-            self.__model__.thetay = Var(self.__model__.L,bounds=(0.0, None), doc='slack y')
-            if type(self.b) != type(None):
-                self.__model__.thetab = Var(self.__model__.B,bounds=(0.0, None), doc='slack b')
-
-            self.__model__.lamda = Var(self.__model__.I2, bounds=(0.0, None),within=Reals, doc='intensity variables')
-
-
-            # Setup the objective function and constraints
-            self.__model__.objective = Objective(rule=self.__objective_rule(), sense=maximize, doc='objective function')
-            self.__model__.input = Constraint(self.__model__.K,  rule=self.__input_rule(), doc='input constraint')
-            self.__model__.output = Constraint(self.__model__.L,  rule=self.__output_rule(), doc='output constraint')
-
-
-            if type(self.b) != type(None):
-                self.__model__.undesirable_output = Constraint(self.__model__.B, rule=self.__undesirable_output_rule(), \
-                                                               doc='undesirable output constraint')
-                self.__model__.mb = Constraint(self.__model__.B,  rule=self.__mb_rule(), \
-                                                                doc='material balance constraint')
-            if self.rts == RTS_VRS1:
-                self.__model__.vrs = Constraint(rule=self.__vrs_rule(), doc='various return to scale rule')
-
-            self.__modeldict[i] = self.__model__
-
-        # Optimize model
-    def __objective_rule(self):
-        """Return the proper objective function"""
-        def objective_rule(model):
-            return sum(model.thetab[b] for b in model.B)
-        return objective_rule
-
-    def __input_rule(self):
-        """Return the proper input constraint"""
-        def input_rule(model, k):
-            return sum(model.lamda[i2] * self.xref.loc[i2,self.xcol[k]] for i2 in model.I2
-                    ) + model.thetax[k] == model.objx[k]
-        return input_rule
-
-    def __output_rule(self):
-        """Return the proper output constraint"""
-        def output_rule(model, l):
-            return sum(model.lamda[i2] * self.yref.loc[i2,self.ycol[l]] for i2 in model.I2
-                    ) - model.thetay[l] == model.objy[l]
-        return output_rule
-
-    def __undesirable_output_rule(self):
-        """Return the proper undesirable output constraint"""
-        def undesirable_output_rule(model, b):
-            return sum(model.lamda[i2] * self.bref.loc[i2,self.bcol[b]] for i2 in model.I2
-                    ) + model.thetab[b] == self.b.loc[self.I0,self.bcol[b]]
-        return undesirable_output_rule
-
-    def __mb_rule(self):
-        """Return the proper undesirable output constraint"""
-        def mb_rule(model, b):
-            return sum(self.sx[b][k] * (model.thetax[k] + self.x.loc[self.I0,self.xcol[k]] - model.objx[k]) for k in model.K) \
-                 + sum(self.sy[b][l] * (model.thetay[l] + model.objy[l] - self.y.loc[self.I0,self.ycol[l]]) for l in model.L) \
-                == model.thetab[b]
-        return mb_rule
-
-
-    def __vrs_rule(self):
-        def vrs_rule(model):
-            return sum(model.lamda[i2] for i2 in model.I2) == 1
-
-        return vrs_rule
-
-    def optimize(self,  solver=OPT_DEFAULT):
-        """Optimize the function by requested method
-
-        Args:
-            solver (string): The solver chosen for optimization. It will optimize with default solver if OPT_DEFAULT is given.
-        """
-        # TODO(error/warning handling): Check problem status after optimization
-
-        data2,obj,thetax,thetay,thetab,lamda = pd.DataFrame(),{},{},{},{},{}
-        for ind, problem in self.__modeldict.items():
-            _, data2.loc[ind,"optimization_status"] = tools.optimize_model(problem, ind, solver)
-
-            if type(self.b) != type(None):
-                obj[ind] = problem.objective()
-                # theta[ind], = np.asarray(list(problem.theta[:].value))
-                thetax[ind]= np.asarray(list(problem.thetax[:].value))
-                thetay[ind]= np.asarray(list(problem.thetay[:].value))
-                thetab[ind]= np.asarray(list(problem.thetab[:].value))
-                lamda[ind]= np.asarray(list(problem.lamda[:].value))
-            else:
-                obj[ind] = problem.objective()
-                # theta[ind], = np.asarray(list(problem.theta[:].value))
-                thetax[ind]= np.asarray(list(problem.thetax[:].value))
-                thetay[ind]= np.asarray(list(problem.thetay[:].value))
-                lamda[ind]= np.asarray(list(problem.lamda[:].value))
-
-                # print(list(problem.thetax[:].value ),list(problem.t[:].value ))
-        obj = pd.DataFrame(obj,index=["obj"]).T
-        # theta = pd.DataFrame(theta,index=["var Undesirable"]).T
-        thetax = pd.DataFrame(thetax).T
-        thetax.columns = thetax.columns.map(lambda x : "Input"+ str(x)+"'s slack" )
-        thetay = pd.DataFrame(thetay).T
-        thetay.columns = thetay.columns.map(lambda y : "Output"+ str(y)+"'s slack" )
-
-        # theta_=pd.concat([theta,thetax],axis=1)
-        theta_=pd.concat([thetax,thetay],axis=1)
-        if type(self.b) != type(None):
-            thetab = pd.DataFrame(thetab).T
-            thetab.columns = thetab.columns.map(lambda b : "Undesirable Output"+ str(b)+"'s slack" )
-            theta_ = pd.concat([theta_,thetab],axis=1)
-
-        lamda =pd.DataFrame(lamda) .T
-        lamda.columns = lamda.columns.map(lambda x : "lamda"+ str(x) )
-        data3 = pd.concat([data2,obj],axis=1)
-        data3 = pd.concat([data3,theta_],axis=1)
-        # data3 = pd.concat([data3,lamda],axis=1)
-        return data3
-
-
-    def info(self, dmu = "all"):
-        """Show the infomation of the lp model
-
-        Args:
-            dmu (string): The solver chosen for optimization. Default is "all".
-        """
-        if dmu =="all":
-            for ind, problem in self.__modeldict.items():
-                print(ind,"\n",problem.pprint())
-
-        print(self.__modeldict[int(dmu)].pprint())
-
-class MB2(MB):
-    def __init__(self, data,year,sent = "inputvar=outputvar",  sx=[[1,1,1],[1,1,1]], sy=[[1],[1]], rts=RTS_VRS1, baseindex=None,refindex=None):
-        """DEA: Directional distance function
-
-        Args:
-            data (pandas.DataFrame): input pandas.
-            sent (str): inputvars=outputvars[: unoutputvars]. e.g.: "K L = Y : CO2"
-            sx (list): 投入包含污染物质系数. Defaults to [[1,1,1],[1,1,1]].
-            sy (list, optional): 期望产出包含污染物质系数. Defaults to [[1],[1]].
-            rts (String): RTS_VRS1 (variable returns to scale) or RTS_CRS (constant returns to scale)
-            baseindex (String, optional): estimate index. Defaults to None. e.g.: "Year=[2010]"
-            refindex (String, optional): reference index. Defaults to None. e.g.: "Year=[2010]"
-        """
-        # Initialize DEA model
-        self.data=data
-        self.year = year
-        self.sent = sent
-        self.tlt=pd.Series(self.year).drop_duplicates().sort_values()
-        self.inputvars = self.sent.split('=')[0].strip(' ').split(' ')
-        try:
-            self.outputvars = self.sent.split('=')[1]   .split(':')[0].strip(' ').split(' ')
-            self.unoutputvars = self.sent.split('=')[1]   .split(':')[1].strip(' ').split(' ')
-        except:
-            self.outputvars = self.sent.split('=')[1]    .strip(' ').split(' ')
-            self.unoutputvars=None
-        self.sx, self.sy = sx, sy
-        self.rts = rts
-        # print(self.sx, self.sy)
-
-        self.baseindex = baseindex
-        if type(baseindex) != type(None):
-            self.varname1=self.baseindex.split('=')[0]
-            # print(self.baseindex)
-            self.varvalue1=ast.literal_eval(self.baseindex.split('=')[1])
-            self.y, self.x, self.b = self.data.loc[self.data[self.varname1].isin(self.varvalue1), self.outputvars
-                                        ], self.data.loc[self.data[self.varname1].isin(self.varvalue1), self.inputvars
-                                        ], self.data.loc[self.data[self.varname1].isin(self.varvalue1), self.unoutputvars
-                                        ]if type(self.unoutputvars) != type(None) else None
-
-        else:
-
-            self.y, self.x, self.b = self.data.loc[:, self.outputvars
-                                        ], self.data.loc[:, self.inputvars
-                                        ], self.data.loc[:, self.unoutputvars
-                                        ] if type(self.unoutputvars) != type(None) else None
-
-
-        # print(self.b)
-        self.refindex = refindex
-        if type(refindex) != type(None):
-            self.varname=self.refindex.split('=')[0]
-            self.varvalue=ast.literal_eval(self.refindex.split('=')[1])
-
-            self.yref, self.xref, self.bref = self.data.loc[self.data[self.varname].isin(self.varvalue), self.outputvars
-                                                ], self.data.loc[self.data[self.varname].isin(self.varvalue), self.inputvars
-                                                ], self.data.loc[self.data[self.varname].isin(self.varvalue), self.unoutputvars
-                                                ] if type(self.unoutputvars) != type(None) else None
-        else:
-            self.yref, self.xref, self.bref = self.data.loc[:, self.outputvars
-                                        ], self.data.loc[:, self.inputvars
-                                        ], self.data.loc[:, self.unoutputvars
-                                        ] if type(self.unoutputvars) != type(None) else None
-
-        self.xcol = self.x.columns
-        self.ycol = self.y.columns
-        self.bcol = self.b.columns if type(self.unoutputvars) != type(None) else None
-
-        # print(self.xcol)
-
-        self.I = self.x.index          ## I 是 被评价决策单元的索引
-        self.__modeldict = {}
-        for i in self.I:
-            # print(i)
-            self.I0 = i                                                 ## I 是 被评价决策单元的数量
-
-            self.__model__ = ConcreteModel()
-            # Initialize sets
-            self.__model__.I2 = Set(initialize= self.xref.index)                     ## I2 是 参考决策单元的数量
-            self.__model__.K = Set(initialize=range(len(self.x.iloc[0])))          ## K 是投入个数
-            self.__model__.L = Set(initialize=range(len(self.y.iloc[0])))          ## L 是产出个数 被评价单元和参考单元的K，L一样
-
-            if type(self.b) != type(None):
-                self.__model__.B = Set(initialize=range(len(self.b.iloc[0])))      ## B 是 非期望产出个数
-
-            # Initialize variable
-            self.__model__.thetax = Var(self.__model__.K,bounds=(0.0, None), doc='slack x')
-            self.__model__.thetay = Var(self.__model__.L,bounds=(0.0, None), doc='slack y')
-            if type(self.b) != type(None):
-                self.__model__.thetab = Var(self.__model__.B,bounds=(0.0, None), doc='slack b')
-
-            self.__model__.lamda = Var(self.__model__.I2, bounds=(0.0, None),within=Reals, doc='intensity variables')
-
-
-            # Setup the objective function and constraints
-            self.__model__.objective = Objective(rule=self.__objective_rule(), sense=maximize, doc='objective function')
-            self.__model__.input = Constraint(self.__model__.K,  rule=self.__input_rule(), doc='input constraint')
-            self.__model__.output = Constraint(self.__model__.L,  rule=self.__output_rule(), doc='output constraint')
-
-
-            if type(self.b) != type(None):
-                self.__model__.undesirable_output = Constraint(self.__model__.B, rule=self.__undesirable_output_rule(), \
-                                                               doc='undesirable output constraint')
-                self.__model__.mb = Constraint(self.__model__.B,  rule=self.__mb_rule(), \
-                                                                doc='material balance constraint')
-            if self.rts == RTS_VRS1:
-                self.__model__.vrs = Constraint(rule=self.__vrs_rule(), doc='various return to scale rule')
-
-            self.__modeldict[i] = self.__model__
-
-        # Optimize model
-    def __objective_rule(self):
-        """Return the proper objective function"""
-        def objective_rule(model):
-            return sum(model.thetab[b]*1 for b in model.B)
-        return objective_rule
-
-    def __input_rule(self):
-        """Return the proper input constraint"""
-        def input_rule(model, k):
-            return sum(model.lamda[i2] * self.xref.loc[i2,self.xcol[k]] for i2 in model.I2
-                    ) + model.thetax[k] == self.x.loc[self.I0,self.xcol[k]]
-        return input_rule
-
-    def __output_rule(self):
-        """Return the proper output constraint"""
-        def output_rule(model, l):
-            return sum(model.lamda[i2] * self.yref.loc[i2,self.ycol[l]] for i2 in model.I2
-                    ) - model.thetay[l] == self.y.loc[self.I0,self.ycol[l]]
-        return output_rule
-
-    def __undesirable_output_rule(self):
-        """Return the proper undesirable output constraint"""
-        def undesirable_output_rule(model, b):
-            return sum(model.lamda[i2] * self.bref.loc[i2,self.bcol[b]] for i2 in model.I2
-                    ) + model.thetab[b] == self.b.loc[self.I0,self.bcol[b]]
-        return undesirable_output_rule
-
-    def __mb_rule(self):
-        """Return the proper undesirable output constraint"""
-        def mb_rule(model, b):
-            return sum(self.sx[b][k] * model.thetax[k] for k in model.K) \
-                    + sum(self.sy[b][l] * model.thetay[l] for l in model.L) \
-                    == model.thetab[b]
-        return mb_rule
-
-    def __vrs_rule(self):
-        def vrs_rule(model):
-            return sum(model.lamda[ i2] for i2 in model.I2) == 1
-
-        return vrs_rule
-
-    def optimize(self,  solver=OPT_DEFAULT):
-        """Optimize the function by requested method
-
-        Args:
-            solver (string): The solver chosen for optimization. It will optimize with default solver if OPT_DEFAULT is given.
-        """
-        # TODO(error/warning handling): Check problem status after optimization
-
-        data2, obj, thetax, thetay, thetab, lamda = pd.DataFrame(), {}, {}, {}, {}, {}
-        for ind, problem in self.__modeldict.items():
-            _, data2.loc[ind, "optimization_status"] = tools.optimize_model(problem, ind, solver)
-
-            if type(self.b) != type(None):
-                obj[ind] = problem.objective()
-                thetax[ind] = np.asarray(list(problem.thetax[:].value))
-                thetay[ind] = np.asarray(list(problem.thetay[:].value))
-                thetab[ind] = np.asarray(list(problem.thetab[:].value))
-                lamda[ind] = np.asarray(list(problem.lamda[:].value))
-            else:
-                obj[ind] = problem.objective()
-                thetax[ind] = np.asarray(list(problem.thetax[:].value))
-                thetay[ind] = np.asarray(list(problem.thetay[:].value))
-                lamda[ind] = np.asarray(list(problem.lamda[:].value))
-
-                # print(list(problem.thetax[:].value ),list(problem.t[:].value ))
-        obj = pd.DataFrame(obj, index=["obj"]).T
-        thetax = pd.DataFrame(thetax).T
-        thetax.columns = thetax.columns.map(lambda x: "Input" + str(x) + "'s slack")
-        thetay = pd.DataFrame(thetay).T
-        thetay.columns = thetay.columns.map(lambda y: "Output" + str(y) + "'s slack")
-
-        theta_ = pd.concat([thetax, thetay], axis=1)
-        if type(self.b) != type(None):
-            thetab = pd.DataFrame(thetab).T
-            thetab.columns = thetab.columns.map(lambda b: "Undesirable Output" + str(b) + "'s slack")
-            theta_ = pd.concat([theta_, thetab], axis=1)
-
-        lamda = pd.DataFrame(lamda).T
-        lamda.columns = lamda.columns.map(lambda x: "lamda" + str(x))
-        data3 = pd.concat([data2, obj], axis=1)
-        data3 = pd.concat([data3, theta_], axis=1)
-        # data3 = pd.concat([data3,lamda],axis=1)
-        return data3
-
-    def info(self, dmu = "all"):
-        """Show the infomation of the lp model
-
-        Args:
-            dmu (string): The solver chosen for optimization. Default is "all".
-        """
-        if dmu =="all":
-            for ind, problem in self.__modeldict.items():
-                print(ind,"\n",problem.pprint())
-
-        print(self.__modeldict[int(dmu)].pprint())
-
+class MB2(_PanelMBBase):
+    """Simplified material-balance panel model with observed input/output targets."""
+    _has_objx = False
+    _has_objy = False
+    _objective_sense = maximize
+    _objective_component = "thetab"
 

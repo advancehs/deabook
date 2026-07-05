@@ -49,11 +49,18 @@ RTS_CRS = "crs"
 RTS_CRS: Constant returns to scale.
 """
 
+# Historical alias used by older dual modules and examples.  The package now
+# keeps the explicit VRS variants, but ``RTS_VRS`` remains a public shorthand
+# for the same-reduction-factor VRS technology.
+RTS_VRS = RTS_VRS1
+
 RTS_Categories = {
     RTS_VRS1: "Variable returns to scale with same reduction factor",
     RTS_VRS2: "Variable returns to scale with different reduction factor",
     RTS_CRS: "Constant returns to scale"
 }
+
+RTS_ALLOWED = frozenset(RTS_Categories)
 
 # Orientation
 ORIENT_IO = "io"
@@ -154,3 +161,25 @@ DYNAMIC_Categories = {
     MAL : " malquist prodcutivity index or malquist-luenberger prodcutivity index",
     LUE : "luenberger prodcutivity index"
 }
+
+
+def validate_category(value, categories, name):
+    """Validate a constant against a category dictionary and return it."""
+    if value not in categories:
+        raise ValueError(f"{name} must be one of {list(categories)}; got {value!r}.")
+    return value
+
+
+def validate_rts(value):
+    """Validate returns-to-scale constants used throughout deabook."""
+    return validate_category(value, RTS_Categories, "rts")
+
+
+def validate_technology(value):
+    """Validate dynamic technology constants."""
+    return validate_category(value, TECH_Categories, "tech")
+
+
+def validate_dynamic(value):
+    """Validate dynamic-productivity index constants."""
+    return validate_category(value, DYNAMIC_Categories, "dynamic")

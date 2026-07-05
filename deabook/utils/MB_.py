@@ -1,1099 +1,306 @@
-# import dependencies
+"""Object-oriented backend for the basic material-balance DEA model.
 
-from pyomo.environ import ConcreteModel, Set, Var, Objective, minimize, maximize, Constraint, Reals,PositiveReals
+The public :class:`deabook.MB.MB` entry point historically dispatches to four
+internal classes named by whether non-polluting and polluting desirable outputs
+are present: ``MB1111``, ``MB1110``, ``MB1101`` and ``MB1100``.  The old file
+implemented those four cases by copy-pasting almost the same Pyomo model.  This
+module keeps the old class names, constructor signatures and result columns, but
+moves the shared model lifecycle into ``_BasicMBBase``.
+"""
+
+from __future__ import annotations
+
 import numpy as np
 import pandas as pd
-from ..constant import CET_ADDI, CET_MULT, FUN_PROD, FUN_COST, RTS_CRS, RTS_VRS1, OPT_DEFAULT, OPT_LOCAL
-import ast
-from . import tools
+from pyomo.environ import ConcreteModel, Constraint, Objective, Reals, Set, Var, minimize, value
 
-class MB1111():
-    """initial Group-VC-added CNLSZ (CNLSZ+G) model
+from ..constant import OPT_DEFAULT, RTS_VRS1
+from ..core import SolverConfig, select_rows, solve_pyomo_model
+
+
+class _BasicMBBase:
+    """Shared implementation for ``MB1111``/``MB1110``/``MB1101``/``MB1100``.
+
+    Subclasses only normalize their historical positional arguments into the
+    four optional variable groups.  The base class preserves the old Pyomo
+    component names (``Knp``, ``Kp``, ``Lp``, ``Lnp``, ``objb`` and so on), the
+    ``level``-controlled variable targets, and the compact result table returned
+    by ``optimize``.
     """
 
-    def __init__(self, data, inputvars_np, inputvars_p,outputvars_np,\
-                         outputvars_p, unoutputvars, sx, sy,  rts,level,baseindex,refindex):
-        """CNLSZ+G model
+    def _init_basic_mb(
+        self,
+        data,
+        inputvars_np,
+        inputvars_p,
+        outputvars_np,
+        outputvars_p,
+        unoutputvars,
+        sx,
+        sy,
+        rts,
+        level,
+        baseindex,
+        refindex,
+    ):
+        self.data = data
+        self.inputvars_np = list(inputvars_np)
+        self.inputvars_p = list(inputvars_p)
+        self.outputvars_np = None if outputvars_np is None else list(outputvars_np)
+        self.outputvars_p = None if outputvars_p is None else list(outputvars_p)
+        self.unoutputvars = list(unoutputvars)
+        self.sx = sx
+        self.sy = sy
+        self.rts = rts
+        self.level = level
+        self.baseindex = baseindex
+        self.refindex = refindex
 
-        Args:
-            y (float): output variable.
-            x (float): input variables.
-            z (float, optional): Contextual variable(s). Defaults to None.
-            cutactive (float): active concavity constraint.
-            cet (String, optional): CET_ADDI (additive composite error term) or CET_MULT (multiplicative composite error term). Defaults to CET_ADDI.
-            fun (String, optional): FUN_PROD (production frontier) or FUN_COST (cost frontier). Defaults to FUN_PROD.
-            rts (String, optional): RTS_VRS1 (variable returns to scale) or RTS_CRS (constant returns to scale). Defaults to RTS_VRS1.
-        """
-        # TODO(error/warning handling): Check the configuration of the model exist
-        self.data, self.inputvars_np, self.inputvars_p, self.outputvars_np, self.outputvars_p, \
-                        self.unoutputvars, self.sx, self.sy, self.rts, \
-                        self.level, self.baseindex, self.refindex = \
-            data, inputvars_np, inputvars_p,outputvars_np,outputvars_p, \
-                        unoutputvars, sx, sy,  rts,\
-                        level,baseindex,refindex
-
-        self.sx_np = np.array(self.sx)[:,0:len(self.inputvars_np)]
-        self.sx_p = np.array(self.sx)[:,len(self.inputvars_np):]
-        self.sy_np = np.array(self.sy)[:,0:len(self.outputvars_np)]
-        self.sy_p = np.array(self.sy)[:,len(self.outputvars_np):]
-
-        # print(self.inputvars_np, self.inputvars_p,self.outputvars_np,\
-        #     self.outputvars_p,self.unoutputvars,self.sx, self.sy)
-
-
-        if type(baseindex) != type(None):
-            self.varname1=self.baseindex.split('=')[0]
-            # print(self.baseindex)
-            self.varvalue1=ast.literal_eval(self.baseindex.split('=')[1])
-            self.y_p,self.y_np, self.x_p,self.x_np, self.b = \
-                                            self.data.loc[self.data[self.varname1].isin(self.varvalue1), self.outputvars_p
-                                        ], self.data.loc[self.data[self.varname1].isin(self.varvalue1), self.outputvars_np
-                                        ],self.data.loc[self.data[self.varname1].isin(self.varvalue1), self.inputvars_p
-                                        ], self.data.loc[self.data[self.varname1].isin(self.varvalue1), self.inputvars_np
-                                        ], self.data.loc[self.data[self.varname1].isin(self.varvalue1), self.unoutputvars
-                                        ]
-
+        self.sx_np = np.asarray(self.sx)[:, : len(self.inputvars_np)]
+        self.sx_p = np.asarray(self.sx)[:, len(self.inputvars_np) :]
+        if self.outputvars_np is None:
+            self.sy_np = None
+            self.sy_p = np.asarray(self.sy) if self.outputvars_p is not None else None
         else:
-            self.y_p,self.y_np, self.x_p,self.x_np, self.b  = \
-                                            self.data.loc[:, self.outputvars_p
-                                        ], self.data.loc[:, self.outputvars_np
-                                        ] , self.data.loc[:, self.inputvars_p
-                                        ], self.data.loc[:, self.inputvars_np
-                                        ], self.data.loc[:, self.unoutputvars
-                                        ]
+            split_at = len(self.outputvars_np)
+            self.sy_np = np.asarray(self.sy)[:, :split_at]
+            self.sy_p = np.asarray(self.sy)[:, split_at:] if self.outputvars_p is not None else None
 
+        eval_df = select_rows(self.data, self.baseindex, "baseindex")
+        ref_df = select_rows(self.data, self.refindex, "refindex")
+        self._assign_frames(eval_df, ref_df)
+        self._build_all_models()
 
-        if type(refindex) != type(None):
-            self.varname=self.refindex.split('=')[0]
-            self.varvalue=ast.literal_eval(self.refindex.split('=')[1])
+    @property
+    def _has_y_np(self):
+        return self.outputvars_np is not None
 
-            self.yref_p,self.yref_np, self.xref_p, self.xref_np, self.bref = \
-                                         self.data.loc[self.data[self.varname].isin(self.varvalue), self.outputvars_p
-                                    ], self.data.loc[self.data[self.varname].isin(self.varvalue), self.outputvars_np
-                                    ] , self.data.loc[self.data[self.varname].isin(self.varvalue), self.inputvars_p
-                                    ], self.data.loc[self.data[self.varname].isin(self.varvalue), self.inputvars_np
-                                    ], self.data.loc[self.data[self.varname].isin(self.varvalue), self.unoutputvars ]
+    @property
+    def _has_y_p(self):
+        return self.outputvars_p is not None
+
+    @property
+    def _output_np_variable_level(self):
+        return 5 if self._has_y_p else 4
+
+    def _assign_frames(self, eval_df, ref_df):
+        self.x_p = eval_df.loc[:, self.inputvars_p]
+        self.x_np = eval_df.loc[:, self.inputvars_np]
+        self.b = eval_df.loc[:, self.unoutputvars]
+        self.xref_p = ref_df.loc[:, self.inputvars_p]
+        self.xref_np = ref_df.loc[:, self.inputvars_np]
+        self.bref = ref_df.loc[:, self.unoutputvars]
+
+        if self._has_y_np:
+            self.y_np = eval_df.loc[:, self.outputvars_np]
+            self.yref_np = ref_df.loc[:, self.outputvars_np]
+            self.ycol_np = self.y_np.columns
         else:
-            self.yref_p, self.yref_np,self.xref_p, self.xref_np, self.bref = \
-                                        self.data.loc[:, self.outputvars_p
-                                    ], self.data.loc[:, self.outputvars_np
-                                    ], self.data.loc[:, self.inputvars_p
-                                    ], self.data.loc[:, self.inputvars_np
-                                    ], self.data.loc[:, self.unoutputvars ]
+            self.y_np = None
+            self.yref_np = None
+            self.ycol_np = None
 
+        if self._has_y_p:
+            self.y_p = eval_df.loc[:, self.outputvars_p]
+            self.yref_p = ref_df.loc[:, self.outputvars_p]
+            self.ycol_p = self.y_p.columns
+        else:
+            self.y_p = None
+            self.yref_p = None
+            self.ycol_p = None
 
         self.xcol_p = self.x_p.columns
         self.xcol_np = self.x_np.columns
-        self.ycol_p = self.y_p.columns
-        self.ycol_np = self.y_np.columns
         self.bcol = self.b.columns
+        self.I = self.x_p.index
 
-        self.I = self.x_p.index          ## I 是 被评价决策单元的索引
-
+    def _build_all_models(self):
         self.__modeldict = {}
+        self._models = self.__modeldict
         for i in self.I:
-            # print(i)
-            self.I0 = i                                                 ## I 是 被评价决策单元的数量
+            self.I0 = i
+            self.__modeldict[i] = self._build_model()
 
-            self.__model__ = ConcreteModel()
+    def _build_model(self):
+        model = ConcreteModel()
+        model.I2 = Set(initialize=self.xref_p.index)
+        model.Knp = Set(initialize=range(len(self.xcol_np)))
+        model.Kp = Set(initialize=range(len(self.xcol_p)))
+        if self._has_y_np:
+            model.Lnp = Set(initialize=range(len(self.ycol_np)))
+        if self._has_y_p:
+            model.Lp = Set(initialize=range(len(self.ycol_p)))
+        model.B = Set(initialize=range(len(self.bcol)))
 
-            self.__model__.I2 = Set(initialize=self.xref_p.index)  ## I2 是 参考决策单元的数量
+        model.thetax_p = Var(model.Kp, bounds=(0.0, None), doc="slack x_p")
+        model.thetax_np = Var(model.Knp, bounds=(0.0, None), doc="slack x_np")
+        if self._has_y_p:
+            model.thetay_p = Var(model.Lp, bounds=(0.0, None), doc="slack y_p")
+        if self._has_y_np:
+            model.thetay_np = Var(model.Lnp, bounds=(0.0, None), doc="slack y_np")
+        model.thetab = Var(model.B, bounds=(0.0, None), doc="slack b")
+        model.objb = Var(model.B, bounds=(0.0, None), within=Reals, doc="object b")
 
-            self.__model__.Knp = Set(initialize=range(len(self.x_np.iloc[0])))  ## K 是投入个数
-            self.__model__.Kp = Set(initialize=range(len(self.x_p.iloc[0])))  ## K 是投入个数
-            self.__model__.Lnp = Set(initialize=range(len(self.y_np.iloc[0])))  ## L 是产出个数 被评价单元和参考单元的K，L一样
+        if self.level >= 2:
+            model.objx_p = Var(model.Kp, bounds=(0.0, None), within=Reals, doc="object x_p")
+        if self.level >= 3:
+            model.objx_np = Var(model.Knp, bounds=(0.0, None), within=Reals, doc="object x_np")
+        if self._has_y_p and self.level >= 4:
+            model.objy_p = Var(model.Lp, bounds=(0.0, None), within=Reals, doc="object y_p")
+        if self._has_y_np and self.level >= self._output_np_variable_level:
+            model.objy_np = Var(model.Lnp, bounds=(0.0, None), within=Reals, doc="object y_np")
 
-            self.__model__.Lp = Set(initialize=range(len(self.y_p.iloc[0])))  ## L 是产出个数 被评价单元和参考单元的K，L一样
+        model.lamda = Var(model.I2, bounds=(0.0, None), within=Reals, doc="intensity variables")
+        model.objective = Objective(rule=self._objective_rule(), sense=minimize, doc="objective function")
+        model.input_np = Constraint(model.Knp, rule=self._input_np_rule(), doc="input_np constraint")
+        model.input_p = Constraint(model.Kp, rule=self._input_p_rule(), doc="input_p constraint")
+        if self._has_y_np:
+            model.output_np = Constraint(model.Lnp, rule=self._output_np_rule(), doc="output_np constraint")
+        if self._has_y_p:
+            model.output_p = Constraint(model.Lp, rule=self._output_p_rule(), doc="output_p constraint")
+        model.undesirable_output = Constraint(model.B, rule=self._undesirable_output_rule(), doc="undesirable output constraint")
+        model.mb = Constraint(model.B, rule=self._mb_rule(), doc="material balance constraint")
+        if self.rts == RTS_VRS1:
+            model.vrs = Constraint(rule=self._vrs_rule(), doc="various return to scale rule")
+        return model
 
-            self.__model__.B = Set(initialize=range(len(self.b.iloc[0])))  ## B 是 非期望产出个数
-
-            # Initialize variable
-            self.__model__.thetax_p = Var(self.__model__.Kp, bounds=(0.0, None), doc='slack x_p')
-            self.__model__.thetax_np = Var(self.__model__.Knp, bounds=(0.0, None), doc='slack x_np')
-            self.__model__.thetay_p = Var(self.__model__.Lp, bounds=(0.0, None), doc='slack y_p')
-            self.__model__.thetay_np = Var(self.__model__.Lnp, bounds=(0.0, None), doc='slack y_np')
-            self.__model__.thetab = Var(self.__model__.B, bounds=(0.0, None), doc='slack b')
-
-            self.__model__.objb = Var(self.__model__.B, bounds=(0.0, None), within=Reals, doc='object b')
-            if self.level >= 2:
-                self.__model__.objx_p = Var(self.__model__.Kp, bounds=(0.0, None), within=Reals, doc='object x_p')
-            if self.level >= 3:
-                self.__model__.objx_np = Var(self.__model__.Knp, bounds=(0.0, None), within=Reals, doc='object x_np')
-            if (self.level >= 4) and (type(self.y_p) != type(None)):
-                self.__model__.objy_p = Var(self.__model__.Lp, bounds=(0.0, None), within=Reals, doc='object y_p')
-            if self.level >= 5:
-                self.__model__.objy_np = Var(self.__model__.Lnp, bounds=(0.0, None), within=Reals, doc='object y_np')
-
-            self.__model__.lamda = Var(self.__model__.I2, bounds=(0.0, None), within=Reals, doc='intensity variables')
-
-            # Setup the objective function and constraints
-            self.__model__.objective = Objective(rule=self.__objective_rule(), sense=minimize, doc='objective function')
-
-            self.__model__.input_np = Constraint(self.__model__.Knp, rule=self.__input_np_rule(),
-                                                 doc='input_np constraint')
-            self.__model__.input_p = Constraint(self.__model__.Kp, rule=self.__input_p_rule(), doc='input_p constraint')
-            self.__model__.output_np = Constraint(self.__model__.Lnp, rule=self.__output_np_rule(),
-                                                  doc='output_np constraint')
-
-            self.__model__.output_p = Constraint(self.__model__.Lp, rule=self.__output_p_rule(),
-                                                     doc='output_p constraint')
-
-            self.__model__.undesirable_output = Constraint(self.__model__.B, rule=self.__undesirable_output_rule(), \
-                                                           doc='undesirable output constraint')
-            self.__model__.mb = Constraint(self.__model__.B, rule=self.__mb_rule(), \
-                                           doc='material balance constraint')
-            if self.rts == RTS_VRS1:
-                self.__model__.vrs = Constraint(rule=self.__vrs_rule(), doc='various return to scale rule')
-
-            self.__modeldict[i] = self.__model__
-
-        # Optimize model
-
-    def __objective_rule(self):
-        """Return the proper objective function"""
-
+    def _objective_rule(self):
         def objective_rule(model):
-            return sum(model.objb[b] * 1 for b in model.B)
+            return sum(model.objb[b] for b in model.B)
 
         return objective_rule
 
-    def __input_p_rule(self):
-        """Return the proper input constraint"""
-        if self.level < 2: # level = 1
-            def input_p_rule(model, kp):
-                return sum(model.lamda[i2] * self.xref_p.loc[i2, self.xcol_p[kp]] for i2 in model.I2
-                           ) + model.thetax_p[kp] == self.x_p.loc[self.I0, self.xcol_p[kp]]
-            return input_p_rule
+    def _input_p_rhs(self, model, kp):
+        if self.level >= 2:
+            return model.objx_p[kp]
+        return self.x_p.loc[self.I0, self.xcol_p[kp]]
 
-        else:
-            def input_p_rule(model, kp):
-                return sum(model.lamda[i2] * self.xref_p.loc[i2, self.xcol_p[kp]] for i2 in model.I2
-                           ) + model.thetax_p[kp] == model.objx_p[kp]
-            return input_p_rule
+    def _input_np_rhs(self, model, knp):
+        if self.level >= 3:
+            return model.objx_np[knp]
+        return self.x_np.loc[self.I0, self.xcol_np[knp]]
 
-    def __input_np_rule(self):
-        """Return the proper input constraint"""
-        if self.level < 3:
-            def input_np_rule(model, knp):
-                return sum(model.lamda[i2] * self.xref_np.loc[i2, self.xcol_np[knp]] for i2 in model.I2
-                           ) + model.thetax_np[knp] == self.x_np.loc[self.I0, self.xcol_np[knp]]
+    def _output_p_rhs(self, model, lp):
+        if self.level >= 4:
+            return model.objy_p[lp]
+        return self.y_p.loc[self.I0, self.ycol_p[lp]]
 
-            return input_np_rule
-        else:
-            def input_np_rule(model, knp):
-                return sum(model.lamda[i2] * self.xref_np.loc[i2, self.xcol_np[knp]] for i2 in model.I2
-                           ) + model.thetax_np[knp] == model.objx_np[knp]
+    def _output_np_rhs(self, model, lnp):
+        if self.level >= self._output_np_variable_level:
+            return model.objy_np[lnp]
+        return self.y_np.loc[self.I0, self.ycol_np[lnp]]
 
-            return input_np_rule
+    def _input_p_rule(self):
+        def input_p_rule(model, kp):
+            return sum(model.lamda[i2] * self.xref_p.loc[i2, self.xcol_p[kp]] for i2 in model.I2) + model.thetax_p[kp] == self._input_p_rhs(model, kp)
 
-    def __output_p_rule(self):
-        """Return the proper output constraint"""
-        if self.level < 4:
-            def output_p_rule(model, lp):
-                return sum(model.lamda[i2] * self.yref_p.loc[i2, self.ycol_p[lp]] for i2 in model.I2
-                           ) - model.thetay_p[lp] == self.y_p.loc[self.I0, self.ycol_p[lp]]
-            return output_p_rule
-        else:
-            def output_p_rule(model, lp):
-                return sum(model.lamda[i2] * self.yref_p.loc[i2, self.ycol_p[lp]] for i2 in model.I2
-                           ) - model.thetay_p[lp] == model.objy_p[lp]
-            return output_p_rule
+        return input_p_rule
 
-    def __output_np_rule(self):
-        """Return the proper output constraint"""
-        if self.level < 5:
-            def output_np_rule(model, lnp):
-                return sum(model.lamda[i2] * self.yref_np.loc[i2, self.ycol_np[lnp]] for i2 in model.I2
-                           ) - model.thetay_np[lnp] == self.y_np.loc[self.I0, self.ycol_np[lnp]]
+    def _input_np_rule(self):
+        def input_np_rule(model, knp):
+            return sum(model.lamda[i2] * self.xref_np.loc[i2, self.xcol_np[knp]] for i2 in model.I2) + model.thetax_np[knp] == self._input_np_rhs(model, knp)
 
-            return output_np_rule
-        else:
-            def output_np_rule(model, lnp):
-                return sum(model.lamda[i2] * self.yref_np.loc[i2, self.ycol_np[lnp]] for i2 in model.I2
-                           ) - model.thetay_np[lnp] == model.objy_np[lnp]
+        return input_np_rule
 
-            return output_np_rule
+    def _output_p_rule(self):
+        def output_p_rule(model, lp):
+            return sum(model.lamda[i2] * self.yref_p.loc[i2, self.ycol_p[lp]] for i2 in model.I2) - model.thetay_p[lp] == self._output_p_rhs(model, lp)
 
-    def __undesirable_output_rule(self):
-        """Return the proper undesirable output constraint"""
+        return output_p_rule
 
+    def _output_np_rule(self):
+        def output_np_rule(model, lnp):
+            return sum(model.lamda[i2] * self.yref_np.loc[i2, self.ycol_np[lnp]] for i2 in model.I2) - model.thetay_np[lnp] == self._output_np_rhs(model, lnp)
+
+        return output_np_rule
+
+    def _undesirable_output_rule(self):
         def undesirable_output_rule(model, b):
-            return sum(model.lamda[i2] * self.bref.loc[i2, self.bcol[b]] for i2 in model.I2
-                       ) + model.thetab[b] == model.objb[b]
+            return sum(model.lamda[i2] * self.bref.loc[i2, self.bcol[b]] for i2 in model.I2) + model.thetab[b] == model.objb[b]
+
         return undesirable_output_rule
 
-    def __mb_rule(self):
-        """Return the proper undesirable output constraint"""
-        if self.level ==1:
-            def mb_rule(model, b):
-                return sum(self.sx_p[b][kp] * model.thetax[kp] for kp in model.Kp) \
-                       + sum(self.sy_p[b][lp] * model.thetay[lp] for lp in model.Lp)\
-                    == self.b.loc[self.I0, self.bcol[b]] - model.objb[b]
-            return mb_rule
+    def _input_pollution_gap(self, model, kp):
+        if self.level >= 2:
+            return self.x_p.loc[self.I0, self.xcol_p[kp]] - model.objx_p[kp]
+        return model.thetax_p[kp]
 
-        elif self.level ==2:
-            def mb_rule(model, b):
-                return sum(
-                    self.sx_p[b][kp] * (self.x_p.loc[self.I0, self.xcol_p[kp]] - model.objx_p[kp]) for kp in model.Kp) \
-                       + sum(self.sy_p[b][lp] * model.thetay[lp] for lp in model.Lp) \
-                        == self.b.loc[self.I0, self.bcol[b]] - model.objb[b]
-            return mb_rule
+    def _output_pollution_gap(self, model, lp):
+        if self.level >= 4:
+            return model.objy_p[lp] - self.y_p.loc[self.I0, self.ycol_p[lp]]
+        return model.thetay_p[lp]
 
-        elif self.level ==3:
-            def mb_rule(model, b):
-                return sum(
-                    self.sx_p[b][kp] * (self.x_p.loc[self.I0, self.xcol_p[kp]] - model.objx_p[kp]) for kp in model.Kp) \
-                       + sum(self.sy_p[b][lp] * model.thetay[lp] for lp in model.Lp) \
-                        == self.b.loc[self.I0, self.bcol[b]] - model.objb[b]
-            return mb_rule
+    def _mb_lhs(self, model, b):
+        input_term = sum(self.sx_p[b][kp] * self._input_pollution_gap(model, kp) for kp in model.Kp)
+        output_term = 0 if not self._has_y_p else sum(self.sy_p[b][lp] * self._output_pollution_gap(model, lp) for lp in model.Lp)
+        return input_term + output_term
 
-        elif self.level ==4:
-            def mb_rule(model, b):
-                return sum(
-                    self.sx_p[b][kp] * (self.x_p.loc[self.I0, self.xcol_p[kp]] - model.objx_p[kp]) for kp in model.Kp) \
-                       + sum(self.sy_p[b][lp] * (model.objy_p[lp] - self.y_p.loc[self.I0, self.ycol_p[lp]]) for lp in
-                             model.Lp) == self.b.loc[self.I0, self.bcol[b]] - model.objb[b]
-            return mb_rule
+    def _mb_rule(self):
+        def mb_rule(model, b):
+            return self._mb_lhs(model, b) == self.b.loc[self.I0, self.bcol[b]] - model.objb[b]
 
-        elif self.level ==5:
-            def mb_rule(model, b):
-                return sum(
-                    self.sx_p[b][kp] * (self.x_p.loc[self.I0, self.xcol_p[kp]] - model.objx_p[kp]) for kp in model.Kp) \
-                       + sum(self.sy_p[b][lp] * (model.objy_p[lp] - self.y_p.loc[self.I0, self.ycol_p[lp]]) for lp in
-                             model.Lp) == self.b.loc[self.I0, self.bcol[b]] - model.objb[b]
-            return mb_rule
+        return mb_rule
 
-    def __vrs_rule(self):
+    def _vrs_rule(self):
         def vrs_rule(model):
             return sum(model.lamda[i2] for i2 in model.I2) == 1
 
         return vrs_rule
 
     def optimize(self, solver=OPT_DEFAULT):
-        """Optimize the function by requested method
-
-        Args:
-            solver (string): The solver chosen for optimization. It will optimize with default solver if OPT_DEFAULT is given.
-        """
-        # TODO(error/warning handling): Check problem status after optimization
-
-        data2, obj, objb, = pd.DataFrame(), {}, {}
+        data2 = pd.DataFrame()
+        obj = {}
+        objb = {}
+        config = SolverConfig(solver=solver)
         for ind, problem in self.__modeldict.items():
-            _, data2.loc[ind, "optimization_status"] = tools.optimize_model4(problem, ind, solver)
-
-            if type(self.b) != type(None):
-                obj[ind] = problem.objective()
-                objb[ind], = np.asarray(list(problem.objb[:].value))
-
+            outcome = solve_pyomo_model(problem, config=config, strict=False)
+            data2.loc[ind, "optimization_status"] = outcome.legacy_status
+            if outcome.ok:
+                obj[ind] = value(problem.objective)
+                objb[ind] = [value(problem.objb[b]) for b in problem.B]
             else:
-                obj[ind] = problem.objective()
-                objb[ind], = np.asarray(list(problem.theta[:].value))
+                obj[ind] = np.nan
+                objb[ind] = [np.nan for _ in problem.B]
 
-
-                # print(list(problem.thetax[:].value ),list(problem.t[:].value ))
-        obj = pd.DataFrame(obj, index=["obj"]).T
-        objb = pd.DataFrame(objb, index=["best of Undesirable"]).T
-
-        theta_ = pd.concat([obj, objb], axis=1)
-        data3 = pd.concat([data2,theta_],axis=1)
-        return data3
+        obj_df = pd.DataFrame(obj, index=["obj"]).T
+        objb_df = pd.DataFrame(objb).T
+        if len(objb_df.columns) == 1:
+            objb_df.columns = ["best of Undesirable"]
+        else:
+            objb_df.columns = [f"best of Undesirable{b}" for b in objb_df.columns]
+        return pd.concat([data2, obj_df, objb_df], axis=1)
 
     def info(self, dmu="all"):
-        """Show the infomation of the lp model
+        """Keep the historical quiet ``info`` behaviour for these internals."""
+        return None
 
-        Args:
-            dmu (string): The solver chosen for optimization. Default is "all".
-        """
-        if dmu == "all":
-            for ind, problem in self.__modeldict.items():
-                # print(ind, "\n", problem.pprint())
-                pass
-        # print(self.__modeldict[int(dmu)].pprint())
 
+class MB1111(_BasicMBBase):
+    """Basic MB model with ``x_np + x_p = y_np + y_p : b``."""
 
-class MB1110():
-    """ 所有期望产出不含污染物质
-    """
+    def __init__(self, data, inputvars_np, inputvars_p, outputvars_np, outputvars_p, unoutputvars, sx, sy, rts, level, baseindex, refindex):
+        self._init_basic_mb(data, inputvars_np, inputvars_p, outputvars_np, outputvars_p, unoutputvars, sx, sy, rts, level, baseindex, refindex)
 
-    def __init__(self, data, inputvars_np, inputvars_p,outputvars_np,\
-                          unoutputvars, sx, sy,  rts,level,baseindex,refindex):
-        """CNLSZ+G model
 
-        Args:
-            y (float): output variable.
-            x (float): input variables.
-            z (float, optional): Contextual variable(s). Defaults to None.
-            cutactive (float): active concavity constraint.
-            cet (String, optional): CET_ADDI (additive composite error term) or CET_MULT (multiplicative composite error term). Defaults to CET_ADDI.
-            fun (String, optional): FUN_PROD (production frontier) or FUN_COST (cost frontier). Defaults to FUN_PROD.
-            rts (String, optional): RTS_VRS1 (variable returns to scale) or RTS_CRS (constant returns to scale). Defaults to RTS_VRS1.
-        """
-        # TODO(error/warning handling): Check the configuration of the model exist
-        self.data, self.inputvars_np, self.inputvars_p, self.outputvars_np, \
-                        self.unoutputvars, self.sx, self.sy, self.rts, \
-                        self.level, self.baseindex, self.refindex = \
-            data, inputvars_np, inputvars_p,outputvars_np, \
-                        unoutputvars, sx, sy,  rts,\
-                        level,baseindex,refindex
+class MB1110(_BasicMBBase):
+    """Basic MB model with ``x_np + x_p = y_np : b``."""
 
-        self.sx_np = np.array(self.sx)[:,0:len(self.inputvars_np)]
-        self.sx_p = np.array(self.sx)[:,len(self.inputvars_np):]
-        self.sy_np = np.array(self.sy)[:,0:len(self.outputvars_np)]
+    def __init__(self, data, inputvars_np, inputvars_p, outputvars_np, unoutputvars, sx, sy, rts, level, baseindex, refindex):
+        self._init_basic_mb(data, inputvars_np, inputvars_p, outputvars_np, None, unoutputvars, sx, sy, rts, level, baseindex, refindex)
 
-        # print(self.inputvars_np, self.inputvars_p,self.outputvars_np,\
-            # self.unoutputvars,self.sx, self.sy)
 
+class MB1101(_BasicMBBase):
+    """Basic MB model with ``x_np + x_p = y_p : b``."""
 
-        if type(baseindex) != type(None):
-            self.varname1=self.baseindex.split('=')[0]
-            # print(self.baseindex)
-            self.varvalue1=ast.literal_eval(self.baseindex.split('=')[1])
-            self.y_np, self.x_p,self.x_np, self.b = \
-                                           self.data.loc[self.data[self.varname1].isin(self.varvalue1), self.outputvars_np
-                                        ],self.data.loc[self.data[self.varname1].isin(self.varvalue1), self.inputvars_p
-                                        ], self.data.loc[self.data[self.varname1].isin(self.varvalue1), self.inputvars_np
-                                        ], self.data.loc[self.data[self.varname1].isin(self.varvalue1), self.unoutputvars
-                                        ]
+    def __init__(self, data, inputvars_np, inputvars_p, outputvars_p, unoutputvars, sx, sy, rts, level, baseindex, refindex):
+        self._init_basic_mb(data, inputvars_np, inputvars_p, None, outputvars_p, unoutputvars, sx, sy, rts, level, baseindex, refindex)
 
-        else:
-            self.y_np, self.x_p,self.x_np, self.b  = \
-                                           self.data.loc[:, self.outputvars_np
-                                        ] , self.data.loc[:, self.inputvars_p
-                                        ], self.data.loc[:, self.inputvars_np
-                                        ], self.data.loc[:, self.unoutputvars
-                                        ]
 
+class MB1100(_BasicMBBase):
+    """Basic MB model with ``x_np + x_p = : b``."""
 
-        if type(refindex) != type(None):
-            self.varname=self.refindex.split('=')[0]
-            self.varvalue=ast.literal_eval(self.refindex.split('=')[1])
+    def __init__(self, data, inputvars_np, inputvars_p, unoutputvars, sx, sy, rts, level, baseindex, refindex):
+        self._init_basic_mb(data, inputvars_np, inputvars_p, None, None, unoutputvars, sx, sy, rts, level, baseindex, refindex)
 
-            self.yref_np, self.xref_p, self.xref_np, self.bref = \
-                                        self.data.loc[self.data[self.varname].isin(self.varvalue), self.outputvars_np
-                                    ] , self.data.loc[self.data[self.varname].isin(self.varvalue), self.inputvars_p
-                                    ], self.data.loc[self.data[self.varname].isin(self.varvalue), self.inputvars_np
-                                    ], self.data.loc[self.data[self.varname].isin(self.varvalue), self.unoutputvars ]
-        else:
-            self.yref_np,self.xref_p, self.xref_np, self.bref = \
-                                         self.data.loc[:, self.outputvars_np
-                                    ], self.data.loc[:, self.inputvars_p
-                                    ], self.data.loc[:, self.inputvars_np
-                                    ], self.data.loc[:, self.unoutputvars ]
 
-
-        self.xcol_p = self.x_p.columns
-        self.xcol_np = self.x_np.columns
-        # self.ycol_p = self.y_p.columns
-        self.ycol_np = self.y_np.columns
-        self.bcol = self.b.columns
-
-        self.I = self.x_p.index          ## I 是 被评价决策单元的索引
-
-        self.__modeldict = {}
-        for i in self.I:
-            # print(i)
-            self.I0 = i                                                 ## I 是 被评价决策单元的数量
-
-            self.__model__ = ConcreteModel()
-
-            self.__model__.I2 = Set(initialize=self.xref_p.index)  ## I2 是 参考决策单元的数量
-
-            self.__model__.Knp = Set(initialize=range(len(self.x_np.iloc[0])))  ## K 是投入个数
-            self.__model__.Kp = Set(initialize=range(len(self.x_p.iloc[0])))  ## K 是投入个数
-            self.__model__.Lnp = Set(initialize=range(len(self.y_np.iloc[0])))  ## L 是产出个数 被评价单元和参考单元的K，L一样
-
-            # self.__model__.Lp = Set(initialize=range(len(self.y_p.iloc[0])))  ## L 是产出个数 被评价单元和参考单元的K，L一样
-
-            self.__model__.B = Set(initialize=range(len(self.b.iloc[0])))  ## B 是 非期望产出个数
-
-            # Initialize variable
-            self.__model__.thetax_p = Var(self.__model__.Kp, bounds=(0.0, None), doc='slack x_p')
-            self.__model__.thetax_np = Var(self.__model__.Knp, bounds=(0.0, None), doc='slack x_np')
-            # self.__model__.thetay_p = Var(self.__model__.Lp, bounds=(0.0, None), doc='slack y_p')
-            self.__model__.thetay_np = Var(self.__model__.Lnp, bounds=(0.0, None), doc='slack y_np')
-            self.__model__.thetab = Var(self.__model__.B, bounds=(0.0, None), doc='slack b')
-
-            self.__model__.objb = Var(self.__model__.B, bounds=(0.0, None), within=Reals, doc='object b')
-            if self.level >= 2:
-                self.__model__.objx_p = Var(self.__model__.Kp, bounds=(0.0, None), within=Reals, doc='object x_p')
-            if self.level >= 3:
-                self.__model__.objx_np = Var(self.__model__.Knp, bounds=(0.0, None), within=Reals, doc='object x_np')
-            if (self.level >= 4) :
-                self.__model__.objy_np = Var(self.__model__.Lnp, bounds=(0.0, None), within=Reals, doc='object y_np')
-
-            self.__model__.lamda = Var(self.__model__.I2, bounds=(0.0, None), within=Reals, doc='intensity variables')
-
-            # Setup the objective function and constraints
-            self.__model__.objective = Objective(rule=self.__objective_rule(), sense=minimize, doc='objective function')
-
-            self.__model__.input_np = Constraint(self.__model__.Knp, rule=self.__input_np_rule(),
-                                                 doc='input_np constraint')
-            self.__model__.input_p = Constraint(self.__model__.Kp, rule=self.__input_p_rule(), doc='input_p constraint')
-            self.__model__.output_np = Constraint(self.__model__.Lnp, rule=self.__output_np_rule(),
-                                                  doc='output_np constraint')
-
-
-
-            self.__model__.undesirable_output = Constraint(self.__model__.B, rule=self.__undesirable_output_rule(), \
-                                                           doc='undesirable output constraint')
-            self.__model__.mb = Constraint(self.__model__.B, rule=self.__mb_rule(), \
-                                           doc='material balance constraint')
-            if self.rts == RTS_VRS1:
-                self.__model__.vrs = Constraint(rule=self.__vrs_rule(), doc='various return to scale rule')
-
-            self.__modeldict[i] = self.__model__
-
-        # Optimize model
-
-    def __objective_rule(self):
-        """Return the proper objective function"""
-
-        def objective_rule(model):
-            return sum(model.objb[b] * 1 for b in model.B)
-
-        return objective_rule
-
-    def __input_p_rule(self):
-        """Return the proper input constraint"""
-        if self.level < 2: # level = 1
-            def input_p_rule(model, kp):
-                return sum(model.lamda[i2] * self.xref_p.loc[i2, self.xcol_p[kp]] for i2 in model.I2
-                           ) + model.thetax_p[kp] == self.x_p.loc[self.I0, self.xcol_p[kp]]
-            return input_p_rule
-
-        else:
-            def input_p_rule(model, kp):
-                return sum(model.lamda[i2] * self.xref_p.loc[i2, self.xcol_p[kp]] for i2 in model.I2
-                           ) + model.thetax_p[kp] == model.objx_p[kp]
-            return input_p_rule
-
-    def __input_np_rule(self):
-        """Return the proper input constraint"""
-        if self.level < 3:
-            def input_np_rule(model, knp):
-                return sum(model.lamda[i2] * self.xref_np.loc[i2, self.xcol_np[knp]] for i2 in model.I2
-                           ) + model.thetax_np[knp] == self.x_np.loc[self.I0, self.xcol_np[knp]]
-
-            return input_np_rule
-        else:
-            def input_np_rule(model, knp):
-                return sum(model.lamda[i2] * self.xref_np.loc[i2, self.xcol_np[knp]] for i2 in model.I2
-                           ) + model.thetax_np[knp] == model.objx_np[knp]
-
-            return input_np_rule
-
-
-    def __output_np_rule(self):
-        """Return the proper output constraint"""
-        if self.level < 4:
-            def output_np_rule(model, lnp):
-                return sum(model.lamda[i2] * self.yref_np.loc[i2, self.ycol_np[lnp]] for i2 in model.I2
-                           ) - model.thetay_np[lnp] == self.y_np.loc[self.I0, self.ycol_np[lnp]]
-            return output_np_rule
-
-        else:
-            def output_np_rule(model, lnp):
-                return sum(model.lamda[i2] * self.yref_np.loc[i2, self.ycol_np[lnp]] for i2 in model.I2
-                           ) - model.thetay_np[lnp] == model.objy_np[lnp]
-            return output_np_rule
-
-    def __undesirable_output_rule(self):
-        """Return the proper undesirable output constraint"""
-        def undesirable_output_rule(model, b):
-            return sum(model.lamda[i2] * self.bref.loc[i2, self.bcol[b]] for i2 in model.I2
-                       ) + model.thetab[b] == model.objb[b]
-        return undesirable_output_rule
-
-    def __mb_rule(self):
-        """Return the proper undesirable output constraint"""
-        if self.level ==1:
-            def mb_rule(model, b):
-                return sum(self.sx_p[b][kp] * model.thetax_p[kp] for kp in model.Kp) \
-                               == self.b.loc[self.I0, self.bcol[b]] - model.objb[b]
-            return mb_rule
-
-        elif self.level ==2:
-            def mb_rule(model, b):
-                return sum(
-                    self.sx_p[b][kp] * (self.x_p.loc[self.I0, self.xcol_p[kp]] - model.objx_p[kp]) for kp in model.Kp) \
-                               == self.b.loc[self.I0, self.bcol[b]] - model.objb[b]
-            return mb_rule
-
-        elif self.level ==3:
-            def mb_rule(model, b):
-                return sum(
-                    self.sx_p[b][kp] * (self.x_p.loc[self.I0, self.xcol_p[kp]] - model.objx_p[kp]) for kp in model.Kp) \
-                               == self.b.loc[self.I0, self.bcol[b]] - model.objb[b]
-            return mb_rule
-
-        elif self.level ==4:
-            def mb_rule(model, b):
-                return sum(
-                    self.sx_p[b][kp] * (self.x_p.loc[self.I0, self.xcol_p[kp]] - model.objx_p[kp]) for kp in model.Kp) \
-                                == self.b.loc[self.I0, self.bcol[b]] - model.objb[b]
-            return mb_rule
-
-
-    def __vrs_rule(self):
-        def vrs_rule(model):
-            return sum(model.lamda[i2] for i2 in model.I2) == 1
-
-        return vrs_rule
-
-    def optimize(self, solver=OPT_DEFAULT):
-        """Optimize the function by requested method
-
-        Args:
-            solver (string): The solver chosen for optimization. It will optimize with default solver if OPT_DEFAULT is given.
-        """
-        # TODO(error/warning handling): Check problem status after optimization
-
-        data2, obj, objb, = pd.DataFrame(), {}, {}
-        for ind, problem in self.__modeldict.items():
-            _, data2.loc[ind, "optimization_status"] = tools.optimize_model4(problem, ind, solver)
-
-            if type(self.b) != type(None):
-                obj[ind] = problem.objective()
-                objb[ind], = np.asarray(list(problem.objb[:].value))
-
-            else:
-                obj[ind] = problem.objective()
-                objb[ind], = np.asarray(list(problem.theta[:].value))
-
-
-                # print(list(problem.thetax[:].value ),list(problem.t[:].value ))
-        obj = pd.DataFrame(obj, index=["obj"]).T
-        objb = pd.DataFrame(objb, index=["best of Undesirable"]).T
-
-        theta_ = pd.concat([obj, objb], axis=1)
-        data3 = pd.concat([data2,theta_],axis=1)
-        return data3
-
-    def info(self, dmu="all"):
-        """Show the infomation of the lp model
-
-        Args:
-            dmu (string): The solver chosen for optimization. Default is "all".
-        """
-        if dmu == "all":
-            for ind, problem in self.__modeldict.items():
-                # print(ind, "\n", problem.pprint())
-                pass
-        # print(self.__modeldict[int(dmu)].pprint())
-
-
-class MB1101():
-    """ 期望产出都包含污染物质
-    """
-
-    def __init__(self, data, inputvars_np, inputvars_p,outputvars_p,\
-                        unoutputvars, sx, sy,  rts,level,baseindex,refindex):
-        """CNLSZ+G model
-
-        Args:
-            y (float): output variable.
-            x (float): input variables.
-            z (float, optional): Contextual variable(s). Defaults to None.
-            cutactive (float): active concavity constraint.
-            cet (String, optional): CET_ADDI (additive composite error term) or CET_MULT (multiplicative composite error term). Defaults to CET_ADDI.
-            fun (String, optional): FUN_PROD (production frontier) or FUN_COST (cost frontier). Defaults to FUN_PROD.
-            rts (String, optional): RTS_VRS1 (variable returns to scale) or RTS_CRS (constant returns to scale). Defaults to RTS_VRS1.
-        """
-        # TODO(error/warning handling): Check the configuration of the model exist
-        self.data, self.inputvars_np, self.inputvars_p, self.outputvars_p, \
-                        self.unoutputvars, self.sx, self.sy, self.rts, \
-                        self.level, self.baseindex, self.refindex = \
-            data, inputvars_np, inputvars_p,outputvars_p, \
-                        unoutputvars, sx, sy,  rts,\
-                        level,baseindex,refindex
-
-        self.sx_np = np.array(self.sx)[:,0:len(self.inputvars_np)]
-        self.sx_p = np.array(self.sx)[:,len(self.inputvars_np):]
-
-        self.sy_p = np.array(self.sy)[:,0:len(self.outputvars_p)]
-
-        # print(self.inputvars_np, self.inputvars_p,self.outputvars_p,self.unoutputvars,self.sx, self.sy)
-        # print("sssssssssss",self.sy_p)
-
-        if type(baseindex) != type(None):
-            self.varname1=self.baseindex.split('=')[0]
-            # print(self.baseindex)
-            self.varvalue1=ast.literal_eval(self.baseindex.split('=')[1])
-            self.y_p, self.x_p,self.x_np, self.b = \
-                                            self.data.loc[self.data[self.varname1].isin(self.varvalue1), self.outputvars_p
-                                        ],self.data.loc[self.data[self.varname1].isin(self.varvalue1), self.inputvars_p
-                                        ], self.data.loc[self.data[self.varname1].isin(self.varvalue1), self.inputvars_np
-                                        ], self.data.loc[self.data[self.varname1].isin(self.varvalue1), self.unoutputvars
-                                        ]
-
-        else:
-            self.y_p, self.x_p,self.x_np, self.b  = \
-                                            self.data.loc[:, self.outputvars_p
-                                        ], self.data.loc[:, self.inputvars_p
-                                        ], self.data.loc[:, self.inputvars_np
-                                        ], self.data.loc[:, self.unoutputvars
-                                        ]
-
-
-        if type(refindex) != type(None):
-            self.varname=self.refindex.split('=')[0]
-            self.varvalue=ast.literal_eval(self.refindex.split('=')[1])
-
-            self.yref_p, self.xref_p, self.xref_np, self.bref = \
-                                         self.data.loc[self.data[self.varname].isin(self.varvalue), self.outputvars_p
-                                    ], self.data.loc[self.data[self.varname].isin(self.varvalue), self.inputvars_p
-                                    ], self.data.loc[self.data[self.varname].isin(self.varvalue), self.inputvars_np
-                                    ], self.data.loc[self.data[self.varname].isin(self.varvalue), self.unoutputvars ]
-        else:
-            self.yref_p,self.xref_p, self.xref_np, self.bref = \
-                                        self.data.loc[:, self.outputvars_p
-                                    ], self.data.loc[:, self.inputvars_p
-                                    ], self.data.loc[:, self.inputvars_np
-                                    ], self.data.loc[:, self.unoutputvars ]
-
-
-        self.xcol_p = self.x_p.columns
-        self.xcol_np = self.x_np.columns
-        self.ycol_p = self.y_p.columns
-        self.bcol = self.b.columns
-
-        self.I = self.x_p.index          ## I 是 被评价决策单元的索引
-
-        self.__modeldict = {}
-        for i in self.I:
-            # print(i)
-            self.I0 = i                                                 ## I 是 被评价决策单元的数量
-
-            self.__model__ = ConcreteModel()
-
-            self.__model__.I2 = Set(initialize=self.xref_p.index)  ## I2 是 参考决策单元的数量
-
-            self.__model__.Knp = Set(initialize=range(len(self.x_np.iloc[0])))  ## K 是投入个数
-            self.__model__.Kp = Set(initialize=range(len(self.x_p.iloc[0])))  ## K 是投入个数
-
-            self.__model__.Lp = Set(initialize=range(len(self.y_p.iloc[0])))  ## L 是产出个数 被评价单元和参考单元的K，L一样
-
-            self.__model__.B = Set(initialize=range(len(self.b.iloc[0])))  ## B 是 非期望产出个数
-
-            # Initialize variable
-            self.__model__.thetax_p = Var(self.__model__.Kp, bounds=(0.0, None), doc='slack x_p')
-            self.__model__.thetax_np = Var(self.__model__.Knp, bounds=(0.0, None), doc='slack x_np')
-            self.__model__.thetay_p = Var(self.__model__.Lp, bounds=(0.0, None), doc='slack y_p')
-            self.__model__.thetab = Var(self.__model__.B, bounds=(0.0, None), doc='slack b')
-
-            self.__model__.objb = Var(self.__model__.B, bounds=(0.0, None), within=Reals, doc='object b')
-            if self.level >= 2:
-                self.__model__.objx_p = Var(self.__model__.Kp, bounds=(0.0, None), within=Reals, doc='object x_p')
-            if self.level >= 3:
-                self.__model__.objx_np = Var(self.__model__.Knp, bounds=(0.0, None), within=Reals, doc='object x_np')
-            if (self.level >= 4) and (type(self.y_p) != type(None)):
-                self.__model__.objy_p = Var(self.__model__.Lp, bounds=(0.0, None), within=Reals, doc='object y_p')
-
-            self.__model__.lamda = Var(self.__model__.I2, bounds=(0.0, None), within=Reals, doc='intensity variables')
-
-            # Setup the objective function and constraints
-            self.__model__.objective = Objective(rule=self.__objective_rule(), sense=minimize, doc='objective function')
-
-            self.__model__.input_np = Constraint(self.__model__.Knp, rule=self.__input_np_rule(),
-                                                 doc='input_np constraint')
-            self.__model__.input_p = Constraint(self.__model__.Kp, rule=self.__input_p_rule(), doc='input_p constraint')
-
-            self.__model__.output_p = Constraint(self.__model__.Lp, rule=self.__output_p_rule(),
-                                                     doc='output_p constraint')
-
-            self.__model__.undesirable_output = Constraint(self.__model__.B, rule=self.__undesirable_output_rule(), \
-                                                           doc='undesirable output constraint')
-            self.__model__.mb = Constraint(self.__model__.B, rule=self.__mb_rule(), \
-                                           doc='material balance constraint')
-            if self.rts == RTS_VRS1:
-                self.__model__.vrs = Constraint(rule=self.__vrs_rule(), doc='various return to scale rule')
-
-            self.__modeldict[i] = self.__model__
-
-        # Optimize model
-
-    def __objective_rule(self):
-        """Return the proper objective function"""
-
-        def objective_rule(model):
-            return sum(model.objb[b] * 1 for b in model.B)
-
-        return objective_rule
-
-    def __input_p_rule(self):
-        """Return the proper input constraint"""
-        if self.level < 2: # level = 1
-            def input_p_rule(model, kp):
-                return sum(model.lamda[i2] * self.xref_p.loc[i2, self.xcol_p[kp]] for i2 in model.I2
-                           ) + model.thetax_p[kp] == self.x_p.loc[self.I0, self.xcol_p[kp]]
-            return input_p_rule
-
-        else:
-            def input_p_rule(model, kp):
-                return sum(model.lamda[i2] * self.xref_p.loc[i2, self.xcol_p[kp]] for i2 in model.I2
-                           ) + model.thetax_p[kp] == model.objx_p[kp]
-            return input_p_rule
-
-    def __input_np_rule(self):
-        """Return the proper input constraint"""
-        if self.level < 3:
-            def input_np_rule(model, knp):
-                return sum(model.lamda[i2] * self.xref_np.loc[i2, self.xcol_np[knp]] for i2 in model.I2
-                           ) + model.thetax_np[knp] == self.x_np.loc[self.I0, self.xcol_np[knp]]
-
-            return input_np_rule
-        else:
-            def input_np_rule(model, knp):
-                return sum(model.lamda[i2] * self.xref_np.loc[i2, self.xcol_np[knp]] for i2 in model.I2
-                           ) + model.thetax_np[knp] == model.objx_np[knp]
-
-            return input_np_rule
-
-    def __output_p_rule(self):
-        """Return the proper output constraint"""
-        if self.level < 4:
-            def output_p_rule(model, lp):
-                return sum(model.lamda[i2] * self.yref_p.loc[i2, self.ycol_p[lp]] for i2 in model.I2
-                           ) - model.thetay_p[lp] == self.y_p.loc[self.I0, self.ycol_p[lp]]
-            return output_p_rule
-        else:
-            def output_p_rule(model, lp):
-                return sum(model.lamda[i2] * self.yref_p.loc[i2, self.ycol_p[lp]] for i2 in model.I2
-                           ) - model.thetay_p[lp] == model.objy_p[lp]
-            return output_p_rule
-
-
-    def __undesirable_output_rule(self):
-        """Return the proper undesirable output constraint"""
-
-        def undesirable_output_rule(model, b):
-            return sum(model.lamda[i2] * self.bref.loc[i2, self.bcol[b]] for i2 in model.I2
-                       ) + model.thetab[b] == model.objb[b]
-        return undesirable_output_rule
-
-    def __mb_rule(self):
-        """Return the proper undesirable output constraint"""
-        if self.level ==1:
-            def mb_rule(model, b):
-                return sum(self.sx_p[b][kp] * model.thetax[kp] for kp in model.Kp) \
-                       + sum(self.sy_p[b][lp] * model.thetay[lp] for lp in model.Lp) if type(self.sy_p) != type(
-                    None) else 0 \
-                               == self.b.loc[self.I0, self.bcol[b]] - model.objb[b]
-            return mb_rule
-
-        elif self.level ==2:
-            def mb_rule(model, b):
-                return sum(
-                    self.sx_p[b][kp] * (self.x_p.loc[self.I0, self.xcol_p[kp]] - model.objx_p[kp]) for kp in model.Kp) \
-                       + sum(self.sy_p[b][lp] * model.thetay[lp] for lp in model.Lp) if type(self.sy_p) != type(
-                    None) else 0 \
-                               == self.b.loc[self.I0, self.bcol[b]] - model.objb[b]
-            return mb_rule
-
-        elif self.level ==3:
-            def mb_rule(model, b):
-                return sum(
-                    self.sx_p[b][kp] * (self.x_p.loc[self.I0, self.xcol_p[kp]] - model.objx_p[kp]) for kp in model.Kp) \
-                       + sum(self.sy_p[b][lp] * model.thetay[lp] for lp in model.Lp) if type(self.sy_p) != type(
-                    None) else 0 \
-                               == self.b.loc[self.I0, self.bcol[b]] - model.objb[b]
-            return mb_rule
-
-        elif self.level ==4:
-            def mb_rule(model, b):
-                return sum(
-                    self.sx_p[b][kp] * (self.x_p.loc[self.I0, self.xcol_p[kp]] - model.objx_p[kp]) for kp in model.Kp) \
-              + sum(self.sy_p[b][lp] * (model.objy_p[lp] - self.y_p.loc[self.I0, self.ycol_p[lp]]) for lp in model.Lp) \
-                                     == self.b.loc[self.I0, self.bcol[b]] - model.objb[b]
-            return mb_rule
-
-
-
-    def __vrs_rule(self):
-        def vrs_rule(model):
-            return sum(model.lamda[i2] for i2 in model.I2) == 1
-
-        return vrs_rule
-
-    def optimize(self, solver=OPT_DEFAULT):
-        """Optimize the function by requested method
-
-        Args:
-            solver (string): The solver chosen for optimization. It will optimize with default solver if OPT_DEFAULT is given.
-        """
-        # TODO(error/warning handling): Check problem status after optimization
-
-        data2, obj, objb, = pd.DataFrame(), {}, {}
-        for ind, problem in self.__modeldict.items():
-            _, data2.loc[ind, "optimization_status"] = tools.optimize_model4(problem, ind, solver)
-
-            if type(self.b) != type(None):
-                obj[ind] = problem.objective()
-                objb[ind], = np.asarray(list(problem.objb[:].value))
-
-            else:
-                obj[ind] = problem.objective()
-                objb[ind], = np.asarray(list(problem.theta[:].value))
-
-
-                # print(list(problem.thetax[:].value ),list(problem.t[:].value ))
-        obj = pd.DataFrame(obj, index=["obj"]).T
-        objb = pd.DataFrame(objb, index=["best of Undesirable"]).T
-
-        theta_ = pd.concat([obj, objb], axis=1)
-        data3 = pd.concat([data2,theta_],axis=1)
-        return data3
-
-    def info(self, dmu="all"):
-        """Show the infomation of the lp model
-
-        Args:
-            dmu (string): The solver chosen for optimization. Default is "all".
-        """
-        if dmu == "all":
-            for ind, problem in self.__modeldict.items():
-                # print(ind, "\n", problem.pprint())
-                pass
-        # print(self.__modeldict[int(dmu)].pprint())
-
-
-
-class MB1100():
-    """ 没有期望产出
-    """
-
-    def __init__(self, data, inputvars_np, inputvars_p,\
-                        unoutputvars, sx, sy,  rts,level,baseindex,refindex):
-        """CNLSZ+G model
-
-        Args:
-            y (float): output variable.
-            x (float): input variables.
-            z (float, optional): Contextual variable(s). Defaults to None.
-            cutactive (float): active concavity constraint.
-            cet (String, optional): CET_ADDI (additive composite error term) or CET_MULT (multiplicative composite error term). Defaults to CET_ADDI.
-            fun (String, optional): FUN_PROD (production frontier) or FUN_COST (cost frontier). Defaults to FUN_PROD.
-            rts (String, optional): RTS_VRS1 (variable returns to scale) or RTS_CRS (constant returns to scale). Defaults to RTS_VRS1.
-        """
-        # TODO(error/warning handling): Check the configuration of the model exist
-        self.data, self.inputvars_np, self.inputvars_p, \
-                        self.unoutputvars, self.sx, self.sy, self.rts, \
-                        self.level, self.baseindex, self.refindex = \
-            data, inputvars_np, inputvars_p, \
-                        unoutputvars, sx, sy,  rts,\
-                        level,baseindex,refindex
-
-        self.sx_np = np.array(self.sx)[:,0:len(self.inputvars_np)]
-        self.sx_p = np.array(self.sx)[:,len(self.inputvars_np):]
-
-        # print(self.inputvars_np, self.inputvars_p,self.unoutputvars,self.sx, self.sy)
-
-
-        if type(baseindex) != type(None):
-            self.varname1=self.baseindex.split('=')[0]
-            # print(self.baseindex)
-            self.varvalue1=ast.literal_eval(self.baseindex.split('=')[1])
-            self.x_p,self.x_np, self.b = \
-                                        self.data.loc[self.data[self.varname1].isin(self.varvalue1), self.inputvars_p
-                                        ], self.data.loc[self.data[self.varname1].isin(self.varvalue1), self.inputvars_np
-                                        ], self.data.loc[self.data[self.varname1].isin(self.varvalue1), self.unoutputvars
-                                        ]
-
-        else:
-            self.x_p,self.x_np, self.b  = \
-                                        self.data.loc[:, self.inputvars_p
-                                        ], self.data.loc[:, self.inputvars_np
-                                        ], self.data.loc[:, self.unoutputvars
-                                        ]
-
-
-        if type(refindex) != type(None):
-            self.varname=self.refindex.split('=')[0]
-            self.varvalue=ast.literal_eval(self.refindex.split('=')[1])
-
-            self.xref_p, self.xref_np, self.bref = \
-                                        self.data.loc[self.data[self.varname].isin(self.varvalue), self.inputvars_p
-                                    ], self.data.loc[self.data[self.varname].isin(self.varvalue), self.inputvars_np
-                                    ], self.data.loc[self.data[self.varname].isin(self.varvalue), self.unoutputvars ]
-        else:
-            self.xref_p, self.xref_np, self.bref = \
-                                     self.data.loc[:, self.inputvars_p
-                                    ], self.data.loc[:, self.inputvars_np
-                                    ], self.data.loc[:, self.unoutputvars ]
-
-
-        self.xcol_p = self.x_p.columns
-        self.xcol_np = self.x_np.columns
-        self.bcol = self.b.columns
-
-        self.I = self.x_p.index          ## I 是 被评价决策单元的索引
-
-        self.__modeldict = {}
-        for i in self.I:
-            # print(i)
-            self.I0 = i                                                 ## I 是 被评价决策单元的数量
-
-            self.__model__ = ConcreteModel()
-
-            self.__model__.I2 = Set(initialize=self.xref_p.index)  ## I2 是 参考决策单元的数量
-
-            self.__model__.Knp = Set(initialize=range(len(self.x_np.iloc[0])))  ## K 是投入个数
-            self.__model__.Kp = Set(initialize=range(len(self.x_p.iloc[0])))  ## K 是投入个数
-
-
-            self.__model__.B = Set(initialize=range(len(self.b.iloc[0])))  ## B 是 非期望产出个数
-
-            # Initialize variable
-            self.__model__.thetax_p = Var(self.__model__.Kp, bounds=(0.0, None), doc='slack x_p')
-            self.__model__.thetax_np = Var(self.__model__.Knp, bounds=(0.0, None), doc='slack x_np')
-            self.__model__.thetab = Var(self.__model__.B, bounds=(0.0, None), doc='slack b')
-
-            self.__model__.objb = Var(self.__model__.B, bounds=(0.0, None), within=Reals, doc='object b')
-            if self.level >= 2:
-                self.__model__.objx_p = Var(self.__model__.Kp, bounds=(0.0, None), within=Reals, doc='object x_p')
-            if self.level >= 3:
-                self.__model__.objx_np = Var(self.__model__.Knp, bounds=(0.0, None), within=Reals, doc='object x_np')
-
-            self.__model__.lamda = Var(self.__model__.I2, bounds=(0.0, None), within=Reals, doc='intensity variables')
-
-            # Setup the objective function and constraints
-            self.__model__.objective = Objective(rule=self.__objective_rule(), sense=minimize, doc='objective function')
-
-            self.__model__.input_np = Constraint(self.__model__.Knp, rule=self.__input_np_rule(),
-                                                 doc='input_np constraint')
-            self.__model__.input_p = Constraint(self.__model__.Kp, rule=self.__input_p_rule(), doc='input_p constraint')
-
-
-
-            self.__model__.undesirable_output = Constraint(self.__model__.B, rule=self.__undesirable_output_rule(), \
-                                                           doc='undesirable output constraint')
-            self.__model__.mb = Constraint(self.__model__.B, rule=self.__mb_rule(), \
-                                           doc='material balance constraint')
-            if self.rts == RTS_VRS1:
-                self.__model__.vrs = Constraint(rule=self.__vrs_rule(), doc='various return to scale rule')
-
-            self.__modeldict[i] = self.__model__
-
-        # Optimize model
-
-    def __objective_rule(self):
-        """Return the proper objective function"""
-
-        def objective_rule(model):
-            return sum(model.objb[b] * 1 for b in model.B)
-
-        return objective_rule
-
-    def __input_p_rule(self):
-        """Return the proper input constraint"""
-        if self.level < 2: # level = 1
-            def input_p_rule(model, kp):
-                return sum(model.lamda[i2] * self.xref_p.loc[i2, self.xcol_p[kp]] for i2 in model.I2
-                           ) + model.thetax_p[kp] == self.x_p.loc[self.I0, self.xcol_p[kp]]
-            return input_p_rule
-
-        else:
-            def input_p_rule(model, kp):
-                return sum(model.lamda[i2] * self.xref_p.loc[i2, self.xcol_p[kp]] for i2 in model.I2
-                           ) + model.thetax_p[kp] == model.objx_p[kp]
-            return input_p_rule
-
-    def __input_np_rule(self):
-        """Return the proper input constraint"""
-        if self.level < 3:
-            def input_np_rule(model, knp):
-                return sum(model.lamda[i2] * self.xref_np.loc[i2, self.xcol_np[knp]] for i2 in model.I2
-                           ) + model.thetax_np[knp] == self.x_np.loc[self.I0, self.xcol_np[knp]]
-
-            return input_np_rule
-        else:
-            def input_np_rule(model, knp):
-                return sum(model.lamda[i2] * self.xref_np.loc[i2, self.xcol_np[knp]] for i2 in model.I2
-                           ) + model.thetax_np[knp] == model.objx_np[knp]
-
-            return input_np_rule
-
-
-
-    def __undesirable_output_rule(self):
-        """Return the proper undesirable output constraint"""
-
-        def undesirable_output_rule(model, b):
-            return sum(model.lamda[i2] * self.bref.loc[i2, self.bcol[b]] for i2 in model.I2
-                       ) + model.thetab[b] == model.objb[b]
-        return undesirable_output_rule
-
-    def __mb_rule(self):
-        """Return the proper undesirable output constraint"""
-        if self.level ==1:
-            def mb_rule(model, b):
-                return sum(self.sx_p[b][kp] * model.thetax[kp] for kp in model.Kp) \
-                      == self.b.loc[self.I0, self.bcol[b]] - model.objb[b]
-            return mb_rule
-
-        elif self.level ==2:
-            def mb_rule(model, b):
-                return sum(
-                    self.sx_p[b][kp] * (self.x_p.loc[self.I0, self.xcol_p[kp]] - model.objx_p[kp]) for kp in model.Kp) \
-                        == self.b.loc[self.I0, self.bcol[b]] - model.objb[b]
-            return mb_rule
-
-        elif self.level ==3:
-            def mb_rule(model, b):
-                return sum(
-                    self.sx_p[b][kp] * (self.x_p.loc[self.I0, self.xcol_p[kp]] - model.objx_p[kp]) for kp in model.Kp) \
-                        == self.b.loc[self.I0, self.bcol[b]] - model.objb[b]
-            return mb_rule
-
-
-
-
-
-    def __vrs_rule(self):
-        def vrs_rule(model):
-            return sum(model.lamda[i2] for i2 in model.I2) == 1
-
-        return vrs_rule
-
-    def optimize(self, solver=OPT_DEFAULT):
-        """Optimize the function by requested method
-
-        Args:
-            solver (string): The solver chosen for optimization. It will optimize with default solver if OPT_DEFAULT is given.
-        """
-        # TODO(error/warning handling): Check problem status after optimization
-
-        data2, obj, objb, = pd.DataFrame(), {}, {}
-        for ind, problem in self.__modeldict.items():
-            _, data2.loc[ind, "optimization_status"] = tools.optimize_model4(problem, ind, solver)
-
-            if type(self.b) != type(None):
-                obj[ind] = problem.objective()
-                objb[ind], = np.asarray(list(problem.objb[:].value))
-
-            else:
-                obj[ind] = problem.objective()
-                objb[ind], = np.asarray(list(problem.theta[:].value))
-
-
-                # print(list(problem.thetax[:].value ),list(problem.t[:].value ))
-        obj = pd.DataFrame(obj, index=["obj"]).T
-        objb = pd.DataFrame(objb, index=["best of Undesirable"]).T
-
-        theta_ = pd.concat([obj, objb], axis=1)
-        data3 = pd.concat([data2,theta_],axis=1)
-        return data3
-
-    def info(self, dmu="all"):
-        """Show the infomation of the lp model
-
-        Args:
-            dmu (string): The solver chosen for optimization. Default is "all".
-        """
-        if dmu == "all":
-            for ind, problem in self.__modeldict.items():
-                # print(ind, "\n", problem.pprint())
-                pass
-        # print(self.__modeldict[int(dmu)].pprint())
-
-
+__all__ = ["MB1111", "MB1110", "MB1101", "MB1100"]

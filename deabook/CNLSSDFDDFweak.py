@@ -7,7 +7,6 @@ import numpy as np
 from .CNLSSDFDDF import CNLSSD
 from .constant import CET_ADDI, CET_MULT, FUN_COST, FUN_PROD, RTS_VRS1, RTS_VRS2, RTS_CRS, OPT_DEFAULT, OPT_LOCAL
 from .utils import tools
-
 class CNLSSDweak(CNLSSD):
     """Convex Nonparametric Least Square for Shephard distance function(CNLSSD)
     """
@@ -102,9 +101,7 @@ class CNLSSDweak(CNLSSD):
             email (string): The email address for remote optimization. It will optimize locally if OPT_LOCAL is given.
             solver (string): The solver chosen for optimization. It will optimize with default solver if OPT_DEFAULT is given.
         """
-        # TODO(error/warning handling): Check problem status after optimization
-        self.problem_status, self.optimization_status = tools.optimize_model(
-            self.__model__, email, self.cet, solver)
+        self._optimize_cnls_model(email=email, solver=solver, cet=self.cet)
 
     def __objective_rule(self):
         """Return the proper objective function"""
@@ -254,119 +251,77 @@ class CNLSSDweak(CNLSSD):
 
         return translation_rule
 
-    def display_status(self):
-        """Display the status of problem"""
-        tools.assert_optimized(self.optimization_status)
-        print(self.display_status)
 
-    def display_alpha(self):
-        """Display alpha value"""
-        tools.assert_optimized(self.optimization_status)
-        tools.assert_various_return_to_scale(self.rts)
-        self.__model__.alpha.display()
 
-    def display_delta(self):
-        """Display delta value"""
-        tools.assert_optimized(self.optimization_status)
-        self.__model__.delta.display()
 
-    def display_gamma(self):
-        """Display gamma value"""
-        tools.assert_optimized(self.optimization_status)
-        self.__model__.gamma.display()
 
-    def display_kappa(self):
-        """Display kappa value"""
-        tools.assert_optimized(self.optimization_status)
-        self.__model__.kappa.display()
-    def display_omega(self):
-        """Display omega value"""
-        tools.assert_optimized(self.optimization_status)
-        tools.assert_contextual_variable(self.z)
-        self.__model__.omega.display()
 
-    def display_residual(self):
-        """Dispaly residual value"""
-        tools.assert_optimized(self.optimization_status)
-        self.__model__.epsilon.display()
 
-    def get_status(self):
-        """Return status"""
-        return self.optimization_status
 
-    def get_alpha(self):
-        """Return alpha value by array"""
-        tools.assert_optimized(self.optimization_status)
-        tools.assert_various_return_to_scale(self.rts)
-        alpha = list(self.__model__.alpha[:].value)
-        return np.asarray(alpha)
 
-    def get_delta(self):
-        """Return delta value by array"""
-        tools.assert_optimized(self.optimization_status)
-        delta = np.asarray([i + tuple([j]) for i, j in zip(list(self.__model__.delta),
-                                                          list(self.__model__.delta[:, :].value))])
-        delta = pd.DataFrame(delta, columns=['Name', 'Key', 'Value'])
-        delta = delta.pivot(index='Name', columns='Key', values='Value')
-        return delta.to_numpy()
 
-    def get_gamma(self):
-        """Return gamma value by array"""
-        tools.assert_optimized(self.optimization_status)
-        gamma = np.asarray([i + tuple([j]) for i, j in zip(list(self.__model__.gamma),
-                                                          list(self.__model__.gamma[:, :].value))])
-        gamma = pd.DataFrame(gamma, columns=['Name', 'Key', 'Value'])
-        gamma = gamma.pivot(index='Name', columns='Key', values='Value')
-        return gamma.to_numpy()
 
-    def get_kappa(self):
-        """Return kappa value by array"""
-        tools.assert_optimized(self.optimization_status)
-        kappa = np.asarray([i + tuple([j]) for i, j in zip(list(self.__model__.kappa),
-                                                          list(self.__model__.kappa[:, :].value))])
-        kappa = pd.DataFrame(kappa, columns=['Name', 'Key', 'Value'])
-        kappa = kappa.pivot(index='Name', columns='Key', values='Value')
-        return kappa.to_numpy()
 
     # def get_residual(self):
     #     """Return residual value by array"""
     #     tools.assert_optimized(self.optimization_status)
-    #     residual = list(self.__model__.epsilon[:].value)
+    #     residual = list(self._single_model().epsilon[:].value)
     #     return np.asarray(residual)
 
     def get_residual(self):
         """Return residual value by array"""
         tools.assert_optimized(self.optimization_status)
-        residual = list(  self.__model__.epsilon[:].value)
+        residual = list(  self._single_model().epsilon[:].value)
         if sum(self.gx) >= 1 and sum(self.gy) ==0 and sum(self.gb) == 0:
             residual = [+1*v for v in residual]
         elif sum(self.gb) >= 1 and sum(self.gx) ==0 and sum(self.gy) == 0:
             residual = [+1*v for v in residual]
         elif sum(self.gy) >= 1 and sum(self.gx) ==0 and sum(self.gb) == 0:
             residual = [-1*v for v in residual]
-        # print("aaasss#,",list(self.__model__.epsilon[:].value))
+        # print("aaasss#,",list(self._single_model().epsilon[:].value))
         return np.asarray(residual)
 
-    def get_omega(self):
-        """Return omega value by array"""
-        tools.assert_optimized(self.optimization_status)
-        tools.assert_contextual_variable(self.z)
-        omega = list(self.__model__.omega[:].value)
-        return np.asarray(omega)
-
-    def get_adjusted_residual(self):
-        """Return the shifted residuals(epsilon) tern by CCNLS"""
-        tools.assert_optimized(self.optimization_status)
-        return self.get_residual() - np.amax(self.get_residual())
-
-    def get_adjusted_alpha(self):
-        """Return the shifted constatnt(alpha) term by CCNLS"""
-        tools.assert_optimized(self.optimization_status)
-        return self.get_alpha() + np.amax(self.get_residual())
 
 
 
 
+
+
+
+
+
+class CNLSSDweakG(CNLSSDweak):
+    """Sparse-G variant of :class:`CNLSSDweak`.
+
+    This class keeps the original weakly disposable CNLSSD model for
+    undesirable-output settings unchanged, including translation, weak
+    disposability and solver logic. It only replaces the full pairwise Afriat
+    block with the Sweet-spot sparse constraint set used by the G variants.
+    """
+
+    def __init__(self, data, sent, z=None, gy=[1], gx=[0], gb=[0],
+                 cet=CET_MULT, fun=FUN_PROD, rts=RTS_VRS1):
+        from .utils import sweet
+        from .utils._g_common import cg_pairs, replace_constraint
+
+        super().__init__(data, sent, z=z, gy=gy, gx=gx, gb=gb,
+                         cet=cet, fun=fun, rts=rts)
+
+        self.cutactive = sweet.sweet(np.column_stack((self.x, self.b)))
+        self.active = np.zeros((len(self.x), len(self.x)))
+        self.active2 = np.zeros((len(self.x), len(self.x)))
+
+        replace_constraint(
+            self,
+            'afriat_rule',
+            cg_pairs(self.cutactive),
+            self._CNLSSDweak__afriat_rule(),
+            'active afriat inequality'
+        )
+
+    def optimize(self, email=OPT_LOCAL, solver=OPT_DEFAULT):
+        """Optimize the sparse weak CNLSSD-G model."""
+        self._optimize_cnls_model(email=email, solver=solver, cet=self.cet)
 
 
 class CNLSDDFweak(CNLSSDweak):
@@ -482,9 +437,7 @@ class CNLSDDFweak(CNLSSDweak):
             email (string): The email address for remote optimization. It will optimize locally if OPT_LOCAL is given.
             solver (string): The solver chosen for optimization. It will optimize with default solver if OPT_DEFAULT is given.
         """
-        # TODO(error/warning handling): Check problem status after optimization
-        self.problem_status, self.optimization_status = tools.optimize_model(
-            self.__model__, email, CET_ADDI, solver)
+        self._optimize_cnls_model(email=email, solver=solver, cet=CET_ADDI)
 
 
 
@@ -647,45 +600,61 @@ class CNLSDDFweak(CNLSSDweak):
 
         return translation_rule2
 
-    def display_gamma(self):
-        """Display gamma value"""
-        tools.assert_optimized(self.optimization_status)
-        self.__model__.gamma.display()
 
-    def display_delta(self):
-        """Display delta value"""
-        tools.assert_optimized(self.optimization_status)
-        tools.assert_undesirable_output(self.b)
-        self.__model__.delta.display()
 
-    def get_gamma(self):
-        """Return gamma value by array"""
-        tools.assert_optimized(self.optimization_status)
-        gamma = np.asarray([i + tuple([j]) for i, j in zip(list(self.__model__.gamma),
-                                                           list(self.__model__.gamma[:, :].value))])
-        gamma = pd.DataFrame(gamma, columns=['Name', 'Key', 'Value'])
-        gamma = gamma.pivot(index='Name', columns='Key', values='Value')
-        return gamma.to_numpy()
 
-    def get_delta(self):
-        """Return delta value by array"""
-        tools.assert_optimized(self.optimization_status)
-        tools.assert_undesirable_output(self.b)
-        delta = np.asarray([i + tuple([j]) for i, j in zip(list(self.__model__.delta),
-                                                           list(self.__model__.delta[:, :].value))])
-        delta = pd.DataFrame(delta, columns=['Name', 'Key', 'Value'])
-        delta = delta.pivot(index='Name', columns='Key', values='Value')
-        return delta.to_numpy()
 
     def get_residual(self):
-        """Return residual value by array"""
+        """Return residual value by array.
+
+        StoNED uses the composite-error convention eps = v - u. In this DDF
+        implementation the regression residual sign depends on the active
+        translation anchor. For joint directions containing gy, the output-side
+        convention is used; otherwise input / undesirable-output directions use
+        the opposite sign.
+        """
         tools.assert_optimized(self.optimization_status)
-        residual = list(  self.__model__.epsilon[:].value)
-        if  sum(self.gx) >= 1 and sum(self.gy) ==0 and sum(self.gb) == 0:
-            residual = [-1*v for v in residual]
-        elif sum(self.gb) >= 1 and sum(self.gx) ==0 and sum(self.gy) == 0:  
-            residual = [-1*v for v in residual]
-        elif sum(self.gy) >= 1 and sum(self.gx) ==0 and sum(self.gb) == 0:
-            residual = [+1*v for v in residual]
+        residual = list(self._single_model().epsilon[:].value)
+        if sum(self.gy) >= 1:
+            residual = [+1 * v for v in residual]
+        elif sum(self.gx) >= 1 or sum(self.gb) >= 1:
+            residual = [-1 * v for v in residual]
         return np.asarray(residual)
+
+# -----------------------------------------------------------------------------
+# Constraint-generation counterpart
+# -----------------------------------------------------------------------------
+
+class CNLSDDFweakG(CNLSDDFweak):
+    """Weak-disposability CNLSDDF with sparse / generated constraints.
+
+    This class preserves the public ``CNLSDDFweak(data, sent, ...)`` interface,
+    keeps the same regression, translation and weak-disposability logic as
+    ``CNLSDDFweak``, and replaces the full pairwise Afriat block by the
+    Sweet-spot sparse constraint set used by the G computational method.
+    """
+
+    def __init__(self, data, sent, z=None, gy=[1], gx=[1], gb=[1], fun=FUN_PROD,
+                rts=RTS_VRS1, deltap=None, gammap=None, kappap=None,
+                baseindex=None, refindex=None):
+        from .utils import sweet
+        from .utils._g_common import cg_pairs, replace_constraint
+        super().__init__(data, sent, z=z, gy=gy, gx=gx, gb=gb, fun=fun,
+                         rts=rts, deltap=deltap, gammap=gammap, kappap=kappap)
+        self.baseindex = baseindex
+        self.refindex = refindex
+        self.cutactive = sweet.sweet(np.column_stack((self.x, self.b)))
+        self.active = np.zeros((len(self.x), len(self.x)))
+        self.activeweak = np.zeros((len(self.x), len(self.x)))
+        replace_constraint(self, 'afriat_rule', cg_pairs(self.cutactive),
+                           self._CNLSDDFweak__afriat_rule(),
+                           'active afriat inequality')
+        if hasattr(self.__model__, 'red_factor_rule'):
+            def red_rule(model, i, h):
+                return model.alpha[h] + sum(model.delta[h, j] * self.x[i][j] for j in model.J) >= 0
+            replace_constraint(self, 'red_factor_rule', cg_pairs(self.cutactive),
+                               red_rule, 'active weak disposability')
+
+    def optimize(self, email=OPT_LOCAL, solver=OPT_DEFAULT):
+        self._optimize_cnls_model(email=email, solver=solver, cet=CET_ADDI)
 

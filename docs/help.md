@@ -973,10 +973,10 @@ get_technical_efficiency(method=RED_MOM)
 
 对 CET_ADDI 和 CET_MULT 均返回 `exp(-get_technical_inefficiency(method))`。
 
-##### get_technical_efficiency_ratio
+##### get_technical_efficiency
 
 ```python
-get_technical_efficiency_ratio(method=RED_MOM)
+get_technical_efficiency(method=RED_MOM)
 ```
 
 仅适用于方向距离函数模型（CNLSDDFweak, CNLSDDF, CNLSSDweakmeta, CNLSDDFweakmeta）。
@@ -1162,7 +1162,7 @@ ddf_model.optimize(solver="mosek")
 
 # StoNED DDF 效率比率
 stoned_ddf = StoNED(ddf_model)
-te_ratio = stoned_ddf.get_technical_efficiency_ratio(method="QLE")
+te_ratio = stoned_ddf.get_technical_efficiency(method="QLE")
 
 # StoNED KDE 方法（Richardson-Lucy 盲反卷积）
 kde_inefficiency = stoned.get_technical_inefficiency(method="KDE")

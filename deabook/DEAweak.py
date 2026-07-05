@@ -5,9 +5,256 @@ import pandas as pd
 from .constant import CET_ADDI, RTS_VRS1, RTS_VRS2, RTS_CRS, OPT_DEFAULT, OPT_LOCAL
 from .utils import tools
 from .DEA import DEA,DEA2,DDF,DDF2
+from .core import (
+    PyomoResultMixin,
+    build_weak_direction_flags,
+    format_ref_indexed_results,
+    format_var_indexed_results,
+)
 
 
-class DEAweak(DEA):
+class _WeakOrientationMixin:
+    """Shared orientation helpers for weak-disposability DEA classes."""
+
+    def _set_weak_orientation_flags(self):
+        flags = build_weak_direction_flags(self.gx, self.gy, self.gb)
+        self.direction_flags = flags
+        self.input_oriented = flags.input_oriented
+        self.output_oriented = flags.output_oriented
+        self.unoutput_oriented = flags.unoutput_oriented
+        self.undesirable_oriented = flags.unoutput_oriented
+        self.hyper_orientedyx = flags.hyper_orientedyx
+        self.hyper_orientedyb = flags.hyper_orientedyb
+        self.hyper_orientedxb = flags.hyper_orientedxb
+        self.hyper_orientedyxb = flags.hyper_orientedyxb
+        self.hyper_oriented = flags.is_hyper
+        return flags
+
+
+class _WeakPerDmuResultMixin:
+    """Reusable result display/get/info methods for weak per-DMU models."""
+
+    def _models(self):
+        preferred = f"_{self.__class__.__name__}__modeldict"
+        if hasattr(self, preferred):
+            return getattr(self, preferred)
+        for name in dir(self):
+            if name.endswith("__modeldict"):
+                return getattr(self, name)
+        raise AttributeError("This object does not expose a model dictionary.")
+
+    def _format_ref_results(self, values):
+        return format_ref_indexed_results(values, self.reference_data_index)
+
+    def _format_var_results(self, values, columns=None):
+        return format_var_indexed_results(values, columns)
+
+    def _solve_per_dmu_models(self, email=OPT_LOCAL, solver=OPT_DEFAULT, include_objective=False):
+        """Solve one weak-disposability Pyomo model per evaluated DMU.
+
+        ``DEAweak2`` and ``DDFweak2`` differ in their formulas and efficiency
+        columns, but they share the whole solver/result-collection lifecycle.
+        Keeping that lifecycle here avoids copy-pasted loops while preserving
+        the historical ``self.results`` dictionary and returned column names.
+        """
+        self.results = {}
+        all_optimization_statuses = {}
+        rho_values, theta_values, objective_values = {}, {}, {}
+        lamda_values, mu_values = {}, {}
+        use_neos = tools.set_neos_email(email)
+
+        for actual_index, model in self._models().items():
+            try:
+                optimization_status = tools.optimize_model2(
+                    model, actual_index, use_neos, CET_ADDI, solver=solver
+                )
+            except Exception as e:
+                print(f"Error optimizing DMU {actual_index}: {e}")
+                optimization_status = "Error"
+
+            all_optimization_statuses[actual_index] = optimization_status
+            if optimization_status in ["ok"]:
+                try:
+                    rho_values[actual_index] = model.rho.value
+                    if self.rts == RTS_VRS1:
+                        theta_values[actual_index] = model.theta.value
+                    lamda_values[actual_index] = self._collect_ref_component(model, "lamda")
+                    if include_objective:
+                        objective_values[actual_index] = model.objective()
+                    if self.rts == RTS_VRS2:
+                        mu_values[actual_index] = self._collect_ref_component(model, "mu")
+                except Exception as e:
+                    print(
+                        "Warning: Could not retrieve results for DMU "
+                        f"{actual_index} despite status '{optimization_status}': {e}"
+                    )
+                    rho_values[actual_index] = np.nan
+                    if self.rts == RTS_VRS1:
+                        theta_values[actual_index] = np.nan
+                    lamda_values[actual_index] = None
+                    if include_objective:
+                        objective_values[actual_index] = np.nan
+                    if self.rts == RTS_VRS2:
+                        mu_values[actual_index] = None
+            else:
+                print(f"Error optimizing DMU {actual_index}, optimization_status :{optimization_status}")
+                rho_values[actual_index] = np.nan
+                if self.rts == RTS_VRS1:
+                    theta_values[actual_index] = np.nan
+                lamda_values[actual_index] = None
+                if include_objective:
+                    objective_values[actual_index] = np.nan
+                if self.rts == RTS_VRS2:
+                    mu_values[actual_index] = None
+
+        self.results["optimization_status"] = all_optimization_statuses
+        self.results["rho"] = rho_values
+        if self.rts == RTS_VRS1:
+            self.results["theta"] = theta_values
+        self.results["lamda_df"] = self._format_ref_results(lamda_values)
+        if include_objective:
+            self.results["objective_value"] = objective_values
+        if self.rts == RTS_VRS2:
+            self.results["mu_df"] = self._format_ref_results(mu_values)
+
+        data = {
+            "optimization_status": pd.Series(all_optimization_statuses),
+            "rho": pd.Series(rho_values),
+        }
+        if include_objective:
+            data["objective_value"] = pd.Series(objective_values)
+        results_df = pd.DataFrame(data)
+        self._add_efficiency_columns(results_df)
+        return results_df
+
+    def _collect_ref_component(self, model, component_name):
+        component = getattr(model, component_name)
+        return {
+            self.reference_data_index[r_range]: component[r_range].value
+            for r_range in model.R
+        }
+
+    def _safe_inverse_one_plus(self, series):
+        return series.apply(lambda x: 1 / (1 + x) if pd.notna(x) else np.nan)
+
+    def _safe_inverse(self, series):
+        return series.apply(lambda x: 1 / x if pd.notna(x) and x != 0 else np.nan)
+
+    def _safe_sqrt(self, series):
+        return series.apply(lambda x: np.sqrt(x) if pd.notna(x) else np.nan)
+
+    def _one_minus(self, series):
+        return series.apply(lambda x: (1 - x) if pd.notna(x) else np.nan)
+
+    def display_status(self):
+        if not self.results or 'optimization_status' not in self.results:
+            print("Optimization has not been run yet.")
+            return
+        print(pd.Series(self.results['optimization_status']))
+
+    def display_rho(self):
+        tools.assert_optimized(self.results)
+        print(self.get_rho())
+
+    def display_theta(self):
+        tools.assert_optimized(self.results)
+        theta = self.get_theta()
+        print(theta if theta is not None else "Theta variable is only available for RTS_VRS1.")
+
+    def display_lamda(self):
+        tools.assert_optimized(self.results)
+        print(self.get_lamda())
+
+    def display_mu(self):
+        tools.assert_optimized(self.results)
+        mu = self.get_mu()
+        print(mu if mu is not None else "Mu variables are only available for RTS_VRS2.")
+
+    def get_status(self):
+        return self.results.get('optimization_status', {})
+
+    def get_rho(self):
+        tools.assert_optimized(self.results)
+        return pd.Series(self.results.get('rho', {}), dtype='float64')
+
+    def get_theta(self):
+        tools.assert_optimized(self.results)
+        if self.rts != RTS_VRS1 or 'theta' not in self.results:
+            return None
+        return pd.Series(self.results.get('theta', {}), dtype='float64')
+
+    def get_lamda(self):
+        tools.assert_optimized(self.results)
+        return self.results.get('lamda_df')
+
+    def get_mu(self):
+        tools.assert_optimized(self.results)
+        if self.rts != RTS_VRS2 or 'mu_df' not in self.results:
+            return None
+        return self.results.get('mu_df')
+
+    def info(self, dmu="all"):
+        modeldict = self._models()
+        if dmu == "all":
+            for ind, problem in modeldict.items():
+                print(f"\n--- Model for DMU: {ind} ---")
+                problem.pprint()
+            return None
+        dmu_list = [dmu] if isinstance(dmu, (str, int, float)) else list(dmu)
+        for ind in dmu_list:
+            key = ind
+            if key not in modeldict:
+                try:
+                    key = int(ind)
+                except (TypeError, ValueError):
+                    pass
+            if key in modeldict:
+                print(f"\n--- Model for DMU: {key} ---")
+                modeldict[key].pprint()
+            else:
+                print(f"DMU '{ind}' not found in the evaluated set.")
+        return None
+
+class _WeakDualResultMixin(PyomoResultMixin):
+    """Shared display/get accessors for weak-disposability dual models."""
+
+    def display_delta(self):
+        tools.assert_optimized(self.optimization_status)
+        self._display_component("delta")
+
+    def display_gamma(self):
+        tools.assert_optimized(self.optimization_status)
+        self._display_component("gamma")
+
+    def display_kappa(self):
+        tools.assert_optimized(self.optimization_status)
+        self._display_component("kappa")
+
+    def display_alpha(self):
+        tools.assert_optimized(self.optimization_status)
+        tools.assert_various_return_to_scale_alpha(self.rts)
+        self._display_component("alpha")
+
+    def get_delta(self):
+        tools.assert_optimized(self.optimization_status)
+        return self._component_array("delta")
+
+    def get_gamma(self):
+        tools.assert_optimized(self.optimization_status)
+        return self._component_array("gamma")
+
+    def get_kappa(self):
+        tools.assert_optimized(self.optimization_status)
+        return self._component_array("kappa")
+
+    def get_alpha(self):
+        tools.assert_optimized(self.optimization_status)
+        tools.assert_various_return_to_scale_alpha(self.rts)
+        return self._component_series("alpha")
+
+
+
+class DEAweak(PyomoResultMixin, DEA):
     """weak dispsbnility of Data Envelopment Analysis (DEA)
     """
 
@@ -159,7 +406,7 @@ class DEAweak(DEA):
         """
         # TODO(error/warning handling): Check problem status after optimization
         self.problem_status, self.optimization_status = tools.optimize_model(
-            self.__model__, email, CET_ADDI, solver)
+            self._single_model(), email, CET_ADDI, solver)
 
     def display_status(self):
         """Display the status of problem"""
@@ -168,17 +415,17 @@ class DEAweak(DEA):
     def display_theta(self):
         """Display theta value"""
         tools.assert_optimized(self.optimization_status)
-        self.__model__.theta.display()
+        self._display_component("theta")
 
     def display_rho(self):
         """Display rho value"""
         tools.assert_optimized(self.optimization_status)
-        self.__model__.rho.display()
+        self._display_component("rho")
 
     def display_lamda(self):
         """Display lamda value"""
         tools.assert_optimized(self.optimization_status)
-        self.__model__.lamda.display()
+        self._display_component("lamda")
 
     def get_status(self):
         """Return status"""
@@ -187,26 +434,20 @@ class DEAweak(DEA):
     def get_theta(self):
         """Return theta value by array"""
         tools.assert_optimized(self.optimization_status)
-        theta = list(self.__model__.theta[:].value)
-        return np.asarray(theta)
+        return self._component_series("theta")
 
     def get_rho(self):
         """Return rho value by array"""
         tools.assert_optimized(self.optimization_status)
-        rho = list(self.__model__.rho[:].value)
-        return np.asarray(rho)
+        return self._component_series("rho")
 
     def get_lamda(self):
         """Return lamda value by array"""
         tools.assert_optimized(self.optimization_status)
-        lamda = np.asarray([i + tuple([j]) for i, j in zip(list(self.__model__.lamda),
-                                                          list(self.__model__.lamda[:, :].value))])
-        lamda = pd.DataFrame(lamda, columns=['Name', 'Key', 'Value'])
-        lamda = lamda.pivot(index='Name', columns='Key', values='Value')
-        return lamda.to_numpy()
+        return self._component_array("lamda")
 
 
-class DEAweak2(DEA2):
+class DEAweak2(_WeakOrientationMixin, _WeakPerDmuResultMixin, DEA2):
     """Data Envelopment Analysis (DEA) - Solves per DMU"""
 
     def __init__(self,data,sent,gy=[1],gx=[0],gb=[1],rts=RTS_VRS1,baseindex=None, refindex=None):
@@ -247,19 +488,8 @@ class DEAweak2(DEA2):
         self.num_outputs = len(self.y[0])
         self.num_unoutputs = len(self.b[0])
         # print(self.gx,self.gy,")))))))))))))")
-        # Determine orientation based on gx/gy/gb vectors
-        self.input_oriented = sum(self.gx) >= 1 and sum(self.gy) == 0 and sum(self.gb) == 0
-        self.output_oriented = sum(self.gy) >= 1 and sum(self.gx) == 0 and sum(self.gb) == 0
-        self.unoutput_oriented = sum(self.gb) >= 1 and sum(self.gx) == 0 and sum(self.gy) == 0
-        self.hyper_orientedyx = sum(self.gx) >= 1 and sum(self.gy) >= 1 and sum(self.gb) == 0
-        self.hyper_orientedyb = sum(self.gb) >= 1 and sum(self.gy) >= 1 and sum(self.gx) == 0
-        self.hyper_orientedxb = sum(self.gb) >= 1 and sum(self.gx) >= 1 and sum(self.gy) == 0
-        self.hyper_orientedyxb = sum(self.gb) >= 1 and sum(self.gx) >= 1 and sum(self.gy) >= 1
-
-        if not (self.input_oriented or self.output_oriented or self.unoutput_oriented \
-                or self.hyper_orientedyx or self.hyper_orientedyb \
-                or self.hyper_orientedxb or self.hyper_orientedyxb):
-             raise ValueError("gx and gy must represent either input or output or hyperyx or hyperyb or hyperxb or hyperyxb orientation.")
+        # Determine orientation based on gx/gy/gb vectors.
+        self._set_weak_orientation_flags()
         if (self.input_oriented and self.output_oriented)   \
             or (self.input_oriented and self.unoutput_oriented) or (self.output_oriented and self.unoutput_oriented):
              # Original code structure suggests one or the other dominates based on the if/elif.
@@ -308,7 +538,7 @@ class DEAweak2(DEA2):
                     model.rho = Var(bounds=(0, 1), doc=f'efficiency for DMU {actual_index}')
                     model.theta = Var(bounds=(0.0, 1.0),doc='emission reduction factor')
                 elif self.rts == RTS_VRS2:
-                    model.rho = Var(bounds=(0, None), doc=f'efficiency for DMU {actual_index}')
+                    model.rho = Var(bounds=(0, 1), doc=f'efficiency for DMU {actual_index}')
                     model.mu = Var(model.R, bounds=(0.0, None),doc='emission reduction factor2')
             elif self.output_oriented: # Maximize rho, efficiency >= 1
                 if self.rts == RTS_CRS:
@@ -429,7 +659,7 @@ class DEAweak2(DEA2):
                     else:
                         return sum(model.lamda[r]*self.xref[r][j] for r in model.R) <= model.theta*self.x[current_dmu_range_index][j]
             elif self.rts == RTS_VRS1:
-                raise ValueError("RTS_VRS1 not supported for hyperyx orientation.") 
+                raise ValueError("RTS_VRS1 not supported for this hyper orientation (input direction + same reduction factor is not linearizable).") 
             elif self.rts == RTS_VRS2:
                 def input_rule(model, j):
                     # Input is scaled by rho in input orientation
@@ -527,7 +757,7 @@ class DEAweak2(DEA2):
                     # Hyper orientation: Output is not scaled by rho if gy[k] == 1
                     return sum(model.lamda[r] * self.yref[r][k] for r in model.R) >= self.y[current_dmu_range_index][k]
             elif self.rts == RTS_VRS1:
-                raise ValueError("RTS_VRS1 not supported for hyperyx orientation.") 
+                raise ValueError("RTS_VRS1 not supported for this hyper orientation (input direction + same reduction factor is not linearizable).") 
 
             elif self.rts == RTS_VRS2:
                 def output_rule(model, k):
@@ -616,7 +846,7 @@ class DEAweak2(DEA2):
                     # Hyper orientation: Output is not scaled by rho if gb[k] == 1
                     return sum(model.lamda[r] * self.bref[r][l] for r in model.R) ==model.theta* self.b[current_dmu_range_index][l]
             elif self.rts == RTS_VRS1:
-                raise ValueError("RTS_VRS1 not supported for hyperyx orientation.") 
+                raise ValueError("RTS_VRS1 not supported for this hyper orientation (input direction + same reduction factor is not linearizable).") 
             elif self.rts == RTS_VRS2:  
                 def unoutput_rule(model, l):
                     # Output is not scaled by rho in input orientation
@@ -690,299 +920,51 @@ class DEAweak2(DEA2):
 
 
 
+
     # --- Optimization and Results Methods ---
 
     def optimize(self, email=OPT_LOCAL, solver=OPT_DEFAULT):
-        """Optimize the model for each DMU individually.
+        """Optimize every evaluated DMU and return legacy DEAweak2 columns."""
+        return self._solve_per_dmu_models(email=email, solver=solver, include_objective=False)
 
-        Args:
-            email (string): The email address for remote optimization (ignored if solver is local).
-            solver (string): The solver chosen for optimization. It will optimize with default solver if OPT_DEFAULT is given.
-
-        Returns:
-            pandas.DataFrame: DataFrame containing optimization status and rho (efficiency) for each evaluated DMU.
-        """
-        self.results = {} # Clear previous results
-        all_optimization_statuses = {}
-        rho_values,theta_values = {},{}
-        lamda_values,mu_values = {},{} # Store lamda results temporarily as dicts
-
-        # Loop through each DMU's model and solve it
-        # The dictionary keys are the actual data indices
-
-        use_neos = tools.set_neos_email(email)
-
-        for actual_index, model in self.__modeldict.items():
-            # print(f"Optimizing for DMU: {actual_index}...") # Optional: print progress
-            try:
-                optimization_status = tools.optimize_model2(
-                   model, actual_index, use_neos, CET_ADDI, solver=solver)
-            except Exception as e:
-                print(f"sasaa Error optimizing DMU {actual_index}: {e}")
-                optimization_status = "Error"
-
-            all_optimization_statuses[actual_index] = optimization_status
-
-            # Store results if optimization was successful (check standard Pyomo status strings)
-            # Common successful statuses include 'optimal', 'feasible'
-            if optimization_status in ['ok']:
-                 try:
-                     rho_values[actual_index] = model.rho.value
-                     if self.rts == RTS_VRS1:
-                        theta_values[actual_index] = model.theta.value
-
-                     # Collect lamda values (indexed by reference range index in the model)
-                     lamda_data_for_dmu= {}
-                     for r_range in model.R:
-                         # Map the reference range index back to the actual reference index label
-                         actual_ref_index = self.reference_data_index[r_range]
-                         lamda_data_for_dmu[actual_ref_index] = model.lamda[r_range].value
-                     lamda_values[actual_index] = lamda_data_for_dmu # Store as dictionary for easier conversion
-          
-                     if self.rts == RTS_VRS2:
-                         mu_data_for_dmu = {}
-                         for r_range in model.R:
-                            # Map the reference range index back to the actual reference index label
-                            actual_ref_index = self.reference_data_index[r_range]
-                            mu_data_for_dmu[actual_ref_index] = model.mu[r_range].value
-
-                         mu_values[actual_index] = mu_data_for_dmu # Store as dictionary for easier conversion
-                 except Exception as e:
-                      print(f"Warning: Could not retrieve results for DMU {actual_index} despite status '{optimization_status}': {e}")
-                      rho_values[actual_index] = np.nan # Indicate failure to retrieve value
-                      if self.rts == RTS_VRS1:
-                        theta_values[actual_index] = np.nan # Indicate failure to retrieve value
-                      lamda_values[actual_index] = None
-                      if self.rts == RTS_VRS2:
-                        mu_values[actual_index] = None
-            else:
-                 print(f"Error optimizing DMU {actual_index}, optimization_status :{optimization_status}")
-
-                 rho_values[actual_index] = np.nan # Use NaN for failed optimizations
-                 if self.rts == RTS_VRS1:
-                    theta_values[actual_index] = np.nan # Indicate failure to retrieve value
-                 lamda_values[actual_index] = None
-                 if self.rts == RTS_VRS2:
-                    mu_values[actual_index] = None
-
-
-
-        # Store collected results in self.results
-        self.results['optimization_status'] = all_optimization_statuses
-        self.results['rho'] = rho_values
-        if self.rts == RTS_VRS1:
-            self.results['theta'] = rho_values
-
-        # Process lamda values into a DataFrame
-        lamda_df_list = []
-        # Keys of lamda_values are actual evaluated DMU indices
-        for actual_index, lam_data_for_dmu in lamda_values.items():
-            if lam_data_for_dmu is not None:
-                 # Create a Series for this DMU's lamda values
-                 # The keys of lam_data_for_dmu are actual reference DMU indices
-                 lam_series = pd.Series(lam_data_for_dmu, name=actual_index)
-                 lamda_df_list.append(lam_series)
-            else:
-                 # For failed DMUs, add a row of NaNs with correct reference index columns
-                 nan_series = pd.Series(np.nan, index=self.reference_data_index, name=actual_index)
-                 lamda_df_list.append(nan_series)
-
-        if lamda_df_list:
-             # Concatenate the Series into a DataFrame. Transpose to get evaluated DMUs as index.
-             # Columns will be the actual reference DMU indices.
-             self.results['lamda_df'] = pd.concat(lamda_df_list, axis=1).T
-        else:
-             self.results['lamda_df'] = None # No successful optimizations or no DMUs evaluated
-
-
-        # Process mu values into a DataFrame
-        if self.rts == RTS_VRS2:
-            mu_df_list = []
-            # Keys of mu_values are actual evaluated DMU indices
-            for actual_index, mu_data_for_dmu in mu_values.items():
-                if mu_data_for_dmu is not None:
-                    # Create a Series for this DMU's mu values
-                    # The keys of mu_data_for_dmu are actual reference DMU indices
-                    mu_series = pd.Series(mu_data_for_dmu, name=actual_index)
-                    mu_df_list.append(mu_series)
-                else:
-                    # For failed DMUs, add a row of NaNs with correct reference index columns
-                    nan_series_mu = pd.Series(np.nan, index=self.reference_data_index, name=actual_index)
-                    mu_df_list.append(nan_series_mu)
-
-            if mu_df_list:
-                # Concatenate the Series into a DataFrame. Transpose to get evaluated DMUs as index.
-                # Columns will be the actual reference DMU indices.
-                self.results['mu_df'] = pd.concat(mu_df_list, axis=1).T
-            else:
-                self.results['mu_df'] = None # No successful optimizations or no DMUs evaluated
-
-
-
-        # Create a summary DataFrame to return (similar to DEAt)
-        results_df = pd.DataFrame({
-            'optimization_status': pd.Series(all_optimization_statuses),
-            'rho': pd.Series(rho_values),
-            # 'theta': pd.Series(theta_values),
-            # Could add problem_status here too if needed
-        })
-
-        # Add 'te' column if applicable, based on rho interpretation
-        # Standard DEA rho is efficiency, often 0-1 or >=1.
-        # If rho is the efficiency score directly, maybe no 'te' calculation needed?
-        # DEAt calculates 'te' from 'beta'. Let's assume rho *is* the efficiency score desired.
-        # If input-oriented (minimize rho, 0-1), rho is efficiency.
-        # If output-oriented (maximize rho, >=1), 1/rho is efficiency.
-        # Let's add a 'te' column that aligns with 0-1 efficiency measure.
-        # If input_oriented, te = rho
-        # If output_oriented, te = 1/rho
+    def _add_efficiency_columns(self, results_df):
+        rho = results_df['rho']
         if self.input_oriented or self.unoutput_oriented:
-            results_df['te'] = results_df['rho']
+            results_df['te'] = rho
         elif self.output_oriented:
-             # Avoid division by zero or NaN
-            results_df['te'] = results_df['rho'].apply(lambda x: 1/x if pd.notna(x) and x != 0 else np.nan)
+            results_df['te'] = self._safe_inverse(rho)
         elif self.hyper_orientedyx:
-             if self.rts == RTS_CRS:
-                 results_df['te'] = results_df['rho'].apply(lambda x: np.sqrt(x) if pd.notna(x) else np.nan)
-             elif self.rts == RTS_VRS1:
-                raise ValueError("RTS_VRS1 not supported for hyperyx orientation.")
-             elif self.rts == RTS_VRS2:
-                 # Avoid  NaN    
-                results_df['tei'] = results_df['rho'].apply(lambda x: (1-x) if pd.notna(x) else np.nan)
-                results_df['teo'] = results_df['rho'].apply(lambda x: 1/(1+x) if pd.notna(x) else np.nan)
+            if self.rts == RTS_CRS:
+                results_df['te'] = self._safe_sqrt(rho)
+            elif self.rts == RTS_VRS1:
+                raise ValueError("RTS_VRS1 not supported for this hyper orientation (input direction + same reduction factor is not linearizable).")
+            elif self.rts == RTS_VRS2:
+                results_df['tei'] = self._one_minus(rho)
+                results_df['teo'] = self._safe_inverse_one_plus(rho)
         elif self.hyper_orientedyb:
             if self.rts == RTS_CRS:
-                results_df['te'] = results_df['rho'].apply(lambda x: np.sqrt(x) if pd.notna(x) else np.nan)
-            elif self.rts == RTS_VRS1:
-                results_df['teuo'] = results_df['rho'].apply(lambda x: (1-x) if pd.notna(x) else np.nan)
-                results_df['teo'] = results_df['rho'].apply(lambda x: 1/(1+x) if pd.notna(x) else np.nan)
-            elif self.rts == RTS_VRS2:
-                # Avoid  NaN    
-                results_df['teuo'] = results_df['rho'].apply(lambda x: (1-x) if pd.notna(x) else np.nan)
-                results_df['teo'] = results_df['rho'].apply(lambda x: 1/(1+x) if pd.notna(x) else np.nan)
+                results_df['te'] = self._safe_sqrt(rho)
+            elif self.rts in (RTS_VRS1, RTS_VRS2):
+                results_df['teuo'] = self._one_minus(rho)
+                results_df['teo'] = self._safe_inverse_one_plus(rho)
         elif self.hyper_orientedxb:
             if self.rts == RTS_CRS:
-                results_df['te'] = results_df['rho'].apply(lambda x: np.sqrt(x) if pd.notna(x) else np.nan)
+                results_df['te'] = self._safe_sqrt(rho)
             elif self.rts == RTS_VRS1:
                 raise ValueError("RTS_VRS1 not supported for hyperxb orientation.")
             elif self.rts == RTS_VRS2:
-                results_df['tei'] = results_df['rho'].apply(lambda x: (1-x) if pd.notna(x) else np.nan)
-                results_df['teuo'] = results_df['rho'].apply(lambda x: (1-x) if pd.notna(x) else np.nan)
+                results_df['tei'] = self._one_minus(rho)
+                results_df['teuo'] = self._one_minus(rho)
         elif self.hyper_orientedyxb:
             if self.rts == RTS_CRS:
-                results_df['te'] = results_df['rho'].apply(lambda x: np.sqrt(x) if pd.notna(x) else np.nan)
+                results_df['te'] = self._safe_sqrt(rho)
             elif self.rts == RTS_VRS1:
                 raise ValueError("RTS_VRS1 not supported for hyperyxb orientation.")
             elif self.rts == RTS_VRS2:
-                results_df['tei'] = results_df['rho'].apply(lambda x: (1-x) if pd.notna(x) else np.nan)
-                results_df['teuo'] = results_df['rho'].apply(lambda x: (1-x) if pd.notna(x) else np.nan)
-                results_df['teo'] = results_df['rho'].apply(lambda x: 1/(1+x) if pd.notna(x) else np.nan)
+                results_df['tei'] = self._one_minus(rho)
+                results_df['teuo'] = self._one_minus(rho)
+                results_df['teo'] = self._safe_inverse_one_plus(rho)
         return results_df
-
-
-    # --- Display and Get Methods ---
-
-    def display_status(self):
-        """Display the optimization status for each DMU."""
-        if not self.results:
-            print("Optimization has not been run yet.")
-            return
-        print("Optimization Status per DMU:")
-        for dmu, status in self.results.get('optimization_status', {}).items():
-            print(f"  {dmu}: {status}")
-
-    def display_rho(self):
-        """Display rho value for each DMU."""
-        # Use assert_optimized to check if results exist
-        tools.assert_optimized(self.results)
-        print("Rho values per DMU:")
-        rho_series = pd.Series(self.results.get('rho', {}))
-        print(rho_series)
-
-    def display_theta(self):
-        """Display theta value for each DMU."""
-        # Use assert_optimized to check if results exist
-        tools.assert_optimized(self.results)
-        print("Theta values per DMU:")
-        theta_series = pd.Series(self.results.get('theta', {}))
-        print(theta_series)
-
-    def display_lamda(self):
-        """Display lamda values (intensity variables) for each DMU."""
-        tools.assert_optimized(self.results)
-        print("Lamda values per DMU:")
-        lamda_df = self.results.get('lamda_df')
-        if lamda_df is not None:
-            print(lamda_df)
-        else:
-            print("No lamda values available (optimization may have failed for all DMUs).")
-    
-    def display_mu(self):
-        """Display mu values (intensity variables) for each DMU."""
-        tools.assert_optimized(self.results)
-        print("mu values per DMU:")
-        mu_df = self.results.get('mu_df')
-        if mu_df is not None:
-            print(mu_df)
-        else:
-            print("No mu values available (optimization may have failed for all DMUs).")
-
-    def get_status(self):
-        """Return optimization status dictionary."""
-        if not self.results:
-             return {}
-        return self.results.get('optimization_status', {})
-
-    def get_rho(self):
-        """Return rho values as a pandas Series."""
-        tools.assert_optimized(self.results)
-        return pd.Series(self.results.get('rho', {}))
-
-    def get_theta(self):
-        """Return theta values as a pandas Series."""
-        tools.assert_optimized(self.results)
-        return pd.Series(self.results.get('theta', {}))
-
-    def get_lamda(self):
-        """Return lamda values as a pandas DataFrame."""
-        tools.assert_optimized(self.results)
-        return self.results.get('lamda_df')
-    
-    def get_mu(self):
-        """Return mu values as a pandas DataFrame."""
-        tools.assert_optimized(self.results)
-        return self.results.get('mu_df')
-
-    def info(self, dmu="all"):
-        """Show the information of the lp model for specified DMU(s).
-
-        Args:
-            dmu (str or list): The actual index label of the DMU(s) to display, or "all". Default is "all".
-        """
-        if not self.__modeldict:
-            print("No models have been initialized.")
-            return
-
-        if dmu == "all":
-            print("Displaying all DMU models:")
-            for ind, problem in self.__modeldict.items():
-                print(f"\n--- Model for DMU: {ind} ---")
-                problem.pprint()
-                print("-" * (len(f"--- Model for DMU: {ind} ---")))
-        else:
-            if isinstance(dmu, str):
-                dmu_list = [dmu]
-            else:
-                dmu_list = dmu
-
-            for ind in dmu_list:
-                if ind in self.__modeldict:
-                    print(f"\n--- Model for DMU: {ind} ---")
-                    self.__modeldict[ind].pprint()
-                    print("-" * (len(f"--- Model for DMU: {ind} ---")))
-                else:
-                    print(f"DMU '{ind}' not found in the evaluated set.")
-
 
 
 
@@ -1084,7 +1066,7 @@ class DDFweak(DEAweak):
             return vrs_rule
 
 
-class DDFweak2(DDF2):
+class DDFweak2(_WeakOrientationMixin, _WeakPerDmuResultMixin, DDF2):
 
     def __init__(self,data,sent,gy=[1],gx=[0],gb=[1],rts=RTS_VRS1,baseindex=None, refindex=None):
         """ DDF: Envelopment problem, solving for each DMU individually.
@@ -1124,18 +1106,8 @@ class DDFweak2(DDF2):
         self.num_outputs = len(self.y[0])
         self.num_unoutputs = len(self.b[0])
         # print(self.gx,self.gy,")))))))))))))")
-        # Determine orientation based on gx/gy vectors
-        self.input_oriented = sum(self.gx) >= 1 and sum(self.gy) == 0 and sum(self.gb) == 0
-        self.output_oriented = sum(self.gy) >= 1 and sum(self.gx) == 0 and sum(self.gb) == 0
-        self.unoutput_oriented = sum(self.gb) >= 1 and sum(self.gx) == 0 and sum(self.gy) == 0
-        self.hyper_orientedyx = sum(self.gx) >= 1 and sum(self.gy) >= 1 and sum(self.gb) == 0
-        self.hyper_orientedyb = sum(self.gb) >= 1 and sum(self.gy) >= 1 and sum(self.gx) == 0
-        self.hyper_orientedxb = sum(self.gb) >= 1 and sum(self.gx) >= 1 and sum(self.gy) == 0
-        self.hyper_orientedyxb = sum(self.gb) >= 1 and sum(self.gx) >= 1 and sum(self.gy) >= 1 
-
-        if not (self.input_oriented or self.output_oriented or self.unoutput_oriented \
-                or self.hyper_orientedyx or self.hyper_orientedyb or self.hyper_orientedxb or self.hyper_orientedyxb ):
-             raise ValueError("gx and gy must represent either input or output or hyperyx or hyperyb or hyperxb or hyperyxb orientation.")
+        # Determine orientation based on gx/gy/gb vectors.
+        self._set_weak_orientation_flags()
         if (self.input_oriented and self.output_oriented)   \
             or (self.input_oriented and self.unoutput_oriented) or (self.output_oriented and self.unoutput_oriented):
              # Original code structure suggests one or the other dominates based on the if/elif.
@@ -1256,7 +1228,7 @@ class DDFweak2(DDF2):
                     return sum(model.lamda[r] * self.xref[r][j] for r in model.R) <=\
                           self.x[current_dmu_range_index][j] - model.rho*self.gx[j]* self.x[current_dmu_range_index][j]
             elif self.rts == RTS_VRS1:
-                raise ValueError("RTS_VRS1 not supported for hyperyx orientation.") 
+                raise ValueError("RTS_VRS1 not supported for this hyper orientation (input direction + same reduction factor is not linearizable).") 
             elif self.rts == RTS_VRS2:
                 def input_rule(model, j):
                     # Input is scaled by rho in input orientation
@@ -1283,7 +1255,7 @@ class DDFweak2(DDF2):
                     return sum(model.lamda[r] * self.xref[r][j] for r in model.R) <=\
                           self.x[current_dmu_range_index][j] - model.rho*self.gx[j]* self.x[current_dmu_range_index][j]
             elif self.rts == RTS_VRS1:
-                raise ValueError("RTS_VRS1 not supported for hyperyx orientation.") 
+                raise ValueError("RTS_VRS1 not supported for this hyper orientation (input direction + same reduction factor is not linearizable).") 
             elif self.rts == RTS_VRS2:
                 def input_rule(model, j):
                     # Input is scaled by rho in input orientation
@@ -1295,7 +1267,7 @@ class DDFweak2(DDF2):
                     return sum(model.lamda[r] * self.xref[r][j] for r in model.R) <=\
                           self.x[current_dmu_range_index][j] - model.rho*self.gx[j]* self.x[current_dmu_range_index][j]
             elif self.rts == RTS_VRS1:
-                raise ValueError("RTS_VRS1 not supported for hyperyx orientation.") 
+                raise ValueError("RTS_VRS1 not supported for this hyper orientation (input direction + same reduction factor is not linearizable).") 
             elif self.rts == RTS_VRS2:
                 def input_rule(model, j):
                     # Input is scaled by rho in input orientation
@@ -1346,7 +1318,7 @@ class DDFweak2(DDF2):
                     return sum(model.lamda[r] * self.yref[r][k] for r in model.R) >= \
                         self.y[current_dmu_range_index][k]+ model.rho*self.gy[k]*self.y[current_dmu_range_index][k]
             elif self.rts == RTS_VRS1:
-                raise ValueError("RTS_VRS1 not supported for hyperyx orientation.") 
+                raise ValueError("RTS_VRS1 not supported for this hyper orientation (input direction + same reduction factor is not linearizable).") 
             elif self.rts == RTS_VRS2:
                 def output_rule(model, k):
                     # Output is not scaled by rho in input orientation
@@ -1365,7 +1337,7 @@ class DDFweak2(DDF2):
                     return sum(model.lamda[r] * self.yref[r][k] for r in model.R) >= \
                         self.y[current_dmu_range_index][k]
             elif self.rts == RTS_VRS1:
-                raise ValueError("RTS_VRS1 not supported for hyperyx orientation.") 
+                raise ValueError("RTS_VRS1 not supported for this hyper orientation (input direction + same reduction factor is not linearizable).") 
             elif self.rts == RTS_VRS2:
                 def output_rule(model, k):
                     # Output is not scaled by rho in input orientation
@@ -1378,7 +1350,7 @@ class DDFweak2(DDF2):
                     return sum(model.lamda[r] * self.yref[r][k] for r in model.R) >= \
                         self.y[current_dmu_range_index][k]+ model.rho*self.gy[k]*self.y[current_dmu_range_index][k]
             elif self.rts == RTS_VRS1:
-                raise ValueError("RTS_VRS1 not supported for hyperyx orientation.") 
+                raise ValueError("RTS_VRS1 not supported for this hyper orientation (input direction + same reduction factor is not linearizable).") 
             elif self.rts == RTS_VRS2:
                 def output_rule(model, k):
                     # Output is not scaled by rho in input orientation
@@ -1425,7 +1397,7 @@ class DDFweak2(DDF2):
                     # Hyper orientation: Output is not scaled by rho if gb[k] == 1
                     return sum(model.lamda[r] * self.bref[r][l] for r in model.R) ==self.b[current_dmu_range_index][l]
             elif self.rts == RTS_VRS1:
-                raise ValueError("RTS_VRS1 not supported for hyperyx orientation.") 
+                raise ValueError("RTS_VRS1 not supported for this hyper orientation (input direction + same reduction factor is not linearizable).") 
             elif self.rts == RTS_VRS2:  
                 def unoutput_rule(model, l):
                     # Output is not scaled by rho in input orientation
@@ -1443,7 +1415,7 @@ class DDFweak2(DDF2):
                     return sum(model.lamda[r] * self.bref[r][l] for r in model.R) ==\
                         self.b[current_dmu_range_index][l] - model.rho*self.gb[l]*self.b[current_dmu_range_index][l]
             elif self.rts == RTS_VRS1:
-                raise ValueError("RTS_VRS1 not supported for hyperyx orientation.") 
+                raise ValueError("RTS_VRS1 not supported for this hyper orientation (input direction + same reduction factor is not linearizable).") 
             elif self.rts == RTS_VRS2:  
                 def unoutput_rule(model, l):
                     # Output is not scaled by rho in input orientation
@@ -1456,7 +1428,7 @@ class DDFweak2(DDF2):
                     return sum(model.lamda[r] * self.bref[r][l] for r in model.R) ==\
                         self.b[current_dmu_range_index][l] - model.rho*self.gb[l]*self.b[current_dmu_range_index][l]
             elif self.rts == RTS_VRS1:
-                raise ValueError("RTS_VRS1 not supported for hyperyx orientation.") 
+                raise ValueError("RTS_VRS1 not supported for this hyper orientation (input direction + same reduction factor is not linearizable).") 
             elif self.rts == RTS_VRS2:  
                 def unoutput_rule(model, l):
                     # Output is not scaled by rho in input orientation
@@ -1481,288 +1453,39 @@ class DDFweak2(DDF2):
             return vrs_rule
 
 
+
     # --- Optimization and Results Methods ---
 
     def optimize(self, email=OPT_LOCAL, solver=OPT_DEFAULT):
-        """Optimize the model for each DMU individually.
+        """Optimize every evaluated DMU and return legacy DDFweak2 columns."""
+        return self._solve_per_dmu_models(email=email, solver=solver, include_objective=True)
 
-        Args:
-            email (string): The email address for remote optimization (ignored if solver is local).
-            solver (string): The solver chosen for optimization. It will optimize with default solver if OPT_DEFAULT is given.
-
-        Returns:
-            pandas.DataFrame: DataFrame containing optimization status and rho (efficiency) for each evaluated DMU.
-        """
-        self.results = {} # Clear previous results
-        all_optimization_statuses = {}
-        rho_values,theta_values,objective_values = {},{},{}
-        lamda_values,mu_values = {},{} # Store lamda results temporarily as dicts
-
-        # Loop through each DMU's model and solve it
-        # The dictionary keys are the actual data indices
-
-        use_neos = tools.set_neos_email(email)
-
-        for actual_index, model in self.__modeldict.items():
-            # print(f"Optimizing for DMU: {actual_index}...") # Optional: print progress
-            try:
-                optimization_status = tools.optimize_model2(
-                   model, actual_index, use_neos, CET_ADDI, solver=solver)
-            except Exception as e:
-                print(f"sasaa Error optimizing DMU {actual_index}: {e}")
-                optimization_status = "Error"
-
-            all_optimization_statuses[actual_index] = optimization_status
-
-            # Store results if optimization was successful (check standard Pyomo status strings)
-            # Common successful statuses include 'optimal', 'feasible'
-            if optimization_status in ['ok']:
-                 try:
-                     rho_values[actual_index] = model.rho.value
-                     if self.rts == RTS_VRS1:
-                        theta_values[actual_index] = model.theta.value
-
-
-                     # Collect lamda values (indexed by reference range index in the model)
-                     lamda_data_for_dmu= {}
-                     for r_range in model.R:
-                         # Map the reference range index back to the actual reference index label
-                         actual_ref_index = self.reference_data_index[r_range]
-                         lamda_data_for_dmu[actual_ref_index] = model.lamda[r_range].value
-                     lamda_values[actual_index] = lamda_data_for_dmu # Store as dictionary for easier conversion
-          
-                     objective_values[actual_index] = model.objective()
-
-                     if self.rts == RTS_VRS2:
-                         mu_data_for_dmu = {}
-                         for r_range in model.R:
-                            # Map the reference range index back to the actual reference index label
-                            actual_ref_index = self.reference_data_index[r_range]
-                            mu_data_for_dmu[actual_ref_index] = model.mu[r_range].value
-
-                         mu_values[actual_index] = mu_data_for_dmu # Store as dictionary for easier conversion
-                 except Exception as e:
-                      print(f"Warning: Could not retrieve results for DMU {actual_index} despite status '{optimization_status}': {e}")
-                      rho_values[actual_index] = np.nan # Indicate failure to retrieve value
-                      if self.rts == RTS_VRS1:
-                        theta_values[actual_index] = np.nan # Indicate failure to retrieve value
-                      lamda_values[actual_index] = None
-                      if self.rts == RTS_VRS2:
-                        mu_values[actual_index] = None
-            else:
-                 print(f"Error optimizing DMU {actual_index}, optimization_status :{optimization_status}")
-
-                 rho_values[actual_index] = np.nan # Use NaN for failed optimizations
-                 if self.rts == RTS_VRS1:
-                    theta_values[actual_index] = np.nan # Indicate failure to retrieve value
-                 lamda_values[actual_index] = None
-                 if self.rts == RTS_VRS2:
-                    mu_values[actual_index] = None
-
-
-
-        # Store collected results in self.results
-        self.results['optimization_status'] = all_optimization_statuses
-        self.results['rho'] = rho_values
-        if self.rts == RTS_VRS1:
-            self.results['theta'] = theta_values
-
-        # Process lamda values into a DataFrame
-        lamda_df_list = []
-        # Keys of lamda_values are actual evaluated DMU indices
-        for actual_index, lam_data_for_dmu in lamda_values.items():
-            if lam_data_for_dmu is not None:
-                 # Create a Series for this DMU's lamda values
-                 # The keys of lam_data_for_dmu are actual reference DMU indices
-                 lam_series = pd.Series(lam_data_for_dmu, name=actual_index)
-                 lamda_df_list.append(lam_series)
-            else:
-                 # For failed DMUs, add a row of NaNs with correct reference index columns
-                 nan_series = pd.Series(np.nan, index=self.reference_data_index, name=actual_index)
-                 lamda_df_list.append(nan_series)
-
-        if lamda_df_list:
-             # Concatenate the Series into a DataFrame. Transpose to get evaluated DMUs as index.
-             # Columns will be the actual reference DMU indices.
-             self.results['lamda_df'] = pd.concat(lamda_df_list, axis=1).T
-        else:
-             self.results['lamda_df'] = None # No successful optimizations or no DMUs evaluated
-
-
-        # Process mu values into a DataFrame
-        if self.rts == RTS_VRS2:
-            mu_df_list = []
-            # Keys of mu_values are actual evaluated DMU indices
-            for actual_index, mu_data_for_dmu in mu_values.items():
-                if mu_data_for_dmu is not None:
-                    # Create a Series for this DMU's mu values
-                    # The keys of mu_data_for_dmu are actual reference DMU indices
-                    mu_series = pd.Series(mu_data_for_dmu, name=actual_index)
-                    mu_df_list.append(mu_series)
-                else:
-                    # For failed DMUs, add a row of NaNs with correct reference index columns
-                    nan_series_mu = pd.Series(np.nan, index=self.reference_data_index, name=actual_index)
-                    mu_df_list.append(nan_series_mu)
-
-            if mu_df_list:
-                # Concatenate the Series into a DataFrame. Transpose to get evaluated DMUs as index.
-                # Columns will be the actual reference DMU indices.
-                self.results['mu_df'] = pd.concat(mu_df_list, axis=1).T
-            else:
-                self.results['mu_df'] = None # No successful optimizations or no DMUs evaluated
-
-
-
-        # Create a summary DataFrame to return (similar to DEAt)
-        results_df = pd.DataFrame({
-            'optimization_status': pd.Series(all_optimization_statuses),
-            'rho': pd.Series(rho_values),
-            'objective_value': pd.Series(objective_values),
-            # 'theta': pd.Series(theta_values),
-            # Could add problem_status here too if needed
-        })
-
-        # Add 'te' column if applicable, based on rho interpretation
-        # Standard DEA rho is efficiency, often 0-1 or >=1.
-        # If rho is the efficiency score directly, maybe no 'te' calculation needed?
-        # DEAt calculates 'te' from 'beta'. Let's assume rho *is* the efficiency score desired.
-        # If input-oriented (minimize rho, 0-1), rho is efficiency.
-        # If output-oriented (maximize rho, >=1), 1/rho is efficiency.
-        # Let's add a 'te' column that aligns with 0-1 efficiency measure.
-        # If input_oriented, te = rho
-        # If output_oriented, te = 1/rho
+    def _add_efficiency_columns(self, results_df):
+        rho = results_df['rho']
         if self.input_oriented:
-            results_df['tei'] = results_df['rho'].apply(lambda x: (1-x) if pd.notna(x) else np.nan)
+            results_df['tei'] = self._one_minus(rho)
         elif self.output_oriented:
-             # Avoid division by zero or NaN
-            results_df['teo'] = results_df['rho'].apply(lambda x: 1/(1+x) if pd.notna(x) else np.nan)
+            results_df['teo'] = self._safe_inverse_one_plus(rho)
         elif self.unoutput_oriented:
-            results_df['teuo'] = results_df['rho'].apply(lambda x: (1-x) if pd.notna(x) else np.nan)
+            results_df['teuo'] = self._one_minus(rho)
         elif self.hyper_orientedyx:
-            results_df['tei'] = results_df['rho'].apply(lambda x: (1-x) if pd.notna(x) else np.nan)
-            results_df['teo'] = results_df['rho'].apply(lambda x: 1/(1+x) if pd.notna(x) else np.nan)
+            results_df['tei'] = self._one_minus(rho)
+            results_df['teo'] = self._safe_inverse_one_plus(rho)
         elif self.hyper_orientedyb:
-            results_df['teuo'] = results_df['rho'].apply(lambda x: (1-x) if pd.notna(x) else np.nan)
-            results_df['teo'] = results_df['rho'].apply(lambda x: 1/(1+x) if pd.notna(x) else np.nan)
+            results_df['teuo'] = self._one_minus(rho)
+            results_df['teo'] = self._safe_inverse_one_plus(rho)
         elif self.hyper_orientedxb:
-            results_df['tei'] = results_df['rho'].apply(lambda x: (1-x) if pd.notna(x) else np.nan)
-            results_df['teuo'] = results_df['rho'].apply(lambda x: (1-x) if pd.notna(x) else np.nan)
+            results_df['tei'] = self._one_minus(rho)
+            results_df['teuo'] = self._one_minus(rho)
         elif self.hyper_orientedyxb:
-            results_df['tei'] = results_df['rho'].apply(lambda x: (1-x) if pd.notna(x) else np.nan)
-            results_df['teuo'] = results_df['rho'].apply(lambda x: (1-x) if pd.notna(x) else np.nan)
-            results_df['teo'] = results_df['rho'].apply(lambda x: 1/(1+x) if pd.notna(x) else np.nan)
-
-
+            results_df['tei'] = self._one_minus(rho)
+            results_df['teuo'] = self._one_minus(rho)
+            results_df['teo'] = self._safe_inverse_one_plus(rho)
         return results_df
 
 
-    # --- Display and Get Methods ---
 
-    def display_status(self):
-        """Display the optimization status for each DMU."""
-        if not self.results:
-            print("Optimization has not been run yet.")
-            return
-        print("Optimization Status per DMU:")
-        for dmu, status in self.results.get('optimization_status', {}).items():
-            print(f"  {dmu}: {status}")
-
-    def display_rho(self):
-        """Display rho value for each DMU."""
-        # Use assert_optimized to check if results exist
-        tools.assert_optimized(self.results)
-        print("Rho values per DMU:")
-        rho_series = pd.Series(self.results.get('rho', {}))
-        print(rho_series)
-
-    def display_theta(self):
-        """Display theta value for each DMU."""
-        # Use assert_optimized to check if results exist
-        tools.assert_optimized(self.results)
-        print("Theta values per DMU:")
-        theta_series = pd.Series(self.results.get('theta', {}))
-        print(theta_series)
-
-    def display_lamda(self):
-        """Display lamda values (intensity variables) for each DMU."""
-        tools.assert_optimized(self.results)
-        print("Lamda values per DMU:")
-        lamda_df = self.results.get('lamda_df')
-        if lamda_df is not None:
-            print(lamda_df)
-        else:
-            print("No lamda values available (optimization may have failed for all DMUs).")
-    
-    def display_mu(self):
-        """Display mu values (intensity variables) for each DMU."""
-        tools.assert_optimized(self.results)
-        print("mu values per DMU:")
-        mu_df = self.results.get('mu_df')
-        if mu_df is not None:
-            print(mu_df)
-        else:
-            print("No mu values available (optimization may have failed for all DMUs).")
-
-    def get_status(self):
-        """Return optimization status dictionary."""
-        if not self.results:
-             return {}
-        return self.results.get('optimization_status', {})
-
-    def get_rho(self):
-        """Return rho values as a pandas Series."""
-        tools.assert_optimized(self.results)
-        return pd.Series(self.results.get('rho', {}))
-
-    def get_theta(self):
-        """Return theta values as a pandas Series."""
-        tools.assert_optimized(self.results)
-        return pd.Series(self.results.get('theta', {}))
-
-    def get_lamda(self):
-        """Return lamda values as a pandas DataFrame."""
-        tools.assert_optimized(self.results)
-        return self.results.get('lamda_df')
-    
-    def get_mu(self):
-        """Return mu values as a pandas DataFrame."""
-        tools.assert_optimized(self.results)
-        return self.results.get('mu_df')
-
-    def info(self, dmu="all"):
-        """Show the information of the lp model for specified DMU(s).
-
-        Args:
-            dmu (str or list): The actual index label of the DMU(s) to display, or "all". Default is "all".
-        """
-        if not self.__modeldict:
-            print("No models have been initialized.")
-            return
-
-        if dmu == "all":
-            print("Displaying all DMU models:")
-            for ind, problem in self.__modeldict.items():
-                print(f"\n--- Model for DMU: {ind} ---")
-                problem.pprint()
-                print("-" * (len(f"--- Model for DMU: {ind} ---")))
-        else:
-            if isinstance(dmu, str):
-                dmu_list = [dmu]
-            else:
-                dmu_list = dmu
-
-            for ind in dmu_list:
-                if ind in self.__modeldict:
-                    print(f"\n--- Model for DMU: {ind} ---")
-                    self.__modeldict[ind].pprint()
-                    print("-" * (len(f"--- Model for DMU: {ind} ---")))
-                else:
-                    print(f"DMU '{ind}' not found in the evaluated set.")
-
-
-
-
-class NDDFweak2(DDF2):
+class NDDFweak2(_WeakOrientationMixin, DDF2):
 
     def __init__(self,data,sent,gy=[1],gx=[0],gb=[1],rts=RTS_VRS1,baseindex=None, refindex=None):
         """ DDF: Envelopment problem, solving for each DMU individually.
@@ -1798,18 +1521,8 @@ class NDDFweak2(DDF2):
         self.sum_gx = sum(self.gx)
         self.sum_gy = sum(self.gy)
         self.sum_gb = sum(self.gb)
-        # Determine orientation based on gx/gy vectors
-        self.input_oriented = sum(self.gx) >= 1 and sum(self.gy) == 0 and sum(self.gb) == 0
-        self.output_oriented = sum(self.gy) >= 1 and sum(self.gx) == 0 and sum(self.gb) == 0
-        self.unoutput_oriented = sum(self.gb) >= 1 and sum(self.gx) == 0 and sum(self.gy) == 0
-        self.hyper_orientedyx = sum(self.gx) >= 1 and sum(self.gy) >= 1 and sum(self.gb) == 0
-        self.hyper_orientedyb = sum(self.gb) >= 1 and sum(self.gy) >= 1 and sum(self.gx) == 0
-        self.hyper_orientedxb = sum(self.gb) >= 1 and sum(self.gx) >= 1 and sum(self.gy) == 0
-        self.hyper_orientedyxb = sum(self.gb) >= 1 and sum(self.gx) >= 1 and sum(self.gy) >= 1 
-
-        if not (self.input_oriented or self.output_oriented or self.unoutput_oriented \
-                or self.hyper_orientedyx or self.hyper_orientedyb or self.hyper_orientedxb or self.hyper_orientedyxb ):
-             raise ValueError("gx and gy must represent either input or output or hyperyx or hyperyb or hyperxb or hyperyxb orientation.")
+        # Determine orientation based on gx/gy/gb vectors.
+        self._set_weak_orientation_flags()
         if (self.input_oriented and self.output_oriented)   \
             or (self.input_oriented and self.unoutput_oriented) or (self.output_oriented and self.unoutput_oriented):
              # Original code structure suggests one or the other dominates based on the if/elif.
@@ -1966,7 +1679,7 @@ class NDDFweak2(DDF2):
                     return sum(model.lamda[r] * self.xref[r][j] for r in model.R) <=\
                           self.x[current_dmu_range_index][j] - model.rhox[j]*self.gx[j]* self.x[current_dmu_range_index][j]
             elif self.rts == RTS_VRS1:
-                raise ValueError("RTS_VRS1 not supported for hyperyx orientation.") 
+                raise ValueError("RTS_VRS1 not supported for this hyper orientation (input direction + same reduction factor is not linearizable).") 
             elif self.rts == RTS_VRS2:
                 def input_rule(model, j):
                     # Input is scaled by rhox in input orientation
@@ -1993,7 +1706,7 @@ class NDDFweak2(DDF2):
                     return sum(model.lamda[r] * self.xref[r][j] for r in model.R) <=\
                           self.x[current_dmu_range_index][j] - model.rhox[j]*self.gx[j]* self.x[current_dmu_range_index][j]
             elif self.rts == RTS_VRS1:
-                raise ValueError("RTS_VRS1 not supported for hyperyx orientation.") 
+                raise ValueError("RTS_VRS1 not supported for this hyper orientation (input direction + same reduction factor is not linearizable).") 
             elif self.rts == RTS_VRS2:
                 def input_rule(model, j):
                     # Input is scaled by rhox in input orientation
@@ -2005,7 +1718,7 @@ class NDDFweak2(DDF2):
                     return sum(model.lamda[r] * self.xref[r][j] for r in model.R) <=\
                           self.x[current_dmu_range_index][j] - model.rhox[j]*self.gx[j]* self.x[current_dmu_range_index][j]
             elif self.rts == RTS_VRS1:
-                raise ValueError("RTS_VRS1 not supported for hyperyx orientation.") 
+                raise ValueError("RTS_VRS1 not supported for this hyper orientation (input direction + same reduction factor is not linearizable).") 
             elif self.rts == RTS_VRS2:
                 def input_rule(model, j):
                     # Input is scaled by rhox in input orientation
@@ -2056,7 +1769,7 @@ class NDDFweak2(DDF2):
                     return sum(model.lamda[r] * self.yref[r][k] for r in model.R) >= \
                         self.y[current_dmu_range_index][k]+ model.rhoy[k]*self.gy[k]*self.y[current_dmu_range_index][k]
             elif self.rts == RTS_VRS1:
-                raise ValueError("RTS_VRS1 not supported for hyperyx orientation.") 
+                raise ValueError("RTS_VRS1 not supported for this hyper orientation (input direction + same reduction factor is not linearizable).") 
             elif self.rts == RTS_VRS2:
                 def output_rule(model, k):
                     # Output is not scaled by rhoy in input orientation
@@ -2075,7 +1788,7 @@ class NDDFweak2(DDF2):
                     return sum(model.lamda[r] * self.yref[r][k] for r in model.R) >= \
                         self.y[current_dmu_range_index][k]
             elif self.rts == RTS_VRS1:
-                raise ValueError("RTS_VRS1 not supported for hyperyx orientation.") 
+                raise ValueError("RTS_VRS1 not supported for this hyper orientation (input direction + same reduction factor is not linearizable).") 
             elif self.rts == RTS_VRS2:
                 def output_rule(model, k):
                     # Output is not scaled by rhoy in input orientation
@@ -2088,7 +1801,7 @@ class NDDFweak2(DDF2):
                     return sum(model.lamda[r] * self.yref[r][k] for r in model.R) >= \
                         self.y[current_dmu_range_index][k]+ model.rhoy[k]*self.gy[k]*self.y[current_dmu_range_index][k]
             elif self.rts == RTS_VRS1:
-                raise ValueError("RTS_VRS1 not supported for hyperyx orientation.") 
+                raise ValueError("RTS_VRS1 not supported for this hyper orientation (input direction + same reduction factor is not linearizable).") 
             elif self.rts == RTS_VRS2:
                 def output_rule(model, k):
                     # Output is not scaled by rhoy in input orientation
@@ -2135,7 +1848,7 @@ class NDDFweak2(DDF2):
                     # Hyper orientation: Output is not scaled by rhob if gb[k] == 1
                     return sum(model.lamda[r] * self.bref[r][l] for r in model.R) ==self.b[current_dmu_range_index][l]
             elif self.rts == RTS_VRS1:
-                raise ValueError("RTS_VRS1 not supported for hyperyx orientation.") 
+                raise ValueError("RTS_VRS1 not supported for this hyper orientation (input direction + same reduction factor is not linearizable).") 
             elif self.rts == RTS_VRS2:  
                 def unoutput_rule(model, l):
                     # Output is not scaled by rhob in input orientation
@@ -2153,7 +1866,7 @@ class NDDFweak2(DDF2):
                     return sum(model.lamda[r] * self.bref[r][l] for r in model.R) ==\
                         self.b[current_dmu_range_index][l] - model.rhob[l]*self.gb[l]*self.b[current_dmu_range_index][l]
             elif self.rts == RTS_VRS1:
-                raise ValueError("RTS_VRS1 not supported for hyperyx orientation.") 
+                raise ValueError("RTS_VRS1 not supported for this hyper orientation (input direction + same reduction factor is not linearizable).") 
             elif self.rts == RTS_VRS2:  
                 def unoutput_rule(model, l):
                     # Output is not scaled by rhob in input orientation
@@ -2166,7 +1879,7 @@ class NDDFweak2(DDF2):
                     return sum(model.lamda[r] * self.bref[r][l] for r in model.R) ==\
                         self.b[current_dmu_range_index][l] - model.rhob[l]*self.gb[l]*self.b[current_dmu_range_index][l]
             elif self.rts == RTS_VRS1:
-                raise ValueError("RTS_VRS1 not supported for hyperyx orientation.") 
+                raise ValueError("RTS_VRS1 not supported for this hyper orientation (input direction + same reduction factor is not linearizable).") 
             elif self.rts == RTS_VRS2:  
                 def unoutput_rule(model, l):
                     # Output is not scaled by rhob in input orientation
@@ -2678,7 +2391,7 @@ class NDDFweak2(DDF2):
 
 
 
-class DEAweakDUAL(DEAweak):
+class DEAweakDUAL(_WeakDualResultMixin, DEAweak):
 
     def __init__(self, data, sent, gy, gx,gb , rts, baseindex=None, refindex=None):
         """DEA: Envelopment problem
@@ -2795,61 +2508,6 @@ class DEAweakDUAL(DEAweak):
 
         return third_rule
 
-    def display_delta(self):
-        """Display delta value"""
-        tools.assert_optimized(self.optimization_status)
-        self.__model__.delta.display()
-
-    def display_gamma(self):
-        """Display gamma value"""
-        tools.assert_optimized(self.optimization_status)
-        self.__model__.gamma.display()
-
-    def display_kappa(self):
-        """Display kappa value"""
-        tools.assert_optimized(self.optimization_status)
-        self.__model__.kappa.display()
-
-    def display_alpha(self):
-         """Display omega value"""
-         tools.assert_optimized(self.optimization_status)
-         tools.assert_various_return_to_scale_alpha(self.rts)
-         self.__model__.alpha.display()
-
-    def get_delta(self):
-        """Return delta value by array"""
-        tools.assert_optimized(self.optimization_status)
-        delta = np.asarray([i + tuple([j]) for i, j in zip(list(self.__model__.delta),
-                                                          list(self.__model__.delta[:, :].value))])
-        delta = pd.DataFrame(delta, columns=['Name', 'Key', 'Value'])
-        delta = delta.pivot(index='Name', columns='Key', values='Value')
-        return delta.to_numpy()
-
-    def get_gamma(self):
-        """Return gamma value by array"""
-        tools.assert_optimized(self.optimization_status)
-        gamma = np.asarray([i + tuple([j]) for i, j in zip(list(self.__model__.gamma),
-                                                          list(self.__model__.gamma[:, :].value))])
-        gamma = pd.DataFrame(gamma, columns=['Name', 'Key', 'Value'])
-        gamma = gamma.pivot(index='Name', columns='Key', values='Value')
-        return gamma.to_numpy()
-
-    def get_kappa(self):
-        """Return kappa value by array"""
-        tools.assert_optimized(self.optimization_status)
-        kappa = np.asarray([i + tuple([j]) for i, j in zip(list(self.__model__.kappa),
-                                                          list(self.__model__.kappa[:, :].value))])
-        kappa = pd.DataFrame(kappa, columns=['Name', 'Key', 'Value'])
-        kappa = kappa.pivot(index='Name', columns='Key', values='Value')
-        return kappa.to_numpy()
-
-    def get_alpha(self):
-        """Return omega value by array"""
-        tools.assert_optimized(self.optimization_status)
-        tools.assert_various_return_to_scale_alpha(self.rts)
-        alpha = list(self.__model__.alpha[:].value)
-        return np.asarray(alpha)
-
     def get_efficiency(self):
         """Return efficiency value by array"""
         tools.assert_optimized(self.optimization_status)
@@ -2887,8 +2545,14 @@ class DDFweakDUAL(DEAweakDUAL):
             refindex (String, optional): reference index. Defaults to None. e.g.: "Year=[2010]"
         """
 
-        self.y, self.x, self.b,  self.gy, self.gx, self.gb, self.yref, self.xref, self.bref = \
-            tools.assert_DDFweak(data,sent, gy, gx, gb,baseindex,refindex)
+        if yref is None:
+            yref = y
+        if xref is None:
+            xref = x
+        if bref is None:
+            bref = b
+        self.y, self.x, self.b, self.gy, self.gx, self.gb, self.yref, self.xref, self.bref = \
+            tools.assert_DDFweak1(y, x, b, gy, gx, gb, yref, xref, bref)
         self.rts = rts
 
 
@@ -2986,46 +2650,4 @@ class DDFweakDUAL(DEAweakDUAL):
             return sum(model.delta[o, j] * self.xref[r][j] for j in model.J) + model.alpha[o] >= 0
 
         return third_rule
-
-    def display_delta(self):
-        """Display delta value"""
-        tools.assert_optimized(self.optimization_status)
-        self.__model__.delta.display()
-
-    def display_gamma(self):
-        """Display gamma value"""
-        tools.assert_optimized(self.optimization_status)
-        self.__model__.gamma.display()
-
-    def display_alpha(self):
-         """Display omega value"""
-         tools.assert_optimized(self.optimization_status)
-         tools.assert_various_return_to_scale_alpha(self.rts)
-         self.__model__.alpha.display()
-
-    def get_delta(self):
-        """Return delta value by array"""
-        tools.assert_optimized(self.optimization_status)
-        delta = np.asarray([i + tuple([j]) for i, j in zip(list(self.__model__.delta),
-                                                          list(self.__model__.delta[:, :].value))])
-        delta = pd.DataFrame(delta, columns=['Name', 'Key', 'Value'])
-        delta = delta.pivot(index='Name', columns='Key', values='Value')
-        return delta.to_numpy()
-
-    def get_gamma(self):
-        """Return nu value by array"""
-        tools.assert_optimized(self.optimization_status)
-        gamma = np.asarray([i + tuple([j]) for i, j in zip(list(self.__model__.gamma),
-                                                          list(self.__model__.gamma[:, :].value))])
-        gamma = pd.DataFrame(gamma, columns=['Name', 'Key', 'Value'])
-        gamma = gamma.pivot(index='Name', columns='Key', values='Value')
-        return gamma.to_numpy()
-
-    def get_alpha(self):
-        """Return omega value by array"""
-        tools.assert_optimized(self.optimization_status)
-        tools.assert_various_return_to_scale_alpha(self.rts)
-        alpha = list(self.__model__.alpha[:].value)
-        return np.asarray(alpha)
-
 

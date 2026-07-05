@@ -8,15 +8,19 @@ in ``self.direction`` as one of ``input_oriented``, ``output_oriented``,
 ``hyper_orientedxb`` or ``hyper_orientedyxb``.
 """
 
-import ast
-import re
-
 import numpy as np
 import pandas as pd
 from pyomo.environ import ConcreteModel, Constraint, Objective, Set, Var, maximize, minimize, value
 
-from .constant import CET_ADDI, OPT_DEFAULT, OPT_LOCAL, RTS_CRS, RTS_VRS1
-from .utils import tools
+from .constant import OPT_DEFAULT, OPT_LOCAL, RTS_CRS, RTS_VRS1
+from .core import (
+    SolverConfig,
+    build_direction_spec,
+    clean_small_values,
+    parse_sent,
+    prepare_dea_data,
+    solve_pyomo_model,
+)
 
 
 class SBM:
@@ -61,10 +65,20 @@ class SBM:
         if self.rts not in {RTS_CRS, RTS_VRS1}:
             raise ValueError("rts must be RTS_CRS or RTS_VRS1.")
 
-        self.xcol, self.ycol, self.bcol = _parse_sent(sent)
-        self.gx = _normalize_direction_vector(gx, len(self.xcol), "gx")
-        self.gy = _normalize_direction_vector(gy, len(self.ycol), "gy")
-        self.gb = _normalize_direction_vector(gb, len(self.bcol), "gb") if self.bcol else []
+        self.formula = parse_sent(sent)
+        self.xcol, self.ycol, self.bcol = self.formula.x, self.formula.y, self.formula.b
+        self.direction_spec = build_direction_spec(
+            gx,
+            gy,
+            gb if self.bcol else [],
+            num_inputs=len(self.xcol),
+            num_outputs=len(self.ycol),
+            num_bad_outputs=len(self.bcol),
+            allow_bad_direction=True,
+        )
+        self.gx = self.direction_spec.gx
+        self.gy = self.direction_spec.gy
+        self.gb = self.direction_spec.gb
 
         self.input_oriented = sum(self.gx) >= 1 and sum(self.gy) == 0 and sum(self.gb) == 0
         self.output_oriented = sum(self.gy) >= 1 and sum(self.gx) == 0 and sum(self.gb) == 0
@@ -75,25 +89,24 @@ class SBM:
         self.hyper_orientedyxb = sum(self.gb) >= 1 and sum(self.gx) >= 1 and sum(self.gy) >= 1
         self.direction = _direction_name(self.gx, self.gy, self.gb)
 
-        data_base = _filter_data(data, baseindex, "baseindex")
-        data_ref = _filter_data(data, refindex, "refindex")
-        if data_base.empty:
-            raise ValueError("baseindex selects no evaluated DMUs.")
-        if data_ref.empty:
-            raise ValueError("refindex selects no reference DMUs.")
-
-        self.evaluated_data_index = data_base.index.tolist()
-        self.reference_data_index = data_ref.index.tolist()
-        self.x = _as_positive_array(data_base, self.xcol, "evaluated inputs")
-        self.y = _as_positive_array(data_base, self.ycol, "evaluated outputs")
-        self.xref = _as_positive_array(data_ref, self.xcol, "reference inputs")
-        self.yref = _as_positive_array(data_ref, self.ycol, "reference outputs")
-        if self.bcol:
-            self.b = _as_positive_array(data_base, self.bcol, "evaluated undesirable outputs")
-            self.bref = _as_positive_array(data_ref, self.bcol, "reference undesirable outputs")
-        else:
-            self.b = None
-            self.bref = None
+        prepared = prepare_dea_data(
+            data,
+            self.formula,
+            eval_query=baseindex,
+            ref_query=refindex,
+            input_side="left",
+            require_nonnegative_b=False,
+        )
+        self.evaluated_data_index = prepared.evaluated_index
+        self.reference_data_index = prepared.reference_index
+        self.x = prepared.x
+        self.y = prepared.y
+        self.xref = prepared.xref
+        self.yref = prepared.yref
+        self.b = prepared.b
+        self.bref = prepared.bref
+        if self.bcol and (np.any(self.b <= 0) or np.any(self.bref <= 0)):
+            raise ValueError("Undesirable outputs must be strictly positive for SBM ratios.")
 
         self.evaluated_indices_range = range(len(self.evaluated_data_index))
         self.reference_indices_range = range(len(self.reference_data_index))
@@ -276,7 +289,7 @@ class SBM:
         Args:
             email (str): NEOS email. Use ``OPT_LOCAL`` for local solving.
             solver (str): Pyomo solver name. Defaults to the package default,
-                which is handled by ``tools.optimize_model2``.
+                which is handled by the shared solver configuration.
 
         Returns:
             pandas.DataFrame: Solver status, direction name, SBM efficiency
@@ -285,13 +298,12 @@ class SBM:
 
         rows = []
         lamda_rows = []
-        use_neos = tools.set_neos_email(email)
+        config = SolverConfig(solver=solver, email=email, tee=False)
 
         for actual_index, model in self.__modeldict.items():
             try:
-                optimization_status = tools.optimize_model2(model, actual_index, use_neos, CET_ADDI, solver=solver)
-                if isinstance(optimization_status, tuple):
-                    optimization_status = optimization_status[-1]
+                outcome = solve_pyomo_model(model, config=config, strict=False)
+                optimization_status = outcome.legacy_status
             except Exception as exc:
                 print(f"Error optimizing DMU {actual_index}: {exc}")
                 optimization_status = "solve_error"
@@ -328,7 +340,7 @@ class SBM:
 
         if model._sbm_model_type == "ratio":
             t_value = value(model.t)
-            lamda = _clean_array(lamda / t_value)
+            lamda = clean_small_values(lamda / t_value)
             for j in model.AX:
                 sx[j] = value(model.sx[j]) / t_value
             for k in model.AY:
@@ -338,12 +350,12 @@ class SBM:
             row["rho"] = _clean_efficiency(objective_value)
             row["t"] = t_value
         elif model._sbm_model_type == "input_only":
-            lamda = _clean_array(lamda)
+            lamda = clean_small_values(lamda)
             for j in model.AX:
                 sx[j] = value(model.sx[j])
             row["rho"] = _clean_efficiency(objective_value)
         elif model._sbm_model_type == "output_bad_only":
-            lamda = _clean_array(lamda)
+            lamda = clean_small_values(lamda)
             for k in model.AY:
                 sy[k] = value(model.sy[k])
             for h in model.AB:
@@ -352,9 +364,9 @@ class SBM:
             row["rho"] = _clean_efficiency(np.nan if phi == 0 else 1 / phi)
             row["phi"] = phi
 
-        sx = _clean_array(sx)
-        sy = _clean_array(sy)
-        sb = _clean_array(sb)
+        sx = clean_small_values(sx)
+        sy = clean_small_values(sy)
+        sb = clean_small_values(sb)
         for j, name in enumerate(self.xcol):
             row[f"slack_x_{name}"] = sx[j]
         for k, name in enumerate(self.ycol):
@@ -435,47 +447,6 @@ class SBM:
             self.__modeldict[actual_index].pprint()
 
 
-def _parse_sent(sent):
-    if "=" not in sent:
-        raise ValueError("sent must use 'inputs = outputs[:undesirable_outputs]' format.")
-
-    input_part, output_part = sent.split("=", 1)
-    output_parts = output_part.split(":", 1)
-    xcol = _split_vars(input_part)
-    ycol = _split_vars(output_parts[0])
-    bcol = _split_vars(output_parts[1]) if len(output_parts) == 2 else []
-
-    if len(xcol) == 0:
-        raise ValueError("At least one input variable is required.")
-    if len(ycol) == 0:
-        raise ValueError("At least one desirable output variable is required.")
-    return xcol, ycol, bcol
-
-
-def _split_vars(text):
-    text = re.sub(r"\s+", " ", text.strip())
-    if not text:
-        return []
-    return text.split(" ")
-
-
-def _normalize_direction_vector(items, expected_len, name):
-    if expected_len == 0:
-        return []
-    if items is None:
-        items = [0]
-    if isinstance(items, (int, float)):
-        items = [items]
-    items = list(items)
-    if len(items) == 1 and expected_len > 1 and items[0] == 0:
-        items = [0] * expected_len
-    if len(items) != expected_len:
-        raise ValueError(f"Length of {name} ({len(items)}) must match the number of variables ({expected_len}).")
-    if any(item < 0 for item in items):
-        raise ValueError(f"{name} must use non-negative direction indicators.")
-    return items
-
-
 def _direction_name(gx, gy, gb):
     has_x = sum(gx) >= 1
     has_y = sum(gy) >= 1
@@ -502,36 +473,6 @@ def _direction_name(gx, gy, gb):
     )
 
 
-def _filter_data(data, index_expr, name):
-    if index_expr is None:
-        return data.copy()
-    if "=" not in index_expr:
-        raise ValueError(f"{name} must have format 'variable=[values]'.")
-    varname, raw_value = index_expr.split("=", 1)
-    varname = varname.strip()
-    if varname not in data.columns:
-        raise ValueError(f"Variable '{varname}' specified in {name} is not in data.")
-    try:
-        values = ast.literal_eval(raw_value.strip())
-    except (ValueError, SyntaxError) as exc:
-        raise ValueError(f"Cannot parse values in {name}: {raw_value}") from exc
-    if not isinstance(values, (list, tuple, set, np.ndarray, pd.Series)):
-        values = [values]
-    return data.loc[data[varname].isin(values)].copy()
-
-
-def _as_positive_array(data, columns, label):
-    missing = [col for col in columns if col not in data.columns]
-    if missing:
-        raise ValueError(f"Variables not found in data: {missing}")
-    frame = data.loc[:, columns].astype(float)
-    if frame.isnull().any().any():
-        raise ValueError(f"{label} contain missing values.")
-    if (frame <= 0).any().any():
-        raise ValueError(f"{label} must be strictly positive for SBM ratios.")
-    return frame.to_numpy(dtype=float)
-
-
 def _clean_efficiency(item):
     item = float(item)
     if abs(item) < 1e-10:
@@ -541,12 +482,6 @@ def _clean_efficiency(item):
     if -1e-8 < item < 0.0:
         return 0.0
     return item
-
-
-def _clean_array(items):
-    items = np.asarray(items, dtype=float)
-    items[np.abs(items) < 1e-10] = 0.0
-    return items
 
 
 def _assert_optimized(result):

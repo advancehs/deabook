@@ -1,11 +1,5 @@
-# from . import CNLSG1
-# from . import CNLSG2
-# from . import CNLSZG1
-# from . import CNLSZG2
-# from . import CQERG1
-# from . import CQERG2
-# from . import CQERZG1
-# from . import CQERZG2
-# from . import interpolation
-# from . import sweet
-from . import tools
+"""Utility subpackage for deabook.
+
+Submodules are intentionally imported lazily. This avoids circular imports
+when combined model modules define base classes and G variants in one file.
+"""

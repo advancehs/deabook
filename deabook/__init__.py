@@ -20,6 +20,7 @@ from . import DEAweak
 from . import MQDEAweak
 from . import MB
 from . import SBM
+from .deabook import DEAModel, simple_dea_solve, validate_dea_inputs
 # from . import FDH
 # from . import plot
 from . import StoNED
@@ -49,6 +50,9 @@ __all__ = [
     'MQDEAweak',
     'MB',
     'SBM',
+    'DEAModel',
+    'simple_dea_solve',
+    'validate_dea_inputs',
     # 'FDH',
     # 'plot',
     'StoNED',

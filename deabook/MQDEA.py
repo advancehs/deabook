@@ -3,15 +3,14 @@
 
 import numpy as np
 import pandas as pd
-from .constant import CET_ADDI, RTS_VRS1, RTS_CRS, OPT_DEFAULT, OPT_LOCAL,\
-            TOTAL,CONTEMPORARY
-from .utils import tools
+from .constant import RTS_VRS1, RTS_CRS, OPT_DEFAULT, OPT_LOCAL, TOTAL
 from .DEA import DEA2,DDF2
+from .productivity import DynamicProductivityMixin
 
 
 
 
-class MQDEA:
+class MQDEA(DynamicProductivityMixin):
     """Malmquist production index (MQPI)
     """
 
@@ -30,68 +29,7 @@ class MQDEA:
             tech (str): TOTAL or CONTEMPORARY.
             solver (str): The solver to use (e.g., "mosek", "cbc").
         """
-        # TODO(error/warning handling): Check the configuration of the model exist
-        # Initialize MQDEAt model
-
-        # Ensure year column exists and is sortable
-        if year not in data.columns:
-            raise ValueError(f"Year column '{year}' not found in data.")
-        self.tlt = pd.Series(data[year]).drop_duplicates().sort_values()  # 生成时间的列表
-
-        # Parse input/output variables
-
-        self.gy, self.gx, self.inputvars,self.outputvars = tools.assert_MQDEA(
-                        data, sent, gy, gx
-                    )
-
-        self.xcol = list(self.inputvars)  # Ensure it's a list for indexing
-        self.ycol = list(self.outputvars)  # Ensure it's a list for indexing
-
-
-        self.tech = tech
-        self.rts = rts
-        self.email = email
-        self.solver = solver
-
-        # Determine orientation based on gx/gy vectors
-        self.input_oriented = sum(self.gx) >= 1 and sum(self.gy) == 0
-        self.output_oriented = sum(self.gy) >= 1 and sum(self.gx) == 0
-        self.hyper_oriented = sum(self.gx) >= 1 and sum(self.gy) >= 1
-
-        # Create a copy of the original data to add results columns
-        self.datazz = data.copy()
-
-        # --- Perform DEA calculations using DEA2 based on the chosen technology ---
-
-        if self.tech == TOTAL:
-            print("Calculating D11 (Total frontier) for all periods...")
-
-            self.get_total(data,sent,id,year)
-
-            print("TOTAL tech calculation finished.")
-
-        elif self.tech == CONTEMPORARY:
-            print("Calculating CONTEMPORARY tech components (D11, D12, D21)...")
-
-            self.get_contemp(data,sent,id,year)
-
-
-
-        else:
-            raise ValueError(f"Unsupported technology type '{self.tech}'. Must be '{TOTAL}' or '{CONTEMPORARY}'.")
-
-
-
-    def optimize(self):
-        """Returns the calculated Malmquist index and components DataFrame."""
-        # In this implementation, optimize() just returns the pre-calculated results
-        # from the __init__ method.
-        if not hasattr(self, 'datazz'):
-             raise RuntimeError("Malmquist index calculation failed during initialization.")
-        return self.datazz
-
-
-
+        self._init_dynamic_dea(data, id, year, sent, gy, gx, rts, tech, email, solver)
 
 
     def get_total(self,data,sent,id,year):
@@ -640,66 +578,7 @@ class MQDDF(MQDEA):
             tech (str): TOTAL or CONTEMPORARY.
             solver (str): The solver to use (e.g., "mosek", "cbc").
         """
-        # TODO(error/warning handling): Check the configuration of the model exist
-        # Initialize MQDEAt model
-
-        # Ensure year column exists and is sortable
-        if year not in data.columns:
-            raise ValueError(f"Year column '{year}' not found in data.")
-        self.tlt = pd.Series(data[year]).drop_duplicates().sort_values()  # 生成时间的列表
-
-        # Parse input/output variables
-
-        self.gy, self.gx, self.inputvars,self.outputvars = tools.assert_MQDEA(
-                        data, sent, gy, gx
-                    )
-
-        self.xcol = list(self.inputvars)  # Ensure it's a list for indexing
-        self.ycol = list(self.outputvars)  # Ensure it's a list for indexing
-
-
-        self.tech = tech
-        self.rts = rts
-        self.email = email
-        self.solver = solver
-
-        # Determine orientation based on gx/gy vectors
-        self.input_oriented = sum(self.gx) >= 1 and sum(self.gy) == 0
-        self.output_oriented = sum(self.gy) >= 1 and sum(self.gx) == 0
-        self.hyper_oriented = sum(self.gx) >= 1 and sum(self.gy) >= 1
-
-        # Create a copy of the original data to add results columns
-        self.datazz = data.copy()
-
-        # --- Perform DDF calculations using DDF2 based on the chosen technology ---
-
-        if self.tech == TOTAL:
-            print("Calculating D11 (Total frontier) for all periods...")
-
-            self.get_total(data,sent,id,year)
-            print("TOTAL tech calculation finished.")
-
-        elif self.tech == CONTEMPORARY:
-            print("Calculating CONTEMPORARY tech components (D11, D12, D21)...")
-
-            self.get_contemp(data,sent,id,year)
-            print("TOTAL tech calculation finished.")
-
-        else:
-            raise ValueError(f"Unsupported technology type '{self.tech}'. Must be '{TOTAL}' or '{CONTEMPORARY}'.")
-
-
-
-    def optimize(self):
-        """Returns the calculated Malmquist index and components DataFrame."""
-        # In this implementation, optimize() just returns the pre-calculated results
-        # from the __init__ method.
-        if not hasattr(self, 'datazz'):
-             raise RuntimeError("Malmquist index calculation failed during initialization.")
-        return self.datazz
-
-
-
+        self._init_dynamic_dea(data, id, year, sent, gy, gx, rts, tech, email, solver)
 
 
     def get_total(self,data,sent,id,year):
@@ -1395,5 +1274,3 @@ class MQDDF(MQDEA):
             raise ValueError(f"Unsupported orientation/RTS combination: input={self.input_oriented}, output={self.output_oriented}, hyper={self.hyper_oriented}, rts={self.rts}")
         
         
-
-

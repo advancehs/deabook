@@ -114,3 +114,6 @@ docs/.omc/
 
 # oh-my-claudecode state
 .omc/
+
+# Review artifacts
+.review/
