@@ -1,0 +1,19 @@
+{
+  "caption": "物质平衡分解与产出下限敏感性（2015—2017年）",
+  "rows": 90,
+  "table_rows": 8,
+  "columns": [
+    "id",
+    "year",
+    "B1",
+    "B2",
+    "B3",
+    "B4",
+    "B4_keep",
+    "TE",
+    "PIAE",
+    "NPIAE",
+    "NPOAE",
+    "保产出效率"
+  ]
+}

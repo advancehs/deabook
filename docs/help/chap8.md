@@ -23,7 +23,7 @@ pip install deabook
 ### 本章需要的导入
 
 ```python
-from deabook.SBM import SBM
+from deabook import DEA, DEAweak
 from deabook.constant import RTS_CRS, RTS_VRS1
 import pandas as pd
 ```
@@ -64,7 +64,7 @@ import pandas as pd
 | `rts` | str | `RTS_CRS` | 不变规模报酬 |
 | | str | `RTS_VRS1` | 可变规模报酬 |
 | | | | |
-| `baseindex` | str | `None` | 被评价 DMU 筛选条件，如 `"t=[1,2,3]"` |
+| `evalindex` | str | `None` | 被评价 DMU 筛选条件，如 `"t=[1,2,3]"` |
 | `refindex` | str | `None` | 参考 DMU 筛选条件，如 `"t=[1,2,3]"` |
 | | | | |
 | `solver` | str | `"mosek"` | 商业求解器 |
@@ -112,8 +112,8 @@ import pandas as pd
 ## 模型 1：投入导向 SBM — CRS
 
 ```python
-model = SBM(data, sent="K L=Y", gy=[0], gx=[1,1], rts=RTS_CRS,
-            baseindex=None, refindex=None)
+model = DEA.sbm(data, sent="K L=Y", gy=[0], gx=[1,1], rts=RTS_CRS,
+            evalindex=None, refindex=None)
 res = model.optimize(solver="mosek")
 ```
 
@@ -122,8 +122,8 @@ res = model.optimize(solver="mosek")
 ## 模型 2：投入导向 SBM — VRS
 
 ```python
-model = SBM(data, sent="K L=Y", gy=[0], gx=[1,1], rts=RTS_VRS1,
-            baseindex=None, refindex=None)
+model = DEA.sbm(data, sent="K L=Y", gy=[0], gx=[1,1], rts=RTS_VRS1,
+            evalindex=None, refindex=None)
 res = model.optimize(solver="mosek")
 ```
 
@@ -134,8 +134,8 @@ res = model.optimize(solver="mosek")
 ## 模型 3：期望产出导向 SBM — CRS
 
 ```python
-model = SBM(data, sent="K L=Y", gy=[1], gx=[0,0], rts=RTS_CRS,
-            baseindex=None, refindex=None)
+model = DEA.sbm(data, sent="K L=Y", gy=[1], gx=[0,0], rts=RTS_CRS,
+            evalindex=None, refindex=None)
 res = model.optimize(solver="mosek")
 ```
 
@@ -144,8 +144,8 @@ res = model.optimize(solver="mosek")
 ## 模型 4：期望产出导向 SBM — VRS
 
 ```python
-model = SBM(data, sent="K L=Y", gy=[1], gx=[0,0], rts=RTS_VRS1,
-            baseindex=None, refindex=None)
+model = DEA.sbm(data, sent="K L=Y", gy=[1], gx=[0,0], rts=RTS_VRS1,
+            evalindex=None, refindex=None)
 res = model.optimize(solver="mosek")
 ```
 
@@ -154,8 +154,8 @@ res = model.optimize(solver="mosek")
 ## 模型 5：投入与期望产出综合 SBM — CRS
 
 ```python
-model = SBM(data, sent="K L=Y", gy=[1], gx=[1,1], rts=RTS_CRS,
-            baseindex=None, refindex=None)
+model = DEA.sbm(data, sent="K L=Y", gy=[1], gx=[1,1], rts=RTS_CRS,
+            evalindex=None, refindex=None)
 res = model.optimize(solver="mosek")
 ```
 
@@ -166,8 +166,8 @@ res = model.optimize(solver="mosek")
 ## 模型 6：投入与期望产出综合 SBM — VRS
 
 ```python
-model = SBM(data, sent="K L=Y", gy=[1], gx=[1,1], rts=RTS_VRS1,
-            baseindex=None, refindex=None)
+model = DEA.sbm(data, sent="K L=Y", gy=[1], gx=[1,1], rts=RTS_VRS1,
+            evalindex=None, refindex=None)
 res = model.optimize(solver="mosek")
 ```
 
@@ -176,8 +176,8 @@ res = model.optimize(solver="mosek")
 ## 模型 7：含非期望产出的非期望产出导向 SBM — CRS
 
 ```python
-model = SBM(data, sent="K L E=Y:CO2", gy=[0], gx=[0,0,0], gb=[1], rts=RTS_CRS,
-            baseindex=None, refindex=None)
+model = DEAweak.sbmu(data, sent="K L E=Y:CO2", gy=[0], gx=[0,0,0], gb=[1], rts=RTS_CRS,
+            evalindex=None, refindex=None)
 res = model.optimize(solver="mosek")
 ```
 
@@ -188,8 +188,8 @@ res = model.optimize(solver="mosek")
 ## 模型 8：含非期望产出的非期望产出导向 SBM — VRS
 
 ```python
-model = SBM(data, sent="K L E=Y:CO2", gy=[0], gx=[0,0,0], gb=[1], rts=RTS_VRS1,
-            baseindex=None, refindex=None)
+model = DEAweak.sbmu(data, sent="K L E=Y:CO2", gy=[0], gx=[0,0,0], gb=[1], rts=RTS_VRS1,
+            evalindex=None, refindex=None)
 res = model.optimize(solver="mosek")
 ```
 
@@ -198,8 +198,8 @@ res = model.optimize(solver="mosek")
 ## 模型 9：含非期望产出的全方向综合 SBM — CRS
 
 ```python
-model = SBM(data, sent="K L E=Y:CO2", gy=[1], gx=[1,1,1], gb=[1], rts=RTS_CRS,
-            baseindex=None, refindex=None)
+model = DEAweak.sbmu(data, sent="K L E=Y:CO2", gy=[1], gx=[1,1,1], gb=[1], rts=RTS_CRS,
+            evalindex=None, refindex=None)
 res = model.optimize(solver="mosek")
 ```
 
@@ -210,8 +210,8 @@ res = model.optimize(solver="mosek")
 ## 模型 10：含非期望产出的全方向综合 SBM — VRS
 
 ```python
-model = SBM(data, sent="K L E=Y:CO2", gy=[1], gx=[1,1,1], gb=[1], rts=RTS_VRS1,
-            baseindex=None, refindex=None)
+model = DEAweak.sbmu(data, sent="K L E=Y:CO2", gy=[1], gx=[1,1,1], gb=[1], rts=RTS_VRS1,
+            evalindex=None, refindex=None)
 res = model.optimize(solver="mosek")
 ```
 
@@ -231,4 +231,4 @@ SBM 的目标函数中存在 $s/x_0$、$s/y_0$、$s/b_0$ 等相对松弛比率�
 
 ## 本章说明
 
-本章介绍了 SBM 模型的数学原理、参数设定和 Python 实现。通过 `deabook.SBM` 模块，可以灵活设置投入导向、产出导向、非期望产出导向和综合非导向 SBM 模型。
+本章介绍了 SBM 模型的数学原理、参数设定和 Python 实现。通过 `DEA.sbm`（不含非期望产出，§8.3）与 `DEAweak.sbmu`（含非期望产出，§8.4）函数，可以灵活设置投入导向、产出导向、非期望产出导向和综合非导向 SBM 模型。

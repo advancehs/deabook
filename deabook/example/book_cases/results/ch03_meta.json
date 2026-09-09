@@ -1,0 +1,17 @@
+{
+  "caption": "美国19家电厂的效率分布与规模报酬比较",
+  "rows": 19,
+  "table_rows": 8,
+  "columns": [
+    "Plant",
+    "Labor",
+    "Fuel",
+    "Capital",
+    "Output",
+    "crs_input",
+    "crs_output",
+    "vrs_input",
+    "vrs_output",
+    "scale"
+  ]
+}

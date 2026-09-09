@@ -43,6 +43,9 @@ extra = [
 include = ["deabook*"]
 exclude = ["docs*"]
 
+[tool.setuptools.package-data]
+deabook = ["data/*"]
+
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}
 

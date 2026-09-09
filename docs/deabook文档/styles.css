@@ -1,0 +1,17 @@
+/* 标准中文图书排版：段落首行缩进 2 个字符 */
+p {
+  text-indent: 2em;
+}
+
+/* 标题（章/节/小节）后的首段不缩进，与印刷书惯例一致 */
+:is(h1, h2, h3, h4, h5, h6) + p {
+  text-indent: 0;
+}
+
+/* 列表、引用、表格说明等块级元素内部不缩进 */
+blockquote p,
+li p,
+figcaption,
+caption {
+  text-indent: 0;
+}

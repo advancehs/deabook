@@ -1,0 +1,12 @@
+{
+  "caption": "读取数据后比较四个变量的相对离散程度",
+  "rows": 19,
+  "table_rows": 8,
+  "columns": [
+    "Plant",
+    "Labor",
+    "Fuel",
+    "Capital",
+    "Output"
+  ]
+}

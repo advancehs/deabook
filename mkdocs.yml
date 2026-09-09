@@ -82,5 +82,5 @@ nav:
     - Examples:
         - examples/intro.ipynb
     - API Reference:
-          - deabook module: deabook.md
-          - common module: common.md
+          - Estimators: deabook.md
+          - Constants & core: common.md

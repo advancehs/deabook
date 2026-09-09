@@ -5,7 +5,7 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from .constant import CONTEMPORARY, TOTAL
+from .constant import CONTEMPORARY, GLOBAL
 from .utils import tools
 
 
@@ -87,16 +87,16 @@ class DynamicProductivityMixin:
         self.hyper_orientedyxb = sum_gx >= 1 and sum_gy >= 1 and sum_gb >= 1
 
     def _dispatch_dynamic_technology(self, data, sent, id, year):
-        if self.tech == TOTAL:
+        if self.tech == GLOBAL:
             print("Calculating D11 (Total frontier) for all periods...")
             self.get_total(data, sent, id, year)
-            print("TOTAL tech calculation finished.")
+            print("GLOBAL tech calculation finished.")
             return
         if self.tech == CONTEMPORARY:
             print("Calculating CONTEMPORARY tech components (D11, D12, D21)...")
             self.get_contemp(data, sent, id, year)
             return
-        raise ValueError(f"Unsupported technology type '{self.tech}'. Must be '{TOTAL}' or '{CONTEMPORARY}'.")
+        raise ValueError(f"Unsupported technology type '{self.tech}'. Must be '{GLOBAL}' or '{CONTEMPORARY}'.")
 
     def optimize(self):
         if not hasattr(self, "datazz"):

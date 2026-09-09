@@ -1,0 +1,18 @@
+{
+  "caption": "美国19家电厂的SBM效率与分项松弛",
+  "rows": 19,
+  "table_rows": 8,
+  "columns": [
+    "Plant",
+    "Labor",
+    "Fuel",
+    "Capital",
+    "Output",
+    "SBM-CRS",
+    "SBM-VRS",
+    "劳动松弛比例",
+    "燃料松弛比例",
+    "装机松弛比例",
+    "发电松弛比例"
+  ]
+}

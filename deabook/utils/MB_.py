@@ -1,6 +1,6 @@
 """Object-oriented backend for the basic material-balance DEA model.
 
-The public :class:`deabook.MB.MB` entry point historically dispatches to four
+The public :class:`deabook.DEAmb.MB` entry point historically dispatches to four
 internal classes named by whether non-polluting and polluting desirable outputs
 are present: ``MB1111``, ``MB1110``, ``MB1101`` and ``MB1100``.  The old file
 implemented those four cases by copy-pasting almost the same Pyomo model.  This
@@ -40,7 +40,7 @@ class _BasicMBBase:
         sy,
         rts,
         level,
-        baseindex,
+        evalindex,
         refindex,
     ):
         self.data = data
@@ -53,7 +53,7 @@ class _BasicMBBase:
         self.sy = sy
         self.rts = rts
         self.level = level
-        self.baseindex = baseindex
+        self.evalindex = evalindex
         self.refindex = refindex
 
         self.sx_np = np.asarray(self.sx)[:, : len(self.inputvars_np)]
@@ -66,7 +66,7 @@ class _BasicMBBase:
             self.sy_np = np.asarray(self.sy)[:, :split_at]
             self.sy_p = np.asarray(self.sy)[:, split_at:] if self.outputvars_p is not None else None
 
-        eval_df = select_rows(self.data, self.baseindex, "baseindex")
+        eval_df = select_rows(self.data, self.evalindex, "evalindex")
         ref_df = select_rows(self.data, self.refindex, "refindex")
         self._assign_frames(eval_df, ref_df)
         self._build_all_models()
@@ -278,29 +278,29 @@ class _BasicMBBase:
 class MB1111(_BasicMBBase):
     """Basic MB model with ``x_np + x_p = y_np + y_p : b``."""
 
-    def __init__(self, data, inputvars_np, inputvars_p, outputvars_np, outputvars_p, unoutputvars, sx, sy, rts, level, baseindex, refindex):
-        self._init_basic_mb(data, inputvars_np, inputvars_p, outputvars_np, outputvars_p, unoutputvars, sx, sy, rts, level, baseindex, refindex)
+    def __init__(self, data, inputvars_np, inputvars_p, outputvars_np, outputvars_p, unoutputvars, sx, sy, rts, level, evalindex, refindex):
+        self._init_basic_mb(data, inputvars_np, inputvars_p, outputvars_np, outputvars_p, unoutputvars, sx, sy, rts, level, evalindex, refindex)
 
 
 class MB1110(_BasicMBBase):
     """Basic MB model with ``x_np + x_p = y_np : b``."""
 
-    def __init__(self, data, inputvars_np, inputvars_p, outputvars_np, unoutputvars, sx, sy, rts, level, baseindex, refindex):
-        self._init_basic_mb(data, inputvars_np, inputvars_p, outputvars_np, None, unoutputvars, sx, sy, rts, level, baseindex, refindex)
+    def __init__(self, data, inputvars_np, inputvars_p, outputvars_np, unoutputvars, sx, sy, rts, level, evalindex, refindex):
+        self._init_basic_mb(data, inputvars_np, inputvars_p, outputvars_np, None, unoutputvars, sx, sy, rts, level, evalindex, refindex)
 
 
 class MB1101(_BasicMBBase):
     """Basic MB model with ``x_np + x_p = y_p : b``."""
 
-    def __init__(self, data, inputvars_np, inputvars_p, outputvars_p, unoutputvars, sx, sy, rts, level, baseindex, refindex):
-        self._init_basic_mb(data, inputvars_np, inputvars_p, None, outputvars_p, unoutputvars, sx, sy, rts, level, baseindex, refindex)
+    def __init__(self, data, inputvars_np, inputvars_p, outputvars_p, unoutputvars, sx, sy, rts, level, evalindex, refindex):
+        self._init_basic_mb(data, inputvars_np, inputvars_p, None, outputvars_p, unoutputvars, sx, sy, rts, level, evalindex, refindex)
 
 
 class MB1100(_BasicMBBase):
     """Basic MB model with ``x_np + x_p = : b``."""
 
-    def __init__(self, data, inputvars_np, inputvars_p, unoutputvars, sx, sy, rts, level, baseindex, refindex):
-        self._init_basic_mb(data, inputvars_np, inputvars_p, None, None, unoutputvars, sx, sy, rts, level, baseindex, refindex)
+    def __init__(self, data, inputvars_np, inputvars_p, unoutputvars, sx, sy, rts, level, evalindex, refindex):
+        self._init_basic_mb(data, inputvars_np, inputvars_p, None, None, unoutputvars, sx, sy, rts, level, evalindex, refindex)
 
 
 __all__ = ["MB1111", "MB1110", "MB1101", "MB1100"]

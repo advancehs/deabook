@@ -1,0 +1,54 @@
+project:
+  type: book
+  output-dir: _book
+
+book:
+  title: "资源环境绩效评估方法：DEA模型与Python应用"
+  chapters:
+    - index.md
+    - "01_绪论.md"
+    - "02_Python基础知识.md"
+    - "03_数据包络分析的经典模型.md"
+    - "04_传统生产率测度方法.md"
+    - "05_能源效率与能源生产率测度方法.md"
+    - "06_环境绩效测度方法.md"
+    - "07_包含非期望产出的生产率.md"
+    - "08_基于松弛测度的效率模型.md"
+    - "09_基于物质平衡的环境绩效测度方法.md"
+    - "10_随机非参数数据包络分析.md"
+    - "11_DEA模型编程的基本思路.md"
+    - "12_DEA程序的实战演练.md"
+    - "13_基于DEA对偶问题的影子价格估计.md"
+  appendices:
+    - "附录_Python程序和错误排查.md"
+
+crossref:
+  chapters: true
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    lang: zh
+    number-sections: true
+    toc: true
+    toc-depth: 3
+    code-tools: true
+    code-copy: true
+  pdf:
+    documentclass: book
+    pdf-engine: lualatex
+    lang: zh
+    number-sections: true
+    keep-tex: true
+    geometry: margin=2.5cm
+    tbl-cap-location: top
+    fig-cap-location: bottom
+    include-in-header:
+      text: |
+        \usepackage{ctex}
+        \usepackage{caption}
+        \captionsetup{justification=centering}
+        % 标准中文图书排版：段落首行缩进 2 字，段间不留空白（仅靠缩进区分）
+        \AtBeginDocument{\setlength{\parindent}{2\ccwd}}
+        \AtBeginDocument{\setlength{\parskip}{0pt}}

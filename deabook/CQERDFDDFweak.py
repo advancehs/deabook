@@ -16,20 +16,20 @@ def _as_2d(value):
     return arr
 
 
-def _parse_data_sent(data, sent, z=None, gy=[1], gx=[1], gb=[1], baseindex=None, refindex=None):
+def _parse_data_sent(data, sent, z=None, gy=[1], gx=[1], gb=[1], evalindex=None, refindex=None):
     outputvars, inputvars, unoutputvars, zvars, gy, gx, gb = tools.assert_valid_yxbz(sent, gy, gx, gb, z)
     y, x, b, zdata, yref, xref, bref, zref, referenceflag = tools.assert_valid_yxbz2(
-        baseindex, refindex, data, outputvars, inputvars, unoutputvars, zvars)
+        evalindex, refindex, data, outputvars, inputvars, unoutputvars, zvars)
     return _as_2d(y), _as_2d(x), _as_2d(b), (None if type(zdata) == type(None) else _as_2d(zdata)), gy, gx, gb
 
 
 class CQRweak:
     """Convex quantile regression with weak disposability."""
 
-    def __init__(self, data, sent, tau, z=None, cet=CET_ADDI, fun=FUN_PROD, rts=RTS_VRS, baseindex=None, refindex=None):
+    def __init__(self, data, sent, tau, z=None, cet=CET_ADDI, fun=FUN_PROD, rts=RTS_VRS, evalindex=None, refindex=None):
         self.y, self.x, self.b, self.z, self.gy, self.gx, self.gb = _parse_data_sent(
             data, sent, z=z, gy=[1], gx=[1] * (len(sent.split('=')[0].split())), gb=[1],
-            baseindex=baseindex, refindex=refindex)
+            evalindex=evalindex, refindex=refindex)
         self.tau = tau
         self.cet = cet
         self.fun = fun
@@ -173,9 +173,9 @@ class CERweak(CQRweak):
 class CQRDDFweak:
     """Weak convex quantile regression with directional distance function."""
 
-    def __init__(self, data, sent, tau, z=None, gy=[1], gx=[1], gb=[1], fun=FUN_PROD, rts=RTS_VRS, baseindex=None, refindex=None):
+    def __init__(self, data, sent, tau, z=None, gy=[1], gx=[1], gb=[1], fun=FUN_PROD, rts=RTS_VRS, evalindex=None, refindex=None):
         self.y, self.x, self.b, self.z, self.gy, self.gx, self.gb = _parse_data_sent(
-            data, sent, z=z, gy=gy, gx=gx, gb=gb, baseindex=baseindex, refindex=refindex)
+            data, sent, z=z, gy=gy, gx=gx, gb=gb, evalindex=evalindex, refindex=refindex)
         self.tau = tau
         self.fun = fun
         self.rts = rts

@@ -636,12 +636,12 @@ class CNLSDDFweakG(CNLSDDFweak):
 
     def __init__(self, data, sent, z=None, gy=[1], gx=[1], gb=[1], fun=FUN_PROD,
                 rts=RTS_VRS1, deltap=None, gammap=None, kappap=None,
-                baseindex=None, refindex=None):
+                evalindex=None, refindex=None):
         from .utils import sweet
         from .utils._g_common import cg_pairs, replace_constraint
         super().__init__(data, sent, z=z, gy=gy, gx=gx, gb=gb, fun=fun,
                          rts=rts, deltap=deltap, gammap=gammap, kappap=kappap)
-        self.baseindex = baseindex
+        self.evalindex = evalindex
         self.refindex = refindex
         self.cutactive = sweet.sweet(np.column_stack((self.x, self.b)))
         self.active = np.zeros((len(self.x), len(self.x)))

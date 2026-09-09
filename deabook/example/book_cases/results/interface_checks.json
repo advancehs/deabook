@@ -1,0 +1,22 @@
+[
+  {
+    "model": "radial crs",
+    "max_error": 2.220446049250313e-16
+  },
+  {
+    "model": "radial vrs1",
+    "max_error": 1.5543122344752192e-15
+  },
+  {
+    "model": "SBM VRS",
+    "max_error": 2.220446049250313e-16
+  },
+  {
+    "model": "DDF crs",
+    "max_error": 3.3306690738754696e-16
+  },
+  {
+    "model": "DDF vrs1",
+    "max_error": 8.881784197001252e-16
+  }
+]

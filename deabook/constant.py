@@ -49,12 +49,13 @@ RTS_CRS = "crs"
 RTS_CRS: Constant returns to scale.
 """
 
-# Historical alias used by older dual modules and examples.  The package now
-# keeps the explicit VRS variants, but ``RTS_VRS`` remains a public shorthand
-# for the same-reduction-factor VRS technology.
-RTS_VRS = RTS_VRS1
+# Generic VRS (single reduction factor) used by the classical DEA/DDF
+# interfaces.  ``RTS_VRS1``/``RTS_VRS2`` remain the explicit weak-disposability
+# variants (same vs. different reduction factor).
+RTS_VRS = "vrs"
 
 RTS_Categories = {
+    RTS_VRS: "Variable returns to scale",
     RTS_VRS1: "Variable returns to scale with same reduction factor",
     RTS_VRS2: "Variable returns to scale with different reduction factor",
     RTS_CRS: "Constant returns to scale"
@@ -129,21 +130,33 @@ OPT_DEFAULT = None
 
 
 # technology
-TOTAL = "Global production technology"
+GLOBAL = "Global production technology"
 """
     window(#)                   use window production technology with the #-period bandwidth
     biennial                    use biennial production technology
     sequential                  use sequential production technology
-    TOTAL:  Global production technology.
+    GLOBAL:  Global production technology.
 """
 CONTEMPORARY = "Contemporary production technology"
 """
 CONTEMPORARY:  Contemporary production technology.
 """
+SEQUENTIAL = "sequential"
+"""
+SEQUENTIAL:  Sequential (cumulative) production technology -- the reference set for
+period t pools every observation with year <= t.
+"""
+WINDOW = "window"
+"""
+WINDOW:  Window production technology -- the reference set for period t is a
+centered local window of width ``window`` around t (e.g. [t-1, t, t+1]).
+"""
 
 TECH_Categories = {
-    TOTAL: "Global production technology",
-    CONTEMPORARY:"Contemporary production technology"
+    GLOBAL: "Global production technology",
+    CONTEMPORARY:"Contemporary production technology",
+    SEQUENTIAL: "Sequential production technology",
+    WINDOW: "Window production technology",
 }
 
 

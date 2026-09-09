@@ -3,6 +3,25 @@
 __author__ = """advancehs"""
 __email__ = "1019753743@qq.com"
 __version__ = "0.0.11"
+
+from importlib.resources import files
+from pathlib import Path
+from types import SimpleNamespace
+
+
+def data_path(name):
+    """Return the absolute path to a bundled example data file.
+
+    Resolves to the installed package location (works for both
+    ``pip install deabook`` and editable installs), independent of the
+    current working directory. Manifests call this via
+    ``pd.read_excel(deabook.data_path("oecd data.xlsx"))``.
+    """
+    try:
+        return str(files("deabook").joinpath("data", name))
+    except (ModuleNotFoundError, FileNotFoundError, TypeError):
+        # Fallback for running directly from the source tree
+        return str(Path(__file__).resolve().parent / "data" / name)
 # from . import CNLS
 # from . import CNLSSDFDDF
 # from . import CNLSSDFDDFweak
@@ -15,12 +34,31 @@ from . import constant
 # from . import CSVR
 # from . import dataset
 from . import DEA
-from . import MQDEA
 from . import DEAweak
-from . import MQDEAweak
-from . import MB
-from . import SBM
-from .deabook import DEAModel, simple_dea_solve, validate_dea_inputs
+from . import DEAmb
+from . import panel
+from .panel import Panel
+from .panel import StoNEDPanel
+# Canonical panel namespace.  ``PANEL.tech`` is a ``Panel`` subclass used directly as
+# the panel-solver constructor (``PANEL.tech(...)``), replacing the older
+# ``PANEL.Panel(...)``.  The technology-type constants (``GLOBAL`` / ``CONTEMPORARY``
+# / ``SEQUENTIAL`` / ``WINDOW``) are NOT exposed under ``PANEL.tech`` nor as bare names
+# on ``deabook``; they live in ``deabook.constant`` and are imported as
+# ``from deabook.constant import CONTEMPORARY`` (etc.), then passed via ``tech=``.
+
+
+class _TechPanel(Panel):
+    """``Panel`` subclass exposed as ``PANEL.tech`` so that ``PANEL.tech(...)``
+    constructs a panel solver.  Technology-type constants live in
+    ``deabook.constant`` (``GLOBAL`` / ``CONTEMPORARY`` / ``SEQUENTIAL`` /
+    ``WINDOW``), not here."""
+
+
+PANEL = SimpleNamespace(
+    Panel=Panel,
+    StoNEDPanel=StoNEDPanel,
+    tech=_TechPanel,
+)
 # from . import FDH
 # from . import plot
 from . import StoNED
@@ -45,14 +83,12 @@ __all__ = [
     # 'CSVR',
     # 'dataset',
     'DEA',
-    'MQDEA',
     'DEAweak',  
-    'MQDEAweak',
-    'MB',
-    'SBM',
-    'DEAModel',
-    'simple_dea_solve',
-    'validate_dea_inputs',
+    'DEAmb',
+    'panel',
+    'Panel',
+    'StoNEDPanel',
+    'PANEL',
     # 'FDH',
     # 'plot',
     'StoNED',

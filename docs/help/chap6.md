@@ -1,6 +1,6 @@
 ﻿# 第六章：环境绩效测度方法（非期望产出）
 
-**主题**：使用弱可处置性 DEA 模型测量环境效率，包含 DEAweak、DDFweak、NDDFweak。
+**主题**：使用弱可处置性 DEA 模型测量环境效率，包含 DEAweak。
 
 **数据文件**：
 - `oecd data.xlsx`（33个OECD国家，2016-2019）
@@ -70,7 +70,7 @@ from deabook.constant import RTS_VRS1, RTS_VRS2, RTS_CRS, OPT_LOCAL
 | `solver` | str | `"mosek"` | 商业求解器 |
 | | str | `"glpk"` | 开源求解器 |
 | | | | |
-| `baseindex` | str | `None` | 被评价 DMU 筛选条件，`None` 表示全部 |
+| `evalindex` | str | `None` | 被评价 DMU 筛选条件，`None` 表示全部 |
 | `refindex` | str | `None` | 参考技术筛选条件，`None` 表示全部 |
 
 ### 返回值

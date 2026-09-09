@@ -25,7 +25,7 @@ pip install deabook
 ### 本章需要的导入
 
 ```python
-from deabook import MB
+from deabook import DEAmb
 from deabook.constant import RTS_CRS, RTS_VRS1
 import pandas as pd
 ```
@@ -55,7 +55,7 @@ import pandas as pd
 |             | int        | `4`                | + y（产出）→ B4                                              |
 |             | int        | `5`                | + y_np（非污染产出），完整分解                               |
 |             |            |                    |                                                              |
-| `baseindex` | str        | `None`             | 被评价 DMU 筛选条件                                          |
+| `evalindex` | str        | `None`             | 被评价 DMU 筛选条件                                          |
 |             | str        | `"year=[2017]"`    | 仅评价 2017 年 DMU                                           |
 |             |            |                    |                                                              |
 | `refindex`  | str        | `None`             | 参考 DMU 筛选条件                                            |
@@ -111,32 +111,32 @@ CO2 → B1(技术效率) → B2(+污染投入) → B3(+非污染投入) → B4(+
 ### Level 1
 
 ```python
-model = MB.MB(data, sent="K L+F=E:CO2", sx=[[0,0,sx]], sy=[[sy]],
-              rts=RTS_VRS1, baseindex=None, refindex=None, level=1)
+model = DEAmb.MB(data, sent="K L+F=E:CO2", sx=[[0,0,sx]], sy=[[sy]],
+              rts=RTS_VRS1, evalindex=None, refindex=None, level=1)
 res, info = model.optimize("mosek", "1")
 ```
 
 ### Level 2
 
 ```python
-model = MB.MB(data, sent="K L+F=E:CO2", sx=[[0,0,sx]], sy=[[sy]],
-              rts=RTS_CRS, baseindex=None, refindex=None, level=2)
+model = DEAmb.MB(data, sent="K L+F=E:CO2", sx=[[0,0,sx]], sy=[[sy]],
+              rts=RTS_CRS, evalindex=None, refindex=None, level=2)
 res, info = model.optimize("mosek", "1")
 ```
 
 ### Level 3
 
 ```python
-model = MB.MB(data, sent="K L+F=E:CO2", sx=[[0,0,sx]], sy=[[sy]],
-              rts=RTS_CRS, baseindex=None, refindex=None, level=3)
+model = DEAmb.MB(data, sent="K L+F=E:CO2", sx=[[0,0,sx]], sy=[[sy]],
+              rts=RTS_CRS, evalindex=None, refindex=None, level=3)
 res, info = model.optimize("mosek", "1")
 ```
 
 ### Level 4
 
 ```python
-model = MB.MB(data, sent="K L+F=E:CO2", sx=[[0,0,sx]], sy=[[sy]],
-              rts=RTS_CRS, baseindex=None, refindex=None, level=4)
+model = DEAmb.MB(data, sent="K L+F=E:CO2", sx=[[0,0,sx]], sy=[[sy]],
+              rts=RTS_CRS, evalindex=None, refindex=None, level=4)
 res, info = model.optimize("mosek", "1")
 ```
 
@@ -144,11 +144,11 @@ res, info = model.optimize("mosek", "1")
 
 ---
 
-## baseindex / refindex 筛选语法
+## evalindex / refindex 筛选语法
 
 使用 DataFrame.query() 兼容的语法：
 
 ```python
-baseindex = "year=[2017]"      # 只评价 2017 年的 DMU
+evalindex = "year=[2017]"      # 只评价 2017 年的 DMU
 refindex = "year=[2015,2016]"  # 使用 2015 和 2016 年的 DMU 做参考
 ```

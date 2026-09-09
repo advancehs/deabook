@@ -58,7 +58,7 @@ import pandas as pd
 | `solver` | str | `"mosek"` | 商业求解器 |
 | | str | `"glpk"` | 开源求解器 |
 | | | | |
-| `baseindex` | str | `None` | 被评价 DMU 筛选条件，`None` 表示全部 |
+| `evalindex` | str | `None` | 被评价 DMU 筛选条件，`None` 表示全部 |
 | `refindex` | str | `None` | 参考技术筛选条件，`None` 表示全部 |
 
 #### 第二部分：动态能源效率（MQDEA）
@@ -86,7 +86,7 @@ import pandas as pd
 | `solver` | str | `"mosek"` | 商业求解器 |
 | | str | `"glpk"` | 开源求解器 |
 | | | | |
-| `baseindex` | str | `None` | 被评价 DMU 筛选条件，`None` 表示全部 |
+| `evalindex` | str | `None` | 被评价 DMU 筛选条件，`None` 表示全部 |
 | `refindex` | str | `None` | 参考技术筛选条件，`None` 表示全部 |
 
 ### 返回值

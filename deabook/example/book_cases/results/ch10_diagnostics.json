@@ -1,0 +1,8 @@
+{
+  "solver_status": "optimal",
+  "su": 0.06839718405257536,
+  "sv": 0.07384515580841028,
+  "residual_skew": 0.19364076185172005,
+  "cost_efficiency_clipped": 2,
+  "afriat_max_violation": 0.0
+}

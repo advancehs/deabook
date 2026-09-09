@@ -21,7 +21,7 @@ import pandas as pd
 from pyomo.environ import SolverFactory, value
 from pyomo.opt import SolverManagerFactory, SolverStatus, TerminationCondition
 
-from .constant import OPT_DEFAULT, OPT_LOCAL, RTS_CRS, RTS_VRS1, RTS_VRS2
+from .constant import OPT_DEFAULT, OPT_LOCAL, RTS_CRS, RTS_VRS, RTS_VRS1, RTS_VRS2
 from .utils import tools
 
 
@@ -354,7 +354,7 @@ def prepare_dea_data(
             f"{missing}. Available columns: {list(dataframe.columns)}"
         )
 
-    eval_df = select_rows(dataframe, eval_query, "eval_query/baseindex")
+    eval_df = select_rows(dataframe, eval_query, "eval_query/evalindex")
     ref_df = select_rows(dataframe, ref_query, "ref_query/refindex")
     if eval_df.empty:
         raise ValueError("The evaluation sample is empty.")
@@ -505,10 +505,39 @@ def build_direction_spec(
 
 def validate_rts(rts: str, allowed: set[str] | None = None) -> str:
     """Validate returns-to-scale code."""
-    allowed_values = allowed or {RTS_CRS, RTS_VRS1, RTS_VRS2}
+    allowed_values = allowed or {RTS_CRS, RTS_VRS, RTS_VRS1, RTS_VRS2}
     if rts not in allowed_values:
         raise ValueError(f"rts must be one of {sorted(allowed_values)}; got {rts!r}.")
     return rts
+
+
+# Solver fallback order used when no explicit solver is requested.
+# Mirrors the book's "mosek -> glpk -> appsi_highs -> cbc" guidance (Chapter 2).
+SOLVER_FALLBACK_CHAIN = ("mosek", "glpk", "appsi_highs", "cbc")
+
+# Per-session cache of solver usability. For example, mosek without a license
+# fails at solve time (not at ``available()``), so we record the failure once
+# and skip it for the remaining DMUs in a loop instead of retrying each time.
+_SOLVER_OK: dict[str, bool] = {}
+
+# Markers that an exception raised by ``solver.solve()`` means the *model* is
+# infeasible, not that the *solver* is broken.  appsi_highs, for example, raises
+# ``RuntimeError: A feasible solution was not found ...`` for an infeasible LP;
+# treating that as a broken solver poisons ``_SOLVER_OK`` and silently turns
+# every subsequent solve into ``unavailable`` (the NaN cascade in cross-period
+# Malmquist runs).  Licence / import / interface errors do NOT match these.
+_INFEASIBLE_MARKERS = (
+    "feasible solution was not found",
+    "no solution can be loaded",
+    "infeasible",
+)
+
+
+def _looks_like_infeasible_model(exc: Exception) -> bool:
+    """True when an exception from ``solver.solve()`` indicates an infeasible
+    model rather than an unusable solver."""
+    message = str(exc).lower()
+    return any(marker in message for marker in _INFEASIBLE_MARKERS)
 
 
 def solve_pyomo_model(model: Any, config: SolverConfig | None = None, strict: bool = True) -> SolverOutcome:
@@ -539,21 +568,63 @@ def solve_pyomo_model(model: Any, config: SolverConfig | None = None, strict: bo
         manager = SolverManagerFactory("neos")
         results = manager.solve(model, tee=config.tee, opt=solver_name)
     else:
-        solver = SolverFactory(solver_name)
-        available = False
-        try:
-            available = bool(solver.available(exception_flag=False))
-        except Exception:
+        # When no explicit solver is requested, try the documented fallback chain
+        # mosek -> glpk -> appsi_highs -> cbc. Note ``available()`` is not enough
+        # for mosek: it reports available even without a license, failing only at
+        # solve time. So we attempt the solve and fall through on any error.
+        candidates = (
+            list(SOLVER_FALLBACK_CHAIN)
+            if config.solver is OPT_DEFAULT
+            else [config.solver_name]
+        )
+        results = None
+        used_solver = None
+        last_exc = None
+        for name in candidates:
+            if _SOLVER_OK.get(name) is False:
+                continue
+            solver = SolverFactory(name)
             available = False
-        if not available:
+            try:
+                available = bool(solver.available(exception_flag=False))
+            except Exception:
+                available = False
+            if not available:
+                _SOLVER_OK[name] = False
+                continue
+            try:
+                results = solver.solve(model, tee=config.tee)
+            except Exception as exc:
+                if _looks_like_infeasible_model(exc):
+                    # The solver is usable; this particular model is infeasible.
+                    # Return an infeasible outcome WITHOUT marking the solver as
+                    # broken, so later (feasible) models still solve.
+                    used_solver = name
+                    _SOLVER_OK[name] = True
+                    return SolverOutcome(
+                        status="infeasible",
+                        termination_condition="infeasible",
+                        ok=False,
+                        raw=None,
+                    )
+                # Unusable solver (missing license, broken interface, ...):
+                # record and fall through to the next candidate.
+                _SOLVER_OK[name] = False
+                last_exc = exc
+                continue
+            used_solver = name
+            break
+        if results is None:
             message = (
-                f"Solver '{solver_name}' is not installed or not available. "
-                "Install it or pass a different solver, for example solver='glpk' or solver='scip'."
+                f"None of the solvers {candidates} could be used. "
+                "Install one (e.g. 'pip install highspy' for appsi_highs, or "
+                "'conda install -c conda-forge glpk cbc'), or pass solver= explicitly."
             )
             if strict:
-                raise RuntimeError(message)
+                raise RuntimeError(message) from last_exc
             return SolverOutcome(status="unavailable", termination_condition="unavailable", ok=False, raw=None)
-        results = solver.solve(model, tee=config.tee)
+        if used_solver is not None:
+            _SOLVER_OK[used_solver] = True
 
     status_obj = results.solver.status
     termination_obj = results.solver.termination_condition

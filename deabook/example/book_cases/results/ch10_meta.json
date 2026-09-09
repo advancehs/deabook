@@ -1,0 +1,20 @@
+{
+  "caption": "芬兰89家配电企业的成本拟合与效率比较",
+  "rows": 89,
+  "table_rows": 8,
+  "columns": [
+    "OPEX",
+    "CAPEX",
+    "TOTEX",
+    "Energy",
+    "Length",
+    "Customers",
+    "PerUndGr",
+    "row_id",
+    "CNLS_fitted",
+    "residual",
+    "JLMS_u",
+    "StoNED成本效率",
+    "DEA成本效率"
+  ]
+}

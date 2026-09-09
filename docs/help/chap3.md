@@ -29,7 +29,7 @@ pip install deabook
 
 ```python
 from deabook import DEA
-from deabook.constant import RTS_VRS1, RTS_CRS, OPT_LOCAL
+from deabook.constant import RTS_VRS, RTS_CRS, OPT_LOCAL
 import pandas as pd
 import numpy as np
 ```
@@ -59,9 +59,9 @@ import numpy as np
 | | | ✓ ✓ → 超效率(Hyper) | 同时缩减投入、扩大产出 |
 | | | | |
 | `rts` | str | `RTS_CRS` | 不变规模报酬 |
-| | str | `RTS_VRS1` | 可变规模报酬 |
+| | str | `RTS_VRS` | 可变规模报酬 |
 | | | | |
-| `baseindex` | str | `None` | 被评价 DMU 筛选条件，如 `"t==2019"`，`None` 表示全部评价 |
+| `evalindex` | str | `None` | 被评价 DMU 筛选条件，如 `"t==2019"`，`None` 表示全部评价 |
 | | str | `"t=[2017,2018,2019]"` | 仅评价指定时期 |
 | | | | |
 | `refindex` | str | `None` | 参考技术筛选条件，如 `"t==2019"`，`None` 表示使用全部 DMU 构建前沿 |
@@ -119,11 +119,11 @@ res = model.optimize(solver="mosek")
 ## 模型 2：投入导向 DEA — VRS（纯资本效率 PEO）
 
 ```python
-model = DEA.DEA2(data, sent="K L E=Y", gy=[0], gx=[1,0,0], rts=RTS_VRS1)
+model = DEA.DEA2(data, sent="K L E=Y", gy=[0], gx=[1,0,0], rts=RTS_VRS)
 res = model.optimize(solver="mosek")
 ```
 
-与模型 1 唯一区别：`rts=RTS_VRS1`（可变规模报酬）。
+与模型 1 唯一区别：`rts=RTS_VRS`（可变规模报酬）。
 
 ---
 
@@ -139,7 +139,7 @@ res = model.optimize(solver="mosek")
 ## 模型 4：超效率 DEA (Hyperbolic) — VRS
 
 ```python
-model = DEA.DEA2(data, sent="K L E=Y", gy=[1], gx=[1,0,0], rts=RTS_VRS1)
+model = DEA.DEA2(data, sent="K L E=Y", gy=[1], gx=[1,0,0], rts=RTS_VRS)
 res = model.optimize(solver="mosek")
 ```
 
@@ -157,10 +157,10 @@ res = model.optimize(solver="mosek")
 ## 模型 6：DDF 投入导向 — VRS
 
 ```python
-model = DEA.DDF2(data, sent="K L E=Y", gy=[0], gx=[1,0,0], rts=RTS_VRS1)
+model = DEA.DDF2(data, sent="K L E=Y", gy=[0], gx=[1,0,0], rts=RTS_VRS)
 res = model.optimize(solver="mosek")
 ```
 
-与模型 5 唯一区别：`rts=RTS_VRS1`（可变规模报酬）。
+与模型 5 唯一区别：`rts=RTS_VRS`（可变规模报酬）。
 
 ---

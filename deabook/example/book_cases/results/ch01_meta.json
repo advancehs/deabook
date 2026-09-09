@@ -1,0 +1,13 @@
+{
+  "caption": "美国电厂的燃料与发电量：为何需要多投入比较",
+  "rows": 19,
+  "table_rows": 8,
+  "columns": [
+    "Plant",
+    "Labor",
+    "Fuel",
+    "Capital",
+    "Output",
+    "发电燃料比"
+  ]
+}

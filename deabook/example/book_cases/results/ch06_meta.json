@@ -1,0 +1,12 @@
+{
+  "caption": "2019年OECD碳排放方向效率的技术假设比较",
+  "rows": 33,
+  "table_rows": 8,
+  "columns": [
+    "id",
+    "year",
+    "弱处置CRS",
+    "弱处置VRS共同因子",
+    "强处置CRS"
+  ]
+}

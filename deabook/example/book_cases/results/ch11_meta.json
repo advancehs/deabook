@@ -1,0 +1,13 @@
+{
+  "caption": "从单个电厂求解扩展到19家电厂循环",
+  "rows": 19,
+  "table_rows": 8,
+  "columns": [
+    "Plant",
+    "Labor",
+    "Fuel",
+    "Capital",
+    "Output",
+    "效率"
+  ]
+}

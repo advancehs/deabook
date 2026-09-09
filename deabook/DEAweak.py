@@ -2,14 +2,25 @@
 from pyomo.environ import ConcreteModel, Set, Var, Objective, minimize, maximize, Constraint
 import numpy as np
 import pandas as pd
-from .constant import CET_ADDI, RTS_VRS1, RTS_VRS2, RTS_CRS, OPT_DEFAULT, OPT_LOCAL
+from .constant import (
+    CET_ADDI, RTS_VRS1, RTS_VRS2, RTS_CRS, OPT_DEFAULT, OPT_LOCAL,
+    CONTEMPORARY, GLOBAL, SEQUENTIAL, WINDOW,
+)
 from .utils import tools
-from .DEA import DEA,DEA2,DDF,DDF2
+from .DEA import _PerDmuEnvelopmentModel, _SBM, _SDDF
 from .core import (
     PyomoResultMixin,
     build_weak_direction_flags,
     format_ref_indexed_results,
     format_var_indexed_results,
+    parse_sent,
+)
+from .mqcore import (
+    MalmquistModel,
+    build_distance_frame,
+    two_factor,
+    normalize_tech,
+    _shift,
 )
 
 
@@ -52,8 +63,8 @@ class _WeakPerDmuResultMixin:
     def _solve_per_dmu_models(self, email=OPT_LOCAL, solver=OPT_DEFAULT, include_objective=False):
         """Solve one weak-disposability Pyomo model per evaluated DMU.
 
-        ``DEAweak2`` and ``DDFweak2`` differ in their formulas and efficiency
-        columns, but they share the whole solver/result-collection lifecycle.
+        ``DEAweak`` and its subclasses share this whole solver/result-collection
+        lifecycle.
         Keeping that lifecycle here avoids copy-pasted loops while preserving
         the historical ``self.results`` dictionary and returned column names.
         """
@@ -215,242 +226,10 @@ class _WeakPerDmuResultMixin:
                 print(f"DMU '{ind}' not found in the evaluated set.")
         return None
 
-class _WeakDualResultMixin(PyomoResultMixin):
-    """Shared display/get accessors for weak-disposability dual models."""
-
-    def display_delta(self):
-        tools.assert_optimized(self.optimization_status)
-        self._display_component("delta")
-
-    def display_gamma(self):
-        tools.assert_optimized(self.optimization_status)
-        self._display_component("gamma")
-
-    def display_kappa(self):
-        tools.assert_optimized(self.optimization_status)
-        self._display_component("kappa")
-
-    def display_alpha(self):
-        tools.assert_optimized(self.optimization_status)
-        tools.assert_various_return_to_scale_alpha(self.rts)
-        self._display_component("alpha")
-
-    def get_delta(self):
-        tools.assert_optimized(self.optimization_status)
-        return self._component_array("delta")
-
-    def get_gamma(self):
-        tools.assert_optimized(self.optimization_status)
-        return self._component_array("gamma")
-
-    def get_kappa(self):
-        tools.assert_optimized(self.optimization_status)
-        return self._component_array("kappa")
-
-    def get_alpha(self):
-        tools.assert_optimized(self.optimization_status)
-        tools.assert_various_return_to_scale_alpha(self.rts)
-        return self._component_series("alpha")
-
-
-
-class DEAweak(PyomoResultMixin, DEA):
-    """weak dispsbnility of Data Envelopment Analysis (DEA)
-    """
-
-    def __init__(self, data, sent, gy, gx,gb , rts, baseindex=None, refindex=None):
-        """DEA: Envelopment problem
-
-        Args:
-            data
-            sent
-            gy (list, optional): output distance vector. Defaults to [1].
-            gx (list, optional): input distance vector. Defaults to [0].
-            gb (list, optional): undesirable output directional vector. Defaults to [1].
-            rts (String): RTS_VRS (variable returns to scale) or RTS_CRS (constant returns to scale)
-            baseindex (String, optional): estimate index. Defaults to None. e.g.: "Year=[2009,2010]"
-            refindex (String, optional): reference index. Defaults to None. e.g.: "Year=[2010]"
-        """
-        # TODO(error/warning handling): Check the configuration of the model exist
-        self.y, self.x, self.b,  self.gy, self.gx, self.gb, self.yref, self.xref, self.bref = \
-            tools.assert_DEAweak(data, sent, gy, gx, gb, baseindex, refindex)
-        self.rts = rts
-
-        # Initialize DEA model
-        self.__model__ = ConcreteModel()
-        self.__model__.R = Set(initialize=range(len(self.yref)))
-
-        # Initialize sets
-        self.__model__.I = Set(initialize=range(len(self.y)))
-        self.__model__.J = Set(initialize=range(len(self.x[0])))
-        self.__model__.K = Set(initialize=range(len(self.y[0])))
-        self.__model__.L = Set(initialize=range(len(self.b[0])))
-
-        # Initialize variable
-        self.__model__.rho = Var(self.__model__.I, doc='efficiency')
-        if self.rts == RTS_VRS1:
-            self.__model__.theta = Var(self.__model__.I, bounds=(0.0, 1.0),doc='emission reduction factor')
-        elif self.rts == RTS_VRS2:
-            self.__model__.mu = Var(self.__model__.I, self.__model__.R, bounds=(0.0, None),doc='emission reduction factor2')
-
-        self.__model__.lamda = Var(self.__model__.I, self.__model__.R, bounds=(0.0, None), doc='intensity variables')
-
-        # Setup the objective function and constraints
-        if sum(self.gy) >= 1:
-            self.__model__.objective = Objective(
-                rule=self.__objective_rule(), sense=maximize, doc='objective function')
-        else:
-            self.__model__.objective = Objective(
-                rule=self.__objective_rule(), sense=minimize, doc='objective function')
-
-        self.__model__.input = Constraint(
-            self.__model__.I, self.__model__.J, rule=self.__input_rule(), doc='input constraint')
-        self.__model__.output = Constraint(
-            self.__model__.I, self.__model__.K, rule=self.__output_rule(), doc='output constraint')
-        self.__model__.unoutput = Constraint(
-            self.__model__.I, self.__model__.L, rule=self.__unoutput_rule(), doc='undesirable output constraint')
-        if self.rts == RTS_VRS1 or self.rts == RTS_VRS2:
-            self.__model__.vrs = Constraint(self.__model__.I, rule=self.__vrs_rule(), doc='variable return to scale rule')
-
-        # Optimize model
-        self.optimization_status = 0
-        self.problem_status = 0
-
-    def __objective_rule(self):
-        """Return the proper objective function"""
-        def objective_rule(model):
-            return sum(model.rho[i] for i in model.I)
-        return objective_rule
-
-    def __input_rule(self):
-        """Return the proper input constraint"""
-        if sum(self.gx)>=1:
-            if self.rts == RTS_VRS2:
-                def input_rule(model, o, j):
-                    if self.gx[j]==1:
-                        return sum((model.lamda[o, r]+model.mu[o,r])*self.xref[r][j] for r in model.R)<=model.rho[o]*self.x[o][j]
-                    else:
-                        return sum((model.lamda[o, r]+model.mu[o,r])*self.xref[r][j] for r in model.R)<=self.x[o][j]
-
-                return input_rule
-            else:
-                def input_rule(model, o, j):
-                    if self.gx[j]==1:
-                        return sum(model.lamda[o, r]*self.xref[r][j] for r in model.R)<=model.rho[o]*self.x[o][j]
-                    else:
-                        return sum(model.lamda[o, r]*self.xref[r][j] for r in model.R)<=self.x[o][j]
-                return input_rule
-        else:
-            if self.rts == RTS_VRS2:
-                def input_rule(model, o, j):
-                    return sum((model.lamda[o, r]+model.mu[o,r])*self.xref[r][j] for r in model.R)<=self.x[o][j]
-                return input_rule
-            else:
-                def input_rule(model, o, j):
-                    return sum(model.lamda[o, r] * self.xref[r][j] for r in model.R) <= self.x[o][j]
-
-                return input_rule
-
-
-
-    def __output_rule(self):
-        """Return the proper output constraint"""
-        if sum(self.gy)>=1:
-
-            def output_rule(model, o, k):
-                if self.gy[k] == 1:
-                    return sum(model.lamda[o, r]*self.yref[r][k] for r in model.R) >= model.rho[o]*self.y[o][k]
-                else:
-                    return sum(model.lamda[o, r] * self.yref[r][k] for r in model.R) >= self.y[o][k]
-
-            return output_rule
-
-        else:
-            def output_rule(model, o, k):
-                return sum(model.lamda[o, r] * self.yref[r][k] for r in model.R) >= self.y[o][k]
-            return output_rule
-
-    def __unoutput_rule(self):
-        """Return the proper undesirable output constraint"""
-        if sum(self.gb)>=1:
-            def unoutput_rule(model, o, l):
-                if self.gb[l] == 1:
-                    return sum(model.lamda[o, r]*self.bref[r][l] for r in model.R) == model.rho[o]*self.b[o][l]
-                else:
-                    return sum(model.lamda[o, r] * self.bref[r][l] for r in model.R) == self.b[o][l]
-
-            return unoutput_rule
-        else:
-            def unoutput_rule(model, o, l):
-                return sum(model.lamda[o, r] * self.bref[r][l] for r in model.R) == self.b[o][l]
-            return unoutput_rule
-
-    def __vrs_rule(self):
-        if self.rts==RTS_VRS1:
-            def vrs_rule(model, o):
-                return sum(model.lamda[o, r] for r in model.R) == model.theta[o]
-            return vrs_rule
-
-        elif self.rts==RTS_VRS2:
-            def vrs_rule(model, o):
-                return sum((model.lamda[o, r]+model.mu[o, r] )for r in model.R) == 1
-
-            return vrs_rule
-
-    def optimize(self, email=OPT_LOCAL, solver=OPT_DEFAULT):
-        """Optimize the function by requested method
-
-        Args:
-            email (string): The email address for remote optimization. It will optimize locally if OPT_LOCAL is given.
-            solver (string): The solver chosen for optimization. It will optimize with default solver if OPT_DEFAULT is given.
-        """
-        # TODO(error/warning handling): Check problem status after optimization
-        self.problem_status, self.optimization_status = tools.optimize_model(
-            self._single_model(), email, CET_ADDI, solver)
-
-    def display_status(self):
-        """Display the status of problem"""
-        print(self.optimization_status)
-
-    def display_theta(self):
-        """Display theta value"""
-        tools.assert_optimized(self.optimization_status)
-        self._display_component("theta")
-
-    def display_rho(self):
-        """Display rho value"""
-        tools.assert_optimized(self.optimization_status)
-        self._display_component("rho")
-
-    def display_lamda(self):
-        """Display lamda value"""
-        tools.assert_optimized(self.optimization_status)
-        self._display_component("lamda")
-
-    def get_status(self):
-        """Return status"""
-        return self.optimization_status
-
-    def get_theta(self):
-        """Return theta value by array"""
-        tools.assert_optimized(self.optimization_status)
-        return self._component_series("theta")
-
-    def get_rho(self):
-        """Return rho value by array"""
-        tools.assert_optimized(self.optimization_status)
-        return self._component_series("rho")
-
-    def get_lamda(self):
-        """Return lamda value by array"""
-        tools.assert_optimized(self.optimization_status)
-        return self._component_array("lamda")
-
-
-class DEAweak2(_WeakOrientationMixin, _WeakPerDmuResultMixin, DEA2):
+class DEAweak(_WeakOrientationMixin, _WeakPerDmuResultMixin, _PerDmuEnvelopmentModel):
     """Data Envelopment Analysis (DEA) - Solves per DMU"""
 
-    def __init__(self,data,sent,gy=[1],gx=[0],gb=[1],rts=RTS_VRS1,baseindex=None, refindex=None):
+    def __init__(self,data,sent,gy=[1],gx=[0],gb=[1],rts=RTS_VRS1,evalindex=None, refindex=None):
         """DEA: Envelopment problem, solving for each DMU individually.
 
         Args:
@@ -460,7 +239,7 @@ class DEAweak2(_WeakOrientationMixin, _WeakPerDmuResultMixin, DEA2):
             gx (list, optional): input distance vector. Defaults to [0].
             gb (list, optional): undesirable output directional vector. Defaults to [1].
             rts (String): RTS_VRS1 (variable returns to scale) or RTS_CRS (constant returns to scale)
-            baseindex (String, optional): estimate index. Defaults to None. e.g.: "Year=[2009,2010]"
+            evalindex (String, optional): estimate index. Defaults to None. e.g.: "Year=[2009,2010]"
             refindex (String, optional): reference index. Defaults to None. e.g.: "Year=[2010]"
         """
         # TODO(error/warning handling): Check the configuration of the model exist
@@ -469,14 +248,14 @@ class DEAweak2(_WeakOrientationMixin, _WeakPerDmuResultMixin, DEA2):
         try:
              self.y, self.x,self.b, self.yref,self.xref,self.bref, self.gy, self.gx,self.gb, \
                  self.evaluated_data_index, self.reference_data_index = tools.assert_DEAweak_with_indices(
-                     data, sent, gy, gx,gb, baseindex, refindex
+                     data, sent, gy, gx,gb, evalindex, refindex
                  )
         except AttributeError:
              # Fallback if assert_DEA_with_indices doesn't exist, assuming original assert_DEA
              # In this case, evaluated_data_index and reference_data_index will be ranges 0..N-1
              print("Warning: tools.assert_DEAweak_with_indices not found. Using range indices.")
              self.y,self.x,self.b, self.yref,self.xref,self.bref, self.gy,self.gx,self.gb = \
-            tools.assert_DEAweak(data, sent, gy, gx, gb, baseindex, refindex)
+            tools.assert_DEAweak(data, sent, gy, gx, gb, evalindex, refindex)
              self.evaluated_data_index = list(range(len(self.y)))
              self.reference_data_index = list(range(len(self.yref)))
 
@@ -924,7 +703,7 @@ class DEAweak2(_WeakOrientationMixin, _WeakPerDmuResultMixin, DEA2):
     # --- Optimization and Results Methods ---
 
     def optimize(self, email=OPT_LOCAL, solver=OPT_DEFAULT):
-        """Optimize every evaluated DMU and return legacy DEAweak2 columns."""
+        """Optimize every evaluated DMU and return legacy DEAweak columns."""
         return self._solve_per_dmu_models(email=email, solver=solver, include_objective=False)
 
     def _add_efficiency_columns(self, results_df):
@@ -967,108 +746,510 @@ class DEAweak2(_WeakOrientationMixin, _WeakPerDmuResultMixin, DEA2):
         return results_df
 
 
+class DEAweakRho(DEAweak):
+    """Radial weak-disposability DEA that reports only the raw LP value ``rho``
+    (plus ``objective_value``), mirroring ``DEA.ddf`` / ``DEAweak.ddf`` /
+    ``DEAweak.nddf``: efficiency is derived by the caller from ``rho`` at the
+    call site.
 
-class DDFweak(DEAweak):
-    def __init__(self,  data, sent, gy=[1], gx=[1], gb=[1], rts=RTS_VRS1, baseindex=None, refindex=None):
-        """DDFweak: Directional distance function with undesirable output
-        
-        Args:
-            data
-            sent
-            gy (list, optional): output directional vector. Defaults to [1].
-            gx (list, optional): input directional vector. Defaults to [1].
-            gb (list, optional): undesirable output directional vector. Defaults to [1].
-            rts (String): RTS_VRS (variable returns to scale) or RTS_CRS (constant returns to scale)
-            baseindex (String, optional): estimate index. Defaults to None. e.g.: "Year=[2009,2010]"
-            refindex (String, optional): reference index. Defaults to None. e.g.: "Year=[2010]"
-        """
+    For the default ``ushephard`` direction (``gx=0, gy=0, gb=1``) the radial
+    efficiency is ``PEE = rho``.  For the default ``hyper`` direction
+    (``gx=0, gy=1, gb=1``): CRS gives ``MEE = sqrt(rho)``; VRS1/VRS2 give
+    ``MEE_BO = 1 - rho`` and ``MEE_O = 1/(1 + rho)``.
+    """
 
-        self.y, self.x, self.b,  self.gy, self.gx, self.gb, self.yref, self.xref, self.bref = \
-            tools.assert_DDFweak(data,sent, gy, gx, gb,baseindex,refindex)
-        self.rts = rts
+    def optimize(self, email=OPT_LOCAL, solver=OPT_DEFAULT):
+        return self._solve_per_dmu_models(email=email, solver=solver,
+                                          include_objective=True)
 
-        # Initialize DEA model
-        self.__model__ = ConcreteModel()
+    def _add_efficiency_columns(self, results_df):
+        return results_df
 
-        # Initialize sets
-        self.__model__.R = Set(initialize=range(len(self.yref)))
-        self.__model__.I = Set(initialize=range(len(self.y)))
-        self.__model__.J = Set(initialize=range(len(self.x[0])))
-        self.__model__.K = Set(initialize=range(len(self.y[0])))
-        self.__model__.L = Set(initialize=range(len(self.b[0])))
-
-        # Initialize variable
-
-        self.__model__.rho = Var(self.__model__.I, doc='directional distance')
-        if self.rts == RTS_VRS1:
-            self.__model__.theta = Var(self.__model__.I, bounds=(0.0, 1.0),doc='emission reduction factor')
-        elif self.rts == RTS_VRS2:
-            self.__model__.mu = Var(self.__model__.I, self.__model__.R, bounds=(0.0, None),
-                                       doc='emission reduction factor2')
-
-        self.__model__.lamda = Var(self.__model__.I, self.__model__.R, bounds=(0.0, None), doc='intensity variables')
-
-        # Setup the objective function and constraints
-        self.__model__.objective = Objective(
-            rule=self._DEAweak__objective_rule(), sense=maximize, doc='objective function')
-        self.__model__.input = Constraint(
-            self.__model__.I, self.__model__.J, rule=self.__input_rule(), doc='input constraint')
-        self.__model__.output = Constraint(
-            self.__model__.I, self.__model__.K, rule=self.__output_rule(), doc='output constraint')
-        self.__model__.undesirable_output = Constraint(
-            self.__model__.I, self.__model__.L, rule=self.__undesirable_output_rule(), doc='undesirable output constraint')
-
-        if self.rts == RTS_VRS1 or self.rts == RTS_VRS2:
-            self.__model__.vrs = Constraint(self.__model__.I, rule=self.__vrs_rule(), doc='various return to scale rule')
-
-        # Optimize model
-        self.optimization_status = 0
-        self.problem_status = 0
-
-    def __input_rule(self):
-        """Return the proper input constraint"""
-        if self.rts == RTS_VRS2:
-
-            def input_rule(model, o, j):
-                return sum((model.lamda[o, r]+model.mu[o, r]) * self.xref[r][j] for r in model.R) \
-                            <= self.x[o][j] - model.rho[o]*self.gx[j]*self.x[o][j]
-            return input_rule
-        else:
-
-            def input_rule(model, o, j):
-                return sum(model.lamda[o, r] * self.xref[r][j] for r in model.R) \
-                            <= self.x[o][j] - model.rho[o]*self.gx[j]*self.x[o][j]
-            return input_rule
-
-    def __output_rule(self):
-        """Return the proper output constraint"""
-        def output_rule(model, o, k):
-            return sum(model.lamda[o, r] * self.yref[r][k] for r in model.R) >= self.y[o][k] + model.rho[o]*self.gy[k]*self.y[o][k]
-        return output_rule
-
-    def __undesirable_output_rule(self):
-        """Return the proper undesirable output constraint"""
-        def undesirable_output_rule(model, o, l):
-            return sum(model.lamda[o, r] * self.bref[r][l] for r in model.R) == self.b[o][l] - model.rho[o]*self.gb[l]*self.b[o][l]
-        return undesirable_output_rule
-
-    def __vrs_rule(self):
-        """Return the VRS constraint"""
-        if self.rts == RTS_VRS1:
-
-            def vrs_rule(model, o):
-                return sum(model.lamda[o, r] for r in model.R) == model.theta[o]
-            return vrs_rule
-        elif self.rts == RTS_VRS2:
-
-            def vrs_rule(model, o):
-                return sum((model.lamda[o, r]+model.mu[o, r] )for r in model.R) == 1
-            return vrs_rule
+# ---------------------------------------------------------------------------
+# Module-level convenience interfaces
+#
+# The ``DEAweak`` class uses a radial distance value.  The functions below expose a
+# distance-function-oriented API: each function carries a sensible default
+# direction vector so that the canonical orientation no longer needs to be
+# specified by hand.  They are reached as ``DEAweak.ushephard(...)`` etc. when
+# the module is imported via ``from deabook import DEAweak``.
+# ---------------------------------------------------------------------------
 
 
-class DDFweak2(_WeakOrientationMixin, _WeakPerDmuResultMixin, DDF2):
+def _weak_var_counts(sent):
+    """Parse a ``sent`` string and return ``(n_inputs, n_outputs, n_unoutputs)``.
 
-    def __init__(self,data,sent,gy=[1],gx=[0],gb=[1],rts=RTS_VRS1,baseindex=None, refindex=None):
+    ``sent`` follows ``"inputs = outputs : unoutputs"``, e.g. ``"K L E=Y:CO2"``.
+    """
+    parts = sent.split('=')
+    if len(parts) != 2:
+        raise ValueError(
+            "Invalid 'sent' format. Expected 'inputs=outputs:unoutputs'")
+    inputvars = [v for v in parts[0].strip().split() if v]
+    out_parts = parts[1].strip().split(':')
+    if len(out_parts) != 2:
+        raise ValueError(
+            "Invalid 'sent' format. Expected 'outputs:unoutputs' after '='")
+    outputvars = [v for v in out_parts[0].strip().split() if v]
+    unoutputvars = [v for v in out_parts[1].strip().split() if v]
+    return len(inputvars), len(outputvars), len(unoutputvars)
+
+
+def ushephard(data, sent, rts=RTS_CRS, evalindex=None, refindex=None):
+    """非期望产出方向的谢泼德距离函数（Shephard distance function for undesirable outputs）。
+
+    该接口方向固定为非期望产出导向（``gx=0, gy=0, gb=1``：投入与期望产出保持不变，
+    仅压缩非期望产出），对应纯环境效率（PEE），**不支持**设定方向向量。与
+    ``DEA.ddf`` 一致，本接口只返回线性规划的目标值 ``rho``（外加 ``objective_value``），
+    即纯环境效率 ``PEE = rho``；不生成 ``te`` 等效率分解列。
+
+    Args:
+        data (pandas.DataFrame): 输入数据。
+        sent (str): ``"投入=期望产出:非期望产出"``，如 ``"K L E=Y:CO2"``。
+        rts: 规模报酬与弱可处置性设定，默认 ``RTS_CRS``。
+        evalindex, refindex (str, optional): 评价/参考样本筛选条件。
+    """
+    n_in, n_out, n_bad = _weak_var_counts(sent)
+    gx = [0] * n_in
+    gy = [0] * n_out
+    gb = [1] * n_bad
+    return DEAweakRho(data, sent, gy=gy, gx=gx, gb=gb, rts=rts,
+                      evalindex=evalindex, refindex=refindex)
+
+
+def hyper(data, sent, gx=None, gy=None, gb=None, rts=RTS_CRS,
+          evalindex=None, refindex=None):
+    """包含非期望产出的双曲距离函数（hyperbolic distance function with undesirable outputs）。
+
+    默认方向 ``gx=0, gy=1, gb=1``：同时扩张期望产出并压缩非期望产出，对应混合环境效率。
+    与 ``DEA.ddf`` 一致，本接口只返回线性规划的目标值 ``rho``（外加 ``objective_value``），
+    不生成 ``te``/``teuo``/``teo`` 等效率分解列；混合环境效率由调用方据方向在调用处换算：
+    CRS 下 ``MEE = sqrt(rho)``，VRS1/VRS2 下 ``MEE_BO = 1 - rho``、``MEE_O = 1/(1 + rho)``。
+
+    Args:
+        data (pandas.DataFrame): 输入数据。
+        sent (str): ``"投入=期望产出:非期望产出"``，如 ``"K L E=Y:CO2"``。
+        gx, gy, gb (list, optional): 方向向量，不指定时取上述混合环境效率默认值。
+        rts: 规模报酬与弱可处置性设定，默认 ``RTS_CRS``。
+        evalindex, refindex (str, optional): 评价/参考样本筛选条件。
+    """
+    n_in, n_out, n_bad = _weak_var_counts(sent)
+    if gx is None:
+        gx = [0] * n_in
+    if gy is None:
+        gy = [1] * n_out
+    if gb is None:
+        gb = [1] * n_bad
+    return DEAweakRho(data, sent, gy=gy, gx=gx, gb=gb, rts=rts,
+                      evalindex=evalindex, refindex=refindex)
+
+
+def ddf(data, sent, gx=None, gy=None, gb=None, rts=RTS_CRS,
+        evalindex=None, refindex=None):
+    """将方向距离函数（DDF）扩展到包含非期望产出。
+
+    默认方向 ``gx=0, gy=1, gb=1``：沿期望产出扩张、沿非期望产出压缩。与
+    ``DEA.ddf`` 一致，本接口只返回线性规划的目标值 ``rho``（即方向距离函数
+    值，外加 ``objective_value``），**不**生成 ``teuo``/``teo`` 等效率分解列；
+    环境效率 ``EB`` 与产出效率 ``EO`` 由调用方据方向在调用处换算
+    （``EB = 1 - rho``、``EO = 1 / (1 + rho)``）。
+
+    Args:
+        data (pandas.DataFrame): 输入数据。
+        sent (str): ``"投入=期望产出:非期望产出"``，如 ``"K L E=Y:CO2"``。
+        gx, gy, gb (list, optional): 方向向量，不指定时取上述期望产出—非期望产出方向默认值。
+        rts: 规模报酬与弱可处置性设定，默认 ``RTS_CRS``。
+        evalindex, refindex (str, optional): 评价/参考样本筛选条件。
+    """
+    n_in, n_out, n_bad = _weak_var_counts(sent)
+    if gx is None:
+        gx = [0] * n_in
+    if gy is None:
+        gy = [1] * n_out
+    if gb is None:
+        gb = [1] * n_bad
+    return DDFweakRho(data, sent, gy=gy, gx=gx, gb=gb, rts=rts,
+                      evalindex=evalindex, refindex=refindex)
+
+
+def nddf(data, sent, gx=None, gy=None, gb=None, rts=RTS_CRS,
+         evalindex=None, refindex=None):
+    """非径向方向距离函数（nonradial DDF），各变量独立调整。
+
+    默认方向 ``gx=0, gy=1, gb=1``。与 ``DEA.ddf`` 一致，本接口只返回线性规划
+    的目标值 ``objective_value``（即各变量 ``beta`` 的加权和），以及每个变量的
+    缩放因子 ``beta``，命名规则为 ``beta_<变量名>``（默认方向下为 ``beta_Y``、
+    ``beta_CO2``）。本接口**不**生成 ``teY``/``teCO2``/``teuo``/``teo``/``teuo2o``
+    等效率分解列；环境效率 ``EB``、产出效率 ``EO`` 与相对排放强度 ``EBO`` 由调用方
+    据方向在调用处换算（标准等权设定 ``wy = wb = 0.5`` 下：
+    ``EB = 0.5*(1 - beta_CO2)``、``EO = 0.5/(1 + beta_Y)``、``EBO = EB / EO``）。
+
+    Args:
+        data (pandas.DataFrame): 输入数据。
+        sent (str): ``"投入=期望产出:非期望产出"``，如 ``"K L E=Y:CO2"``。
+        gx, gy, gb (list, optional): 方向向量，不指定时取上述期望产出—非期望产出方向默认值。
+        rts: 规模报酬与弱可处置性设定，默认 ``RTS_CRS``。
+        evalindex, refindex (str, optional): 评价/参考样本筛选条件。
+    """
+    n_in, n_out, n_bad = _weak_var_counts(sent)
+    if gx is None:
+        gx = [0] * n_in
+    if gy is None:
+        gy = [1] * n_out
+    if gb is None:
+        gb = [1] * n_bad
+    return NDDFweakRho(data, sent, gy=gy, gx=gx, gb=gb, rts=rts,
+                       evalindex=evalindex, refindex=refindex)
+
+
+# ---------------------------------------------------------------------------
+# Dynamic (panel) environmental productivity indices — Chapter 7.
+#
+# These follow the Chapter-4 ``DEA.mq`` engine (deabook.mqcore) but plug in the
+# weak-disposability distance primitives above.  They deliberately do NOT depend
+# on the legacy ``MQDEAweak`` module.  All three share the same ``tech``
+# reference-set semantics (Chapter 3 §3.4) and a common ``.optimize()``
+# lifecycle, exactly like ``DEA.mq`` / ``DEA.mqddf``:
+#
+#   * tech=CONTEMPORARY (default) / SEQUENTIAL / WINDOW / GLOBAL
+#   * .optimize(email, solver) returns a DataFrame indexed like the input data
+#
+#   * dep     -- dynamic environmental performance index (MEPI), built on
+#                :func:`ushephard` (undesirable-output-oriented Shephard distance,
+#                §7.4.1).  Ratio decomposition: MQ / MEFFCH / MTECHCH.
+#   * depddf  -- DDF-based dynamic environmental-performance index (ML, §7.4.2),
+#                built on the bad-output-oriented DDF (:func:`ddf` with direction
+#                (0, 0, 1)).  Ratio decomposition: MQ / MEFFCH / MTECHCH.
+#   * lddf    -- additive Luenberger indicator, built on the single-period
+#                Luenberger DDF (:func:`_ldf_distance`).  Additive decomposition:
+#                L / LEFFCH / LTECHCH (benchmark 0).  ``orient`` = "oo" / "io" / "both"
+#                (§7.2.1 / §7.2.2 / §7.2.3).
+# ---------------------------------------------------------------------------
+
+# --- single (eval, ref) distance solvers -> one-column DataFrame["E"] ---------
+def _ushephard_distance(data, sent, rts, evalindex, refindex, email, solver):
+    """MEPI distance: undesirable-output-oriented Shephard distance = ushephard rho."""
+    res = ushephard(data, sent, rts=rts, evalindex=evalindex, refindex=refindex).optimize(email, solver)
+    out = pd.DataFrame(index=res.index)
+    out["E"] = res["rho"].astype(float)
+    return out
+
+
+def _ddf_distance(data, sent, gx, gy, gb, rts, orient, evalindex, refindex, email, solver):
+    """ML distance: D = 1 + rho (oo, §7.2.1) or D = 1 - rho (io, §7.2.2) from ddf."""
+    res = ddf(data, sent, gx=gx, gy=gy, gb=gb, rts=rts, evalindex=evalindex, refindex=refindex).optimize(email, solver)
+    rho = res["rho"].astype(float)
+    out = pd.DataFrame(index=res.index)
+    out["E"] = (1.0 + rho) if orient == "oo" else (1.0 - rho)
+    return out
+
+
+def _ddf_bad_distance(data, sent, rts, evalindex, refindex, email, solver):
+    """DDF-based dynamic environmental-performance distance (§7.4.2).
+
+    Direction is fixed to the undesirable-output contraction
+    ``(gx, gy, gb) = (0, 0, 1)`` -- the directional analogue of
+    :func:`ushephard` -- so that the returned term ``E = 1 - rho`` equals
+    ``1 - D_b(vec)`` entering the Malmquist-Luenberger index of eq. (7-51).
+    """
+    n_in, n_out, n_bad = _weak_var_counts(sent)
+    gx, gy, gb = [0] * n_in, [0] * n_out, [1] * n_bad
+    res = ddf(data, sent, gx=gx, gy=gy, gb=gb, rts=rts, evalindex=evalindex, refindex=refindex).optimize(email, solver)
+    rho = res["rho"].astype(float)
+    out = pd.DataFrame(index=res.index)
+    out["E"] = 1.0 - rho
+    return out
+
+
+def _ldf_distance(data, sent, orient="oo", rts=RTS_CRS,
+                 evalindex=None, refindex=None, email=OPT_LOCAL, solver=OPT_DEFAULT):
+    """Single-period Luenberger DDF solve: returns a one-column DataFrame["E"]
+    whose value is the directional distance :math:`\\overrightarrow{D}` for the
+    chosen orientation (§7.2.1 / §7.2.2 / §7.2.3).  This is the internal building
+    block for the dynamic :func:`lddf` indicator; the public ``lddf`` name is taken
+    by that dynamic indicator, so the primitive lives here under ``_ldf_distance``.
+    """
+    if orient not in ("io", "oo", "both"):
+        raise ValueError(
+            "orient must be 'oo' (output, §7.2.1), 'io' (input, §7.2.2) "
+            "or 'both' (graph/comprehensive, §7.2.3 / §7.4)."
+        )
+    n_in, n_out, n_bad = _weak_var_counts(sent)
+    if orient == "io":
+        gx, gy, gb = [1] * n_in, [0] * n_out, [0] * n_bad
+    elif orient == "oo":
+        gx, gy, gb = [0] * n_in, [1] * n_out, [1] * n_bad
+    else:  # both
+        gx, gy, gb = [1] * n_in, [1] * n_out, [1] * n_bad
+    if orient in ("io", "both") and rts == RTS_VRS1:
+        raise ValueError(
+            "rts=RTS_VRS1 is not supported for the input/both orientation of the "
+            "Luenberger DDF: the directional distance function with an input direction "
+            "is not linearizable under VRS1. Use RTS_CRS or RTS_VRS2 instead."
+        )
+    res = DDFweakRho(data, sent, gy=gy, gx=gx, gb=gb, rts=rts,
+                     evalindex=evalindex, refindex=refindex).optimize(email, solver)
+    out = pd.DataFrame(index=res.index)
+    out["E"] = res["rho"].astype(float)
+    return out
+
+
+# --- decomposition helpers ----------------------------------------------------
+def _ratio_global(glob, cont, id):
+    """Pastor & Lovell (2005) global-frontier split for a ratio index.
+
+    Returns ``D11`` (global), ``mqpi``, ``MEFFCH`` (contemporary efficiency
+    change) and ``MTECHCH`` (best-practice-gap change), so that
+    ``mqpi = MEFFCH * MTECHCH``.
+    """
+    bpg = pd.DataFrame({id: glob[id], "BPG": glob["D11"] / cont["D11"]}, index=glob.index)
+    out = pd.DataFrame(index=glob.index)
+    out["D11"] = glob["D11"]
+    out["mqpi"] = glob["D11"] / _shift(glob, id, "D11")
+    out["MEFFCH"] = cont["D11"] / _shift(cont, id, "D11")
+    out["MTECHCH"] = bpg["BPG"] / _shift(bpg, id, "BPG")
+    return out
+
+
+def _luenberger_decompose(frame, id):
+    """Additive Luenberger decomposition (§7.2): L = LEFFCH + LTECHCH, benchmark 0.
+
+    Uses the same D11 / D12 / D21 layout produced by ``build_distance_frame``;
+    under GLOBAL (where D12 == D21 == D11) it collapses to LTECHCH = 0 and
+    L = LEFFCH, the additive analogue of MTECHCH = 1.
+    """
+    d11 = frame["D11"]
+    d12 = frame["D12"]
+    d21 = frame["D21"]
+    d11_prev = _shift(frame, id, "D11")
+    d21_prev = _shift(frame, id, "D21")
+    out = pd.DataFrame(index=frame.index)
+    out["LEFFCH"] = d11_prev - d11
+    out["LTECHCH"] = 0.5 * (d11 - d12) + 0.5 * (d21_prev - d11_prev)
+    out["L"] = 0.5 * (d11_prev + d21_prev - d11 - d12)
+    return out
+
+
+# --- dynamic indicator factories (return a mqcore.MalmquistModel) ------------
+def dep(data, id, year, sent="inputvar=outputvar:unoutputvar",
+        rts=RTS_CRS, tech=CONTEMPORARY, window=3, verbose=False):
+    """Dynamic environmental-performance index (MEPI, §7.4.1).
+
+    Built on :func:`ushephard` (undesirable-output-oriented Shephard distance);
+    corresponds to the MEPI of eq. (7-45).  Returns a
+    :class:`~deabook.mqcore.MalmquistModel`; call ``.optimize(email, solver)``
+    to solve.  ``tech`` accepts ``CONTEMPORARY`` (default), ``WINDOW``,
+    ``SEQUENTIAL`` and ``GLOBAL`` (Chapter 3 §3.4).  Non-global technologies
+    return ``D11``/``D12``/``D21`` plus ``MQ``/``MEFFCH``/``MTECHCH``; ``GLOBAL``
+    returns ``D11``/``mqpi``/``MEFFCH``/``MTECHCH`` (Pastor & Lovell, 2005).
+    """
+    if rts not in (RTS_CRS, RTS_VRS1, RTS_VRS2):
+        raise ValueError("rts must be RTS_CRS, RTS_VRS1 or RTS_VRS2.")
+
+    def build(work, years, t, w, year_col, email, solver):
+        solve = lambda e, r, em, sv: _ushephard_distance(work, sent, rts, e, r, em, sv)
+        if t == GLOBAL:
+            glob = build_distance_frame(solve, work, years, GLOBAL, w, year_col, id_col=id, email=email, solver=solver, bundle="E")
+            cont = build_distance_frame(solve, work, years, CONTEMPORARY, w, year_col, id_col=id, email=email, solver=solver, bundle="E")
+            return _ratio_global(glob, cont, id)
+        frame = build_distance_frame(solve, work, years, t, w, year_col, id_col=id, email=email, solver=solver, bundle="E")
+        return pd.concat([frame[["D11", "D12", "D21"]], two_factor(frame, id)], axis=1)
+
+    return MalmquistModel(data, id, year, tech=normalize_tech(tech), window=int(window),
+                          build=build, kind="dep", orient=None, verbose=verbose)
+
+
+def depddf(data, id, year, sent="inputvar=outputvar:unoutputvar",
+           rts=RTS_CRS, tech=CONTEMPORARY, window=3, verbose=False):
+    """DDF-based dynamic environmental-performance index (ML, §7.4.2).
+
+    Built on the bad-output-oriented directional distance function (direction
+    ``(gx, gy, gb) = (0, 0, 1)``, i.e. pollution abatement only), the directional
+    analogue of :func:`ushephard`; corresponds to the ML index of eq. (7-51).
+    Unlike the general radial/output-oriented DDF, this indicator keeps the
+    same non-desirable-output direction as :func:`dep`, so the two are directly
+    comparable.  Returns a :class:`~deabook.mqcore.MalmquistModel`; call
+    ``.optimize(email, solver)`` to solve.  ``tech`` accepts ``CONTEMPORARY``
+    (default), ``WINDOW``, ``SEQUENTIAL`` and ``GLOBAL`` (Chapter 3 §3.4).
+    Non-global technologies return ``D11``/``D12``/``D21`` plus ``MQ``/``MEFFCH``/
+    ``MTECHCH``; ``GLOBAL`` returns ``D11``/``mqpi``/``MEFFCH``/``MTECHCH``
+    (Pastor & Lovell, 2005).
+    """
+    if rts not in (RTS_CRS, RTS_VRS1, RTS_VRS2):
+        raise ValueError("rts must be RTS_CRS, RTS_VRS1 or RTS_VRS2.")
+
+    def build(work, years, t, w, year_col, email, solver):
+        solve = lambda e, r, em, sv: _ddf_bad_distance(work, sent, rts, e, r, em, sv)
+        if t == GLOBAL:
+            glob = build_distance_frame(solve, work, years, GLOBAL, w, year_col, id_col=id, email=email, solver=solver, bundle="E")
+            cont = build_distance_frame(solve, work, years, CONTEMPORARY, w, year_col, id_col=id, email=email, solver=solver, bundle="E")
+            return _ratio_global(glob, cont, id)
+        frame = build_distance_frame(solve, work, years, t, w, year_col, id_col=id, email=email, solver=solver, bundle="E")
+        return pd.concat([frame[["D11", "D12", "D21"]], two_factor(frame, id)], axis=1)
+
+    return MalmquistModel(data, id, year, tech=normalize_tech(tech), window=int(window),
+                          build=build, kind="depddf", orient=None, verbose=verbose)
+
+
+def lddf(data, id, year, sent="inputvar=outputvar:unoutputvar",
+         orient="oo", rts=RTS_CRS, tech=CONTEMPORARY, window=3, verbose=False):
+    """Additive Luenberger indicator based on the directional distance function.
+
+    Built on the single-period Luenberger DDF (:func:`_ldf_distance`).  ``orient``
+    selects ``"oo"`` (§7.2.1), ``"io"`` (§7.2.2) or ``"both"`` (§7.2.3 / §7.4).
+    Returns a :class:`~deabook.mqcore.MalmquistModel`; ``.optimize(email,
+    solver)`` solves and returns ``D11``/``D12``/``D21`` plus the additive
+    decomposition ``L``/``LEFFCH``/``LTECHCH`` (benchmark 0).  ``tech`` accepts
+    ``CONTEMPORARY`` (default), ``WINDOW``, ``SEQUENTIAL`` and ``GLOBAL``
+    (Chapter 3 §3.4); under ``GLOBAL`` the technical-change component ``LTECHCH``
+    is 0 and ``L`` equals the efficiency-change component.
+    """
+    if orient not in ("oo", "io", "both"):
+        raise ValueError("orient must be 'oo' (output, §7.2.1), 'io' (input, §7.2.2) or 'both' (graph, §7.2.3).")
+    if rts not in (RTS_CRS, RTS_VRS1, RTS_VRS2):
+        raise ValueError("rts must be RTS_CRS, RTS_VRS1 or RTS_VRS2.")
+    if orient in ("io", "both") and rts == RTS_VRS1:
+        raise ValueError(
+            "rts=RTS_VRS1 is not supported for the input/both orientation of the "
+            "Luenberger DDF: the directional distance function with an input direction "
+            "is not linearizable under VRS1. Use RTS_CRS or RTS_VRS2 instead."
+        )
+
+    def build(work, years, t, w, year_col, email, solver):
+        solve = lambda e, r, em, sv: _ldf_distance(work, sent, orient, rts, e, r, em, sv)
+        if t == GLOBAL:
+            # Pastor & Lovell (2005) global Malmquist is a *ratio* decomposition
+            # (MEFFCH x MTECHCH). The additive Luenberger needs no analogous
+            # contemporary-vs-global split: under GLOBAL build_distance_frame sets
+            # D12 = D21 = D11, so _luenberger_decompose collapses to LTECHCH = 0
+            # and L = LEFFCH (the additive analogue of MTECHCH = 1). We therefore
+            # apply the same additive decomposition used for the other technologies
+            # rather than branching the formula, keeping L = LEFFCH + LTECHCH valid.
+            frame = build_distance_frame(solve, work, years, t, w, year_col, id_col=id, email=email, solver=solver, bundle="E")
+            return pd.concat([frame[["D11", "D12", "D21"]], _luenberger_decompose(frame, id)], axis=1)
+        frame = build_distance_frame(solve, work, years, t, w, year_col, id_col=id, email=email, solver=solver, bundle="E")
+        return pd.concat([frame[["D11", "D12", "D21"]], _luenberger_decompose(frame, id)], axis=1)
+
+    return MalmquistModel(data, id, year, tech=normalize_tech(tech), window=int(window),
+                          build=build, kind="lddf", orient=orient, verbose=verbose)
+
+
+# --- static slacks-based measure (SBM) factory ---------------------------------
+def _sbm_sent_has_bad(sent):
+    """Return ``True`` if ``sent`` declares an undesirable-output component.
+
+    The package ``sent`` convention is ``"inputs = outputs"`` or
+    ``"inputs = outputs : undesirable_outputs"``; an undesirable part exists iff
+    the sub-string after the first ``=`` contains a ``:``.
+    """
+    return len(parse_sent(sent).b) > 0
+
+
+def sbmu(data, sent="inputvar=outputvar:unoutputvar", gx=None, gy=None, gb=None,
+         rts=RTS_VRS1, evalindex=None, refindex=None):
+    """Static slacks-based measure (SBM) *with* undesirable outputs (§8.4).
+
+    Extends :func:`sbm` by letting the ``:``-separated undesirable outputs enter
+    the SBM objective as an additional slack-excess dimension (Tone, 2003/2010).
+    Returns the (unsolved) :class:`~deabook.DEA._SBM` model object; call
+    ``.optimize(email, solver)`` to solve and obtain ``rho`` plus the
+    ``slack_x_*`` / ``slack_y_*`` / ``slack_b_*`` columns.  ``sent`` MUST
+    declare an undesirable-output component.
+
+    Args:
+        data (pandas.DataFrame): Input-output data.
+        sent (str): ``"inputs = outputs : undesirable"`` expression, e.g.
+            ``"K L E=Y:CO2"``.
+        gx (list, optional): Input slack direction.
+        gy (list, optional): Desirable-output slack direction.
+        gb (list, optional): Undesirable-output slack direction.
+        rts (str): ``RTS_CRS`` or ``RTS_VRS1``.
+        evalindex (str, optional): Evaluated-sample filter.
+        refindex (str, optional): Reference-sample filter.
+
+    Returns:
+        deabook.DEA._SBM: An unsolved SBM model; call ``.optimize()`` on it.
+
+    Example:
+        >>> m = sbmu(data, sent="K L E=Y:CO2", gy=[1], gx=[1, 1, 1], gb=[1],
+        ...          rts=RTS_VRS1)
+        >>> res = m.optimize(OPT_LOCAL, "highs")
+    """
+    if not _sbm_sent_has_bad(sent):
+        raise ValueError(
+            "DEAweak.sbmu is for SBM *with* undesirable outputs, but the sent "
+            f"{sent!r} has no undesirable-output component. Separate it with ':' "
+            "(e.g. \"K L E=Y:CO2\"), or use DEAweak.sbm for the standard SBM (§8.3)."
+        )
+    kwargs = {}
+    if gx is not None:
+        kwargs["gx"] = gx
+    if gy is not None:
+        kwargs["gy"] = gy
+    if gb is not None:
+        kwargs["gb"] = gb
+    return _SBM(data, sent, rts=rts, evalindex=evalindex, refindex=refindex, **kwargs)
+
+
+def sddf(data, sent="inputvar=outputvar:unoutputvar", gx=None, gy=None, gb=None,
+         rts=RTS_VRS1, evalindex=None, refindex=None):
+    """Slack-based directional distance function with undesirable outputs
+    (Pham & Zelenyuk, 2018).
+
+    Extends :func:`DEA.sddf` by letting the ``:``-separated undesirable outputs
+    enter the SD objective as an additional slack-excess dimension under joint
+    weak disposability of good and bad outputs (§8.5.2).  Returns the (unsolved)
+    :class:`~deabook.DEA._SDDF` model object; call ``.optimize(email, solver)``
+    to obtain ``objective_value`` (the SD inefficiency) plus the
+    ``slack_x_*`` / ``slack_y_*`` / ``slack_b_*`` columns.  ``sent`` MUST
+    declare an undesirable-output component.
+
+    Args:
+        data (pandas.DataFrame): Input-output data.
+        sent (str): ``"inputs = outputs : undesirable"`` expression, e.g.
+            ``"K L E=Y:CO2"``.
+        gx (list, optional): Input slack direction.
+        gy (list, optional): Desirable-output slack direction.
+        gb (list, optional): Undesirable-output slack direction.
+        rts (str): ``RTS_CRS`` or ``RTS_VRS1``.
+        evalindex (str, optional): Evaluated-sample filter.
+        refindex (str, optional): Reference-sample filter.
+
+    Returns:
+        deabook.DEA._SDDF: An unsolved SDDF model; call ``.optimize()`` on it.
+
+    Example:
+        >>> m = sddf(data, sent="K L E=Y:CO2", rts=RTS_VRS1)
+        >>> res = m.optimize(OPT_LOCAL, "highs")
+    """
+    if not _sbm_sent_has_bad(sent):
+        raise ValueError(
+            "DEAweak.sddf is the Pham-Zelenyuk (2018) SD model *with* "
+            f"undesirable outputs, but the sent {sent!r} has no undesirable-"
+            "output component. Separate it with ':' (e.g. \"K L E=Y:CO2\"), or "
+            "use DEA.sddf for the standard model (§8.5.1)."
+        )
+    kwargs = {}
+    if gx is not None:
+        kwargs["gx"] = gx
+    if gy is not None:
+        kwargs["gy"] = gy
+    if gb is not None:
+        kwargs["gb"] = gb
+    return _SDDF(data, sent, rts=rts, evalindex=evalindex, refindex=refindex, **kwargs)
+
+
+# ===========================================================================
+# Migrated from backup (_deabook_backup_20260905/DEAweak.py) on 2026-09-05.
+# These four classes (DDFweak, DDFweakRho, NDDFweak, NDDFweakRho) were
+# removed earlier alongside the deleted inner `DEA.DDF`; ch6 uses
+# DEAweak.ddf / nddf / dep / depddf / lddf which require them. The deleted
+# `DDF` base class is dropped; the classes now inherit the existing weak
+# mixins only. No other code in the package is changed.
+# ===========================================================================
+class DDFweak(_WeakOrientationMixin, _WeakPerDmuResultMixin):
+
+    def __init__(self,data,sent,gy=[1],gx=[0],gb=[1],rts=RTS_VRS1,evalindex=None, refindex=None):
         """ DDF: Envelopment problem, solving for each DMU individually.
         
         Args:
@@ -1078,7 +1259,7 @@ class DDFweak2(_WeakOrientationMixin, _WeakPerDmuResultMixin, DDF2):
             gx (list, optional): input distance vector. Defaults to [0].
             gb (list, optional): undesirable output directional vector. Defaults to [1].
             rts (String): RTS_VRS1 (variable returns to scale) or RTS_CRS (constant returns to scale)
-            baseindex (String, optional): estimate index. Defaults to None. e.g.: "Year=[2009,2010]"
+            evalindex (String, optional): estimate index. Defaults to None. e.g.: "Year=[2009,2010]"
             refindex (String, optional): reference index. Defaults to None. e.g.: "Year=[2010]"
         """
         # TODO(error/warning handling): Check the configuration of the model exist
@@ -1087,14 +1268,14 @@ class DDFweak2(_WeakOrientationMixin, _WeakPerDmuResultMixin, DDF2):
         try:
              self.y, self.x,self.b, self.yref,self.xref,self.bref, self.gy, self.gx,self.gb, \
                  self.evaluated_data_index, self.reference_data_index = tools.assert_DEAweak_with_indices(
-                     data, sent, gy, gx,gb, baseindex, refindex
+                     data, sent, gy, gx,gb, evalindex, refindex
                  )
         except AttributeError:
              # Fallback if assert_DEA_with_indices doesn't exist, assuming original assert_DEA
              # In this case, evaluated_data_index and reference_data_index will be ranges 0..N-1
              print("Warning: tools.assert_DEAweak_with_indices not found. Using range indices.")
              self.y,self.x,self.b, self.yref,self.xref,self.bref, self.gy,self.gx,self.gb = \
-            tools.assert_DEAweak(data, sent, gy, gx, gb, baseindex, refindex)
+            tools.assert_DEAweak(data, sent, gy, gx, gb, evalindex, refindex)
              self.evaluated_data_index = list(range(len(self.y)))
              self.reference_data_index = list(range(len(self.yref)))
 
@@ -1457,7 +1638,7 @@ class DDFweak2(_WeakOrientationMixin, _WeakPerDmuResultMixin, DDF2):
     # --- Optimization and Results Methods ---
 
     def optimize(self, email=OPT_LOCAL, solver=OPT_DEFAULT):
-        """Optimize every evaluated DMU and return legacy DDFweak2 columns."""
+        """Optimize every evaluated DMU and return legacy DDFweak columns."""
         return self._solve_per_dmu_models(email=email, solver=solver, include_objective=True)
 
     def _add_efficiency_columns(self, results_df):
@@ -1483,11 +1664,26 @@ class DDFweak2(_WeakOrientationMixin, _WeakPerDmuResultMixin, DDF2):
             results_df['teo'] = self._safe_inverse_one_plus(rho)
         return results_df
 
+class DDFweakRho(DDFweak):
+    """Weak-disposability directional distance function that reports only the
+    raw LP value ``rho`` (plus ``objective_value``), mirroring ``DEA.ddf``'s
+    ``_DdfRho`` behaviour.
+
+    ``DEA.ddf`` leaves the efficiency conversion (``1 - rho`` on an input
+    direction, ``1 / (1 + rho)`` on an output direction) to the caller, and so
+    does this class: it does **not** generate the ``teuo``/``teo`` decomposition
+    columns that :class:`DDFweak` produces.  The chapter derives environmental
+    efficiency ``EB`` and output efficiency ``EO`` from ``rho`` at the call
+    site, exactly as :func:`DEA.ddf` callers derive ``E_tei``/``E_teo``.
+    """
+
+    def _add_efficiency_columns(self, results_df):
+        return results_df
 
 
-class NDDFweak2(_WeakOrientationMixin, DDF2):
+class NDDFweak(_WeakOrientationMixin, _WeakPerDmuResultMixin):
 
-    def __init__(self,data,sent,gy=[1],gx=[0],gb=[1],rts=RTS_VRS1,baseindex=None, refindex=None):
+    def __init__(self,data,sent,gy=[1],gx=[0],gb=[1],rts=RTS_VRS1,evalindex=None, refindex=None):
         """ DDF: Envelopment problem, solving for each DMU individually.
         
         Args:
@@ -1497,7 +1693,7 @@ class NDDFweak2(_WeakOrientationMixin, DDF2):
             gx (list, optional): input distance vector. Defaults to [0].
             gb (list, optional): undesirable output directional vector. Defaults to [1].
             rts (String): RTS_VRS1 (variable returns to scale) or RTS_CRS (constant returns to scale)
-            baseindex (String, optional): estimate index. Defaults to None. e.g.: "Year=[2009,2010]"
+            evalindex (String, optional): estimate index. Defaults to None. e.g.: "Year=[2009,2010]"
             refindex (String, optional): reference index. Defaults to None. e.g.: "Year=[2010]"
         """
         # TODO(error/warning handling): Check the configuration of the model exist
@@ -1506,7 +1702,7 @@ class NDDFweak2(_WeakOrientationMixin, DDF2):
         self.y, self.x,self.b, self.outputvars,self.inputvars,self.unoutputvars, \
             self.yref,self.xref,self.bref, self.gy, self.gx,self.gb, self.wx,self.wy,self.wb, \
             self.evaluated_data_index, self.reference_data_index = tools.assert_NDDFweak_with_indices(
-                data, sent, gy, gx,gb, baseindex, refindex
+                data, sent, gy, gx,gb, evalindex, refindex
             )
 
         self.rts = rts
@@ -1523,6 +1719,14 @@ class NDDFweak2(_WeakOrientationMixin, DDF2):
         self.sum_gb = sum(self.gb)
         # Determine orientation based on gx/gy/gb vectors.
         self._set_weak_orientation_flags()
+        # Return-shape flags for the nddf interface:
+        #  - NDDFweak    (full): emits per-variable beta ("rho<var>") AND the
+        #    te*/weight/aggregate efficiency columns.
+        #  - NDDFweakRho (minimal): emits only the LP value (objective_value)
+        #    plus per-variable beta ("beta_<var>"); efficiency is derived by the
+        #    caller.  The prefix lets subclasses rename the beta columns.
+        self._minimal = False
+        self._beta_prefix = "rho"
         if (self.input_oriented and self.output_oriented)   \
             or (self.input_oriented and self.unoutput_oriented) or (self.output_oriented and self.unoutput_oriented):
              # Original code structure suggests one or the other dominates based on the if/elif.
@@ -2103,23 +2307,29 @@ class NDDFweak2(_WeakOrientationMixin, DDF2):
 
             if rho_df_summary is not None:
                  # Ensure columns are named consistently and in correct order
-                 rho_cols = [f"rho{i}" for i in vars_list]
+                 rho_cols = [f"{self._beta_prefix}{i}" for i in vars_list]
                  te_cols = [f"te{i}" for i in vars_list]
                  wei_te_cols = [f"weight_te{i}" for i in vars_list]
 
                  # Rename columns for clarity in the output DataFrame
                  rho_df_summary.columns = rho_cols
 
-                 # Calculate derived columns
-                 for k, v in enumerate(weights_list):
-                     rho_df_summary[te_cols[k]] = rho_df_summary[rho_cols[k]].apply(te_formula)
-                     rho_df_summary[wei_te_cols[k]] = rho_df_summary[te_cols[k]] * v # Simpler calculation
+                 # The per-variable scaling factors (beta) are always reported.
+                 results_df = pd.concat([results_df, rho_df_summary[rho_cols]], axis=1)
 
-                 # Calculate aggregate efficiency
-                 rho_df_summary[aggregate_col_name] = rho_df_summary[wei_te_cols].sum(axis=1)
+                 # The efficiency decomposition (te*/weight/aggregate) is only
+                 # emitted in the full NDDFweak variant, not in the minimal
+                 # NDDFweakRho variant.
+                 if not self._minimal:
+                     for k, v in enumerate(weights_list):
+                         rho_df_summary[te_cols[k]] = rho_df_summary[rho_cols[k]].apply(te_formula)
+                         rho_df_summary[wei_te_cols[k]] = rho_df_summary[te_cols[k]] * v # Simpler calculation
 
-                 # Concatenate only the relevant new columns to results_df
-                 results_df = pd.concat([results_df, rho_df_summary[rho_cols + te_cols + wei_te_cols + [aggregate_col_name]]], axis=1)
+                     # Calculate aggregate efficiency
+                     rho_df_summary[aggregate_col_name] = rho_df_summary[wei_te_cols].sum(axis=1)
+
+                     # Concatenate only the relevant new columns to results_df
+                     results_df = pd.concat([results_df, rho_df_summary[te_cols + wei_te_cols + [aggregate_col_name]]], axis=1)
 
         if self.input_oriented or self.hyper_orientedyx or self.hyper_orientedxb or self.hyper_orientedyxb:
             rho_df_summary = self.results.get('rhox_df')
@@ -2129,18 +2339,22 @@ class NDDFweak2(_WeakOrientationMixin, DDF2):
             aggregate_col_name = 'tei' # Assuming 'tei' for both input and hyper input part
 
             if rho_df_summary is not None:
-                 rho_cols = [f"rho{i}" for i in vars_list]
+                 rho_cols = [f"{self._beta_prefix}{i}" for i in vars_list]
                  te_cols = [f"te{i}" for i in vars_list]
                  wei_te_cols = [f"weight_te{i}" for i in vars_list]
 
                  rho_df_summary.columns = rho_cols
 
-                 for k, v in enumerate(weights_list):
-                     rho_df_summary[te_cols[k]] = rho_df_summary[rho_cols[k]].apply(te_formula)
-                     rho_df_summary[wei_te_cols[k]] = rho_df_summary[te_cols[k]] * v
+                 # The per-variable scaling factors (beta) are always reported.
+                 results_df = pd.concat([results_df, rho_df_summary[rho_cols]], axis=1)
 
-                 rho_df_summary[aggregate_col_name] = rho_df_summary[wei_te_cols].sum(axis=1)
-                 results_df = pd.concat([results_df, rho_df_summary[rho_cols + te_cols + wei_te_cols + [aggregate_col_name]]], axis=1)
+                 if not self._minimal:
+                     for k, v in enumerate(weights_list):
+                         rho_df_summary[te_cols[k]] = rho_df_summary[rho_cols[k]].apply(te_formula)
+                         rho_df_summary[wei_te_cols[k]] = rho_df_summary[te_cols[k]] * v
+
+                     rho_df_summary[aggregate_col_name] = rho_df_summary[wei_te_cols].sum(axis=1)
+                     results_df = pd.concat([results_df, rho_df_summary[te_cols + wei_te_cols + [aggregate_col_name]]], axis=1)
 
 
         if self.unoutput_oriented or self.hyper_orientedyb or self.hyper_orientedxb or self.hyper_orientedyxb:
@@ -2151,26 +2365,31 @@ class NDDFweak2(_WeakOrientationMixin, DDF2):
             aggregate_col_name = 'teuo' # Assuming this name
 
             if rho_df_summary is not None:
-                 rho_cols = [f"rho{i}" for i in vars_list]
+                 rho_cols = [f"{self._beta_prefix}{i}" for i in vars_list]
                  te_cols = [f"te{i}" for i in vars_list]
                  wei_te_cols = [f"weight_te{i}" for i in vars_list]
 
                  rho_df_summary.columns = rho_cols
 
-                 for k, v in enumerate(weights_list):
-                     rho_df_summary[te_cols[k]] = rho_df_summary[rho_cols[k]].apply(te_formula)
-                     rho_df_summary[wei_te_cols[k]] = rho_df_summary[te_cols[k]] * v
+                 # The per-variable scaling factors (beta) are always reported.
+                 results_df = pd.concat([results_df, rho_df_summary[rho_cols]], axis=1)
 
-                 rho_df_summary[aggregate_col_name] = rho_df_summary[wei_te_cols].sum(axis=1)
-                 results_df = pd.concat([results_df, rho_df_summary[rho_cols + te_cols + wei_te_cols + [aggregate_col_name]]], axis=1)
-        if self.hyper_orientedyb:
-            results_df['teuo2o'] = results_df['teuo'] / results_df['teo']
-        if self.hyper_orientedyx:
-            results_df['tei2o'] = results_df['tei'] / results_df['teo']
-        if self.hyper_orientedyxb:
-            results_df['teiuo2o'] = 0.5*(results_df['tei']+results_df['teuo'] ) / results_df['teo']
-        if self.hyper_orientedxb:
-            results_df['teuo2i'] = results_df['teuo'] / results_df['tei']
+                 if not self._minimal:
+                     for k, v in enumerate(weights_list):
+                         rho_df_summary[te_cols[k]] = rho_df_summary[rho_cols[k]].apply(te_formula)
+                         rho_df_summary[wei_te_cols[k]] = rho_df_summary[te_cols[k]] * v
+
+                     rho_df_summary[aggregate_col_name] = rho_df_summary[wei_te_cols].sum(axis=1)
+                     results_df = pd.concat([results_df, rho_df_summary[te_cols + wei_te_cols + [aggregate_col_name]]], axis=1)
+        if not self._minimal:
+            if self.hyper_orientedyb:
+                results_df['teuo2o'] = results_df['teuo'] / results_df['teo']
+            if self.hyper_orientedyx:
+                results_df['tei2o'] = results_df['tei'] / results_df['teo']
+            if self.hyper_orientedyxb:
+                results_df['teiuo2o'] = 0.5*(results_df['tei']+results_df['teuo'] ) / results_df['teo']
+            if self.hyper_orientedxb:
+                results_df['teuo2i'] = results_df['teuo'] / results_df['tei']
 
         objective_df = self.get_objective_value()
         objective_df.name = 'objective_value'
@@ -2388,266 +2607,26 @@ class NDDFweak2(_WeakOrientationMixin, DDF2):
                     print(f"DMU '{ind}' not found in the evaluated set.")
 
 
+class NDDFweakRho(NDDFweak):
+    """Nonradial DDF that reports only the raw LP value (``objective_value``)
+    plus each variable's scaling factor ``beta`` as columns ``beta_<varname>``,
+    mirroring ``DEAweak.ddf`` / ``DEA.ddf`` (which leave efficiency decomposition
+    to the caller).
 
+    In the default direction (``gx=0, gy=1, gb=1``) the returned beta columns are
+    ``beta_Y`` and ``beta_CO2``.  Environmental efficiency ``EB`` and output
+    efficiency ``EO`` are derived at the call site.  Under the equal group-weight
+    specification used by the standard case (``wy = wb = 0.5``):
 
+        EB = 0.5 * (1 - beta_CO2),   EO = 0.5 / (1 + beta_Y),   EBO = EB / EO.
 
-class DEAweakDUAL(_WeakDualResultMixin, DEAweak):
+    These coincide with the legacy ``teuo`` / ``teo`` / ``teuo2o`` columns that
+    this class no longer emits.
+    """
 
-    def __init__(self, data, sent, gy, gx,gb , rts, baseindex=None, refindex=None):
-        """DEA: Envelopment problem
-
-        Args:
-            data
-            sent
-            gy (list, optional): output distance vector. Defaults to [1].
-            gx (list, optional): input distance vector. Defaults to [0].
-            gb (list, optional): undesirable output directional vector. Defaults to [1].
-            rts (String): RTS_VRS (variable returns to scale) or RTS_CRS (constant returns to scale)
-            baseindex (String, optional): estimate index. Defaults to None. e.g.: "Year=[2009,2010]"
-            refindex (String, optional): reference index. Defaults to None. e.g.: "Year=[2010]"
-        """
-        # TODO(error/warning handling): Check the configuration of the model exist
-        self.y, self.x, self.b,  self.gy, self.gx, self.gb, self.yref, self.xref, self.bref = \
-            tools.assert_DEAweak(data, sent, gy, gx, gb, baseindex, refindex)
-        self.rts = rts
-
-
-        # Initialize DEA model
-        self.__model__ = ConcreteModel()
-
-        # Initialize sets
-        self.__model__.R = Set(initialize=range(len(self.yref)))
-        self.__model__.I = Set(initialize=range(len(self.y)))
-        self.__model__.J = Set(initialize=range(len(self.x[0])))
-        self.__model__.K = Set(initialize=range(len(self.y[0])))
-        self.__model__.L = Set(initialize=range(len(self.b[0])))
-
-        # Initialize variable
-        self.__model__.delta = Var(self.__model__.I, self.__model__.J, bounds=(
-            0.0, None), doc='multiplier x')
-        self.__model__.gamma = Var(self.__model__.I, self.__model__.K, bounds=(
-            0.0, None), doc='multiplier y')
-        self.__model__.kappa = Var(self.__model__.I, self.__model__.L,  doc='multiplier b')
-
-        if self.rts == RTS_VRS1:
-            self.__model__.alpha = Var(self.__model__.I,               bounds=(
-            0.0, None), doc='variable return to scale')
-        elif self.rts == RTS_VRS2:
-            self.__model__.alpha = Var(self.__model__.I,               bounds=(
-            None, None), doc='variable return to scale')
-        # Setup the objective function and constraints
-        self.__model__.objective = Objective(
-            rule=self.__objective_rule(), sense=minimize, doc='objective function')
-
-        self.__model__.first = Constraint(
-            self.__model__.I, self.__model__.R, rule=self.__first_rule(), doc='technology constraint')
-        self.__model__.second = Constraint(
-            self.__model__.I,                   rule=self.__second_rule(), doc='normalization constraint')
-        if self.rts == RTS_VRS2:
-            self.__model__.third = Constraint(
-                self.__model__.I, rule=self.__third_rule(), doc='weak disposability constraint')
-        # Optimize model
-        self.optimization_status = 0
-        self.problem_status = 0
-
-    def __objective_rule(self):
-        """Return the proper objective function"""
-        def objective_rule(model):
-            return sum(sum(model.delta[o, j] * self.x[o][j]* (1-self.gx[j]) for o in model.I) for j in model.J) - \
-                sum(sum(model.gamma[o, k] * self.y[o][k]* (1-self.gb[k]) for o in model.I) for k in model.K) +\
-                sum(sum(model.kappa[o,l] * self.b[o][l]* (1-self.gb[l]) for o in model.I) for l in model.L)
-
-        return objective_rule
-
-
-    def __first_rule(self):
-        """Return the proper technology constraint"""
-        if self.rts == RTS_VRS1:
-            def first_rule(model, o, r):
-                return sum(model.delta[o, j] * self.xref[r][j] for j in model.J) -\
-                    sum(model.gamma[o, k] * self.yref[r][k] for k in model.K) + \
-                    sum(model.kappa[o, l] * self.bref[r][l] for l in model.L) - model.alpha[o] >= 0
-            return first_rule
-
-        elif self.rts == RTS_VRS2:
-            def first_rule(model, o, r):
-                return sum(model.delta[o, j] * self.xref[r][j] for j in model.J) -\
-                    sum(model.gamma[o, k] * self.yref[r][k] for k in model.K) + \
-                    sum(model.kappa[o, l] * self.bref[r][l] for l in model.L) + model.alpha[o] >= 0
-            return first_rule
-
-        elif self.rts == RTS_CRS:
-            def first_rule(model, o, r):
-                return sum(model.delta[o, j] * self.xref[r][j] for j in model.J) -\
-                    sum(model.gamma[o, k] * self.yref[r][k] for k in model.K) + \
-                    sum(model.kappa[o, l] * self.bref[r][l] for l in model.L) >= 0
-            return first_rule
-
-    def __second_rule(self):
-        """Return the proper normalization constraint"""
-        if sum(self.gx) >= 1:
-            def second_rule(model, o):
-                return sum(model.delta[o, j] * self.x[o][j]* self.gx[j] for j in model.J) == 1
-            return second_rule
-        elif sum(self.gy) >= 1:
-
-            def second_rule(model, o):
-                return sum(model.gamma[o, k] * self.y[o][k]* self.gy[k] for k in model.K) == 1
-            return second_rule
-        elif sum(self.gb) >= 1:
-
-            def second_rule(model, o):
-                return sum(model.kappa[o, l] * self.b[o][l]* self.gb[l] for l in model.L) == 1
-            return second_rule
-
-    def __third_rule(self):
-        """Return the proper weak disposability constraint"""
-
-        def third_rule(model, o, r):
-            return sum(model.delta[o, j] * self.xref[r][j] for j in model.J) + model.alpha[o] >= 0
-
-        return third_rule
-
-    def get_efficiency(self):
-        """Return efficiency value by array"""
-        tools.assert_optimized(self.optimization_status)
-        if sum(self.gx) >= 1:
-            if self.rts == RTS_CRS:
-                return (np.sum(self.get_delta()*self.y, axis=1)).reshape(len(self.y), 1)
-            else:
-                return (np.sum(self.get_delta()*self.y, axis=1)).reshape(len(self.y), 1) + self.get_alpha().reshape(len(self.y), 1)
-        if sum(self.gy) >= 1:
-            if self.rts == RTS_CRS:
-                return (np.sum(self.get_gamma()*self.x, axis=1)).reshape(len(self.x), 1)
-            else:
-                return (np.sum(self.get_gamma()*self.x, axis=1)).reshape(len(self.x), 1) + self.get_alpha().reshape(len(self.x), 1)
-        if sum(self.gb) >= 1:
-            if self.rts == RTS_CRS:
-                return (np.sum(self.get_delta()*self.y, axis=1)).reshape(len(self.y), 1)
-            else:
-                return (np.sum(self.get_delta()*self.y, axis=1)).reshape(len(self.y), 1) + self.get_alpha().reshape(len(self.y), 1)
-
-
-
-
-class DDFweakDUAL(DEAweakDUAL):
-    def __init__(self, y, x, b, gy=[1], gx=[1], gb=[1], rts=RTS_VRS1, yref=None, xref=None, bref=None):
-        """DDFweak: Directional distance function with undesirable output
-
-        Args:
-            data
-            sent
-            gy (list, optional): output directional vector. Defaults to [1].
-            gx (list, optional): input directional vector. Defaults to [1].
-            gb (list, optional): undesirable output directional vector. Defaults to [1].
-            rts (String): RTS_VRS (variable returns to scale) or RTS_CRS (constant returns to scale)
-            baseindex (String, optional): estimate index. Defaults to None. e.g.: "Year=[2009,2010]"
-            refindex (String, optional): reference index. Defaults to None. e.g.: "Year=[2010]"
-        """
-
-        if yref is None:
-            yref = y
-        if xref is None:
-            xref = x
-        if bref is None:
-            bref = b
-        self.y, self.x, self.b, self.gy, self.gx, self.gb, self.yref, self.xref, self.bref = \
-            tools.assert_DDFweak1(y, x, b, gy, gx, gb, yref, xref, bref)
-        self.rts = rts
-
-
-        # Initialize DEA model
-        self.__model__ = ConcreteModel()
-        self.__model__.R = Set(initialize=range(len(self.yref)))
-
-        # Initialize sets
-        self.__model__.I = Set(initialize=range(len(self.y)))
-        self.__model__.J = Set(initialize=range(len(self.x[0])))
-        self.__model__.K = Set(initialize=range(len(self.y[0])))
-        self.__model__.L = Set(initialize=range(len(self.b[0])))
-
-        # Initialize variable
-        self.__model__.delta = Var(self.__model__.I, self.__model__.J, bounds=(
-            0.0, None), doc='multiplier x')
-        self.__model__.gamma = Var(self.__model__.I, self.__model__.K, bounds=(
-            0.0, None), doc='multiplier y')
-        self.__model__.kappa = Var(self.__model__.I, self.__model__.L,  doc='multiplier b')
-
-        if self.rts == RTS_VRS1:
-            self.__model__.alpha = Var(self.__model__.I,               bounds=(
-            0.0, None), doc='variable return to scale')
-        elif self.rts == RTS_VRS2:
-            self.__model__.alpha = Var(self.__model__.I,               bounds=(
-            None, None), doc='variable return to scale')
-
-        # Setup the objective function and constraints
-        self.__model__.objective = Objective(
-            rule=self.__objective_rule(), sense=minimize, doc='objective function')
-
-        self.__model__.first = Constraint(
-            self.__model__.I, self.__model__.R, rule=self.__first_rule(), doc='technology constraint')
-        self.__model__.second = Constraint(
-            self.__model__.I, rule=self.__second_rule(), doc='normalization constraint')
-        if self.rts == RTS_VRS2:
-            self.__model__.third = Constraint(
-                self.__model__.I, rule=self.__third_rule(), doc='weak disposability constraint')
-        # Optimize model
-        self.optimization_status = 0
-        self.problem_status = 0
-
-    def __objective_rule(self):
-        """Return the proper objective function"""
-        if self.rts == RTS_VRS1:
-
-            def objective_rule(model):
-                return sum(sum(model.delta[o, j] * self.x[o][j] for o in model.I) for j in model.J) -\
-                    sum(sum(model.gamma[o, k] * self.y[o][k] for o in model.I) for k in model.K) + \
-                    sum(sum(model.kappa[o, l] * self.b[o][l] for o in model.I) for l in model.L)
-            return objective_rule
-
-        elif self.rts == RTS_VRS2:
-
-            def objective_rule(model):
-                return sum(sum(model.delta[o, j] * self.x[o][j] for o in model.I) for j in model.J) -\
-                    sum(sum(model.gamma[o, k] * self.y[o][k] for o in model.I) for k in model.K) + \
-                    sum(sum(model.kappa[o, l] * self.b[o][l] for o in model.I) for l in model.L) + \
-                    sum(model.alpha[o] for o in model.I)
-            return objective_rule
-    def __first_rule(self):
-        """Return the proper technology constraint"""
-        if self.rts == RTS_VRS1:
-            def first_rule(model, o, r):
-                return sum(model.delta[o, j] * self.xref[r][j] for j in model.J) -\
-                    sum(model.gamma[o, k] * self.yref[r][k] for k in model.K) + \
-                    sum(model.kappa[o, l] * self.bref[r][l] for l in model.L) - model.alpha[o] >= 0
-            return first_rule
-        elif self.rts == RTS_VRS2:
-            def first_rule(model, o, r):
-                return sum(model.delta[o, j] * self.xref[r][j] for j in model.J) -\
-                    sum(model.gamma[o, k] * self.yref[r][k] for k in model.K) + \
-                    sum(model.kappa[o, l] * self.bref[r][l] for l in model.L) + model.alpha[o] >= 0
-            return first_rule
-        elif self.rts == RTS_CRS:
-            def first_rule(model, o, r):
-                return sum(model.delta[o, j] * self.xref[r][j] for j in model.J) -\
-                    sum(model.gamma[o, k] * self.yref[r][k] for k in model.K) + \
-                    sum(model.kappa[o, l] * self.bref[r][l] for l in model.L) >= 0
-            return first_rule
-
-
-    def __second_rule(self):
-        """Return the proper normalization constraint"""
-        def second_rule(model, o):
-            return sum(model.delta[o, j] *self.gx[j]* self.x[o][j] for j in model.J) +\
-                sum(model.gamma[o, k] *self.gy[k]* self.y[o][k] for k in model.K) +\
-                sum(model.kappa[o, l] *self.gb[l]* self.b[o][l] for l in model.L) == 1
-        return second_rule
-
-    def __third_rule(self):
-        """Return the proper weak disposability constraint"""
-
-        def third_rule(model, o, r):
-            return sum(model.delta[o, j] * self.xref[r][j] for j in model.J) + model.alpha[o] >= 0
-
-        return third_rule
-
+    def __init__(self, data, sent, gy=[1], gx=[0], gb=[1], rts=RTS_VRS1,
+                 evalindex=None, refindex=None):
+        super().__init__(data, sent, gy=gy, gx=gx, gb=gb, rts=rts,
+                         evalindex=evalindex, refindex=refindex)
+        self._minimal = True
+        self._beta_prefix = "beta_"

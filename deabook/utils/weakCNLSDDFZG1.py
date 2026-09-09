@@ -3,7 +3,7 @@ from ..CNLSSDFDDFweak import CNLSDDFweak
 from pyomo.environ import Constraint
 
 class weakCNLSDDFZG1(CNLSDDFweak):
-    def __init__(self, data, sent, z, cutactive, gy, gx, gb, fun, rts, baseindex=None, refindex=None):
+    def __init__(self, data, sent, z, cutactive, gy, gx, gb, fun, rts, evalindex=None, refindex=None):
         super().__init__(data, sent, z=z, gy=gy, gx=gx, gb=gb, fun=fun, rts=rts)
         pairs = cg_pairs(cutactive)
         replace_constraint(self, 'afriat_rule', pairs, self._CNLSDDFweak__afriat_rule(), 'active afriat inequality')
@@ -23,8 +23,8 @@ class weakCNLSDDFZG1(CNLSDDFweak):
         return self.get_kappa()
 
 class weakCNLSDDFZG2(weakCNLSDDFZG1):
-    def __init__(self, data, sent, z, cutactive, active, activeweak, gy, gx, gb, fun, rts, baseindex=None, refindex=None):
-        super().__init__(data, sent, z, cutactive, gy, gx, gb, fun, rts, baseindex=baseindex, refindex=refindex)
+    def __init__(self, data, sent, z, cutactive, active, activeweak, gy, gx, gb, fun, rts, evalindex=None, refindex=None):
+        super().__init__(data, sent, z, cutactive, gy, gx, gb, fun, rts, evalindex=evalindex, refindex=refindex)
         replace_constraint(self, 'afriat_rule', cg_pairs(cutactive, active), self._CNLSDDFweak__afriat_rule(), 'active afriat inequality')
         if hasattr(self.__model__, 'red_factor_rule'):
             def red_rule(model, i, h):

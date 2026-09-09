@@ -296,12 +296,12 @@ def assert_valid_basic_data(y, x, z=None):
 
     return y, x, z
 
-def assert_DEA(data, sent, gy, gx,baseindex,refindex):
+def assert_DEA(data, sent, gy, gx,evalindex,refindex):
 
-    if type(baseindex) != type(None):
-        varname1 = baseindex.split('=')[0]
-        print(baseindex)
-        varvalue1 = ast.literal_eval(baseindex.split('=')[1])
+    if type(evalindex) != type(None):
+        varname1 = evalindex.split('=')[0]
+        print(evalindex)
+        varvalue1 = ast.literal_eval(evalindex.split('=')[1])
         data_base= data.loc[data[varname1].isin(varvalue1)]
     else:
         data_base= data
@@ -372,7 +372,7 @@ def assert_DEA1(y, x, yref, xref, gy, gx):
     return y, x, yref, xref, gy, gx
 
 
-def assert_DEA_with_indices(data, sent, gy, gx, baseindex, refindex):
+def assert_DEA_with_indices(data, sent, gy, gx, evalindex, refindex):
     """
     Validates DEA input data and returns processed numpy arrays and original indices.
 
@@ -381,7 +381,7 @@ def assert_DEA_with_indices(data, sent, gy, gx, baseindex, refindex):
         sent (str): String specifying input and output variables. e.g., "K L = Y"
         gy (list): Output distance vector.
         gx (list): Input distance vector.
-        baseindex (str, optional): Filter for evaluated DMUs. e.g., "Year=[2010]". Defaults to None (all DMUs).
+        evalindex (str, optional): Filter for evaluated DMUs. e.g., "Year=[2010]". Defaults to None (all DMUs).
         refindex (str, optional): Filter for reference DMUs. e.g., "Year=[2010]". Defaults to None (all DMUs).
 
     Returns:
@@ -395,23 +395,23 @@ def assert_DEA_with_indices(data, sent, gy, gx, baseindex, refindex):
     Raises:
         ValueError: If data format or dimensions are inconsistent.
     """
-    # 1. Filter data based on baseindex to get evaluated DMUs
-    if baseindex is not None:
-        parts = baseindex.split('=')
+    # 1. Filter data based on evalindex to get evaluated DMUs
+    if evalindex is not None:
+        parts = evalindex.split('=')
         if len(parts) != 2:
-            raise ValueError("Invalid 'baseindex' format. Expected 'varname=value'")
+            raise ValueError("Invalid 'evalindex' format. Expected 'varname=value'")
         varname1 = parts[0].strip()
         try:
             varvalue1 = ast.literal_eval(parts[1].strip())
         except (ValueError, SyntaxError):
-             raise ValueError(f"Invalid value format in 'baseindex': {parts[1].strip()}")
+             raise ValueError(f"Invalid value format in 'evalindex': {parts[1].strip()}")
 
         # Ensure varvalue1 is iterable for isin
         if not isinstance(varvalue1, (list, tuple, set)):
              varvalue1 = [varvalue1]
 
         if varname1 not in data.columns:
-             raise ValueError(f"Variable '{varname1}' specified in 'baseindex' not found in data columns.")
+             raise ValueError(f"Variable '{varname1}' specified in 'evalindex' not found in data columns.")
 
         # Use .loc for filtering and .copy() to avoid potential SettingWithCopyWarning
         data_base = data.loc[data[varname1].isin(varvalue1)].copy()
@@ -419,7 +419,7 @@ def assert_DEA_with_indices(data, sent, gy, gx, baseindex, refindex):
         data_base = data.copy() # Use .copy() for default case too
 
     if data_base.empty:
-         raise ValueError("Filtering with 'baseindex' resulted in an empty dataset for evaluated DMUs.")
+         raise ValueError("Filtering with 'evalindex' resulted in an empty dataset for evaluated DMUs.")
 
     # Store evaluated DMU indices (original index labels)
     evaluated_data_index = data_base.index.tolist()
@@ -655,11 +655,11 @@ def assert_valid_mupltiple_y_data(y, x):
     return y, x
 
 
-def assert_DEAweak(data, sent, gy, gx, gb, baseindex, refindex):
-    if type(baseindex) != type(None):
-        varname1 = baseindex.split('=')[0]
-        print(baseindex)
-        varvalue1 = ast.literal_eval(baseindex.split('=')[1])
+def assert_DEAweak(data, sent, gy, gx, gb, evalindex, refindex):
+    if type(evalindex) != type(None):
+        varname1 = evalindex.split('=')[0]
+        print(evalindex)
+        varvalue1 = ast.literal_eval(evalindex.split('=')[1])
         data_base= data.loc[data[varname1].isin(varvalue1)]
     else:
         data_base= data
@@ -758,7 +758,7 @@ def assert_DEAweak1(y, x, b, gy, gx, gb, yref, xref, bref):
     return y, x, b,yref, xref, bref,gy, gx, gb
 
 
-def assert_DEAweak_with_indices(data, sent, gy, gx,gb, baseindex, refindex):
+def assert_DEAweak_with_indices(data, sent, gy, gx,gb, evalindex, refindex):
     """
     Validates DEA input data and returns processed numpy arrays and original indices.
 
@@ -768,7 +768,7 @@ def assert_DEAweak_with_indices(data, sent, gy, gx,gb, baseindex, refindex):
         gy (list): Output distance vector.
         gx (list): Input distance vector.
         gb (list): Input distance vector.
-        baseindex (str, optional): Filter for evaluated DMUs. e.g., "Year=[2010]". Defaults to None (all DMUs).
+        evalindex (str, optional): Filter for evaluated DMUs. e.g., "Year=[2010]". Defaults to None (all DMUs).
         refindex (str, optional): Filter for reference DMUs. e.g., "Year=[2010]". Defaults to None (all DMUs).
 
     Returns:
@@ -782,23 +782,23 @@ def assert_DEAweak_with_indices(data, sent, gy, gx,gb, baseindex, refindex):
     Raises:
         ValueError: If data format or dimensions are inconsistent.
     """
-    # 1. Filter data based on baseindex to get evaluated DMUs
-    if baseindex is not None:
-        parts = baseindex.split('=')
+    # 1. Filter data based on evalindex to get evaluated DMUs
+    if evalindex is not None:
+        parts = evalindex.split('=')
         if len(parts) != 2:
-            raise ValueError("Invalid 'baseindex' format. Expected 'varname=value'")
+            raise ValueError("Invalid 'evalindex' format. Expected 'varname=value'")
         varname1 = parts[0].strip()
         try:
             varvalue1 = ast.literal_eval(parts[1].strip())
         except (ValueError, SyntaxError):
-             raise ValueError(f"Invalid value format in 'baseindex': {parts[1].strip()}")
+             raise ValueError(f"Invalid value format in 'evalindex': {parts[1].strip()}")
 
         # Ensure varvalue1 is iterable for isin
         if not isinstance(varvalue1, (list, tuple, set)):
              varvalue1 = [varvalue1]
 
         if varname1 not in data.columns:
-             raise ValueError(f"Variable '{varname1}' specified in 'baseindex' not found in data columns.")
+             raise ValueError(f"Variable '{varname1}' specified in 'evalindex' not found in data columns.")
 
         # Use .loc for filtering and .copy() to avoid potential SettingWithCopyWarning
         data_base = data.loc[data[varname1].isin(varvalue1)].copy()
@@ -806,7 +806,7 @@ def assert_DEAweak_with_indices(data, sent, gy, gx,gb, baseindex, refindex):
         data_base = data.copy() # Use .copy() for default case too
 
     if data_base.empty:
-         raise ValueError("Filtering with 'baseindex' resulted in an empty dataset for evaluated DMUs.")
+         raise ValueError("Filtering with 'evalindex' resulted in an empty dataset for evaluated DMUs.")
 
     # Store evaluated DMU indices (original index labels)
     evaluated_data_index = data_base.index.tolist()
@@ -1246,11 +1246,11 @@ def assert_CNLSSDFweakmeta(data, sent, z, gy=[1], gx=[0], gb=[0]):
 
 
 
-def assert_DDF(data, sent, gy, gx,baseindex, refindex):
-    if type(baseindex) != type(None):
-        varname1 = baseindex.split('=')[0]
-        print(baseindex)
-        varvalue1 = ast.literal_eval(baseindex.split('=')[1])
+def assert_DDF(data, sent, gy, gx,evalindex, refindex):
+    if type(evalindex) != type(None):
+        varname1 = evalindex.split('=')[0]
+        print(evalindex)
+        varvalue1 = ast.literal_eval(evalindex.split('=')[1])
         data_base= data.loc[data[varname1].isin(varvalue1)]
     else:
         data_base= data
@@ -1329,7 +1329,7 @@ def assert_DDF1(y, x, yref, xref, gy, gx):
 
 
 
-def assert_DDF_with_indices(data, sent, gy, gx, baseindex, refindex):
+def assert_DDF_with_indices(data, sent, gy, gx, evalindex, refindex):
     """
     Validates DEA input data and returns processed numpy arrays and original indices.
 
@@ -1338,7 +1338,7 @@ def assert_DDF_with_indices(data, sent, gy, gx, baseindex, refindex):
         sent (str): String specifying input and output variables. e.g., "K L = Y"
         gy (list): Output distance vector.
         gx (list): Input distance vector.
-        baseindex (str, optional): Filter for evaluated DMUs. e.g., "Year=[2010]". Defaults to None (all DMUs).
+        evalindex (str, optional): Filter for evaluated DMUs. e.g., "Year=[2010]". Defaults to None (all DMUs).
         refindex (str, optional): Filter for reference DMUs. e.g., "Year=[2010]". Defaults to None (all DMUs).
 
     Returns:
@@ -1352,23 +1352,23 @@ def assert_DDF_with_indices(data, sent, gy, gx, baseindex, refindex):
     Raises:
         ValueError: If data format or dimensions are inconsistent.
     """
-    # 1. Filter data based on baseindex to get evaluated DMUs
-    if baseindex is not None:
-        parts = baseindex.split('=')
+    # 1. Filter data based on evalindex to get evaluated DMUs
+    if evalindex is not None:
+        parts = evalindex.split('=')
         if len(parts) != 2:
-            raise ValueError("Invalid 'baseindex' format. Expected 'varname=value'")
+            raise ValueError("Invalid 'evalindex' format. Expected 'varname=value'")
         varname1 = parts[0].strip()
         try:
             varvalue1 = ast.literal_eval(parts[1].strip())
         except (ValueError, SyntaxError):
-             raise ValueError(f"Invalid value format in 'baseindex': {parts[1].strip()}")
+             raise ValueError(f"Invalid value format in 'evalindex': {parts[1].strip()}")
 
         # Ensure varvalue1 is iterable for isin
         if not isinstance(varvalue1, (list, tuple, set)):
              varvalue1 = [varvalue1]
 
         if varname1 not in data.columns:
-             raise ValueError(f"Variable '{varname1}' specified in 'baseindex' not found in data columns.")
+             raise ValueError(f"Variable '{varname1}' specified in 'evalindex' not found in data columns.")
 
         # Use .loc for filtering and .copy() to avoid potential SettingWithCopyWarning
         data_base = data.loc[data[varname1].isin(varvalue1)].copy()
@@ -1376,7 +1376,7 @@ def assert_DDF_with_indices(data, sent, gy, gx, baseindex, refindex):
         data_base = data.copy() # Use .copy() for default case too
 
     if data_base.empty:
-         raise ValueError("Filtering with 'baseindex' resulted in an empty dataset for evaluated DMUs.")
+         raise ValueError("Filtering with 'evalindex' resulted in an empty dataset for evaluated DMUs.")
 
     # Store evaluated DMU indices (original index labels)
     evaluated_data_index = data_base.index.tolist()
@@ -1514,11 +1514,11 @@ def assert_DDF_with_indices(data, sent, gy, gx, baseindex, refindex):
 
 
 
-def assert_DDFweak(data,sent, gy, gx, gb,baseindex,refindex):
-    if type(baseindex) != type(None):
-        varname1 = baseindex.split('=')[0]
-        print(baseindex)
-        varvalue1 = ast.literal_eval(baseindex.split('=')[1])
+def assert_DDFweak(data,sent, gy, gx, gb,evalindex,refindex):
+    if type(evalindex) != type(None):
+        varname1 = evalindex.split('=')[0]
+        print(evalindex)
+        varvalue1 = ast.literal_eval(evalindex.split('=')[1])
         data_base= data.loc[data[varname1].isin(varvalue1)]
     else:
         data_base= data
@@ -1620,11 +1620,11 @@ def assert_DDFweak1(y, x, b, gy, gx, gb, yref, xref, bref):
 
 
 
-def assert_NDDFweak(data,sent, gy, gx, gb,baseindex,refindex):
-    if type(baseindex) != type(None):
-        varname1 = baseindex.split('=')[0]
-        print(baseindex)
-        varvalue1 = ast.literal_eval(baseindex.split('=')[1])
+def assert_NDDFweak(data,sent, gy, gx, gb,evalindex,refindex):
+    if type(evalindex) != type(None):
+        varname1 = evalindex.split('=')[0]
+        print(evalindex)
+        varvalue1 = ast.literal_eval(evalindex.split('=')[1])
         data_base= data.loc[data[varname1].isin(varvalue1)]
     else:
         data_base= data
@@ -1728,7 +1728,7 @@ def assert_NDDFweak1(y, x, b, gy, gx, gb, yref, xref, bref):
 
 
 
-def assert_NDDFweak_with_indices(data, sent, gy, gx,gb, baseindex, refindex):
+def assert_NDDFweak_with_indices(data, sent, gy, gx,gb, evalindex, refindex):
     """
     Validates DEA input data and returns processed numpy arrays and original indices.
 
@@ -1738,7 +1738,7 @@ def assert_NDDFweak_with_indices(data, sent, gy, gx,gb, baseindex, refindex):
         gy (list): Output distance vector.
         gx (list): Input distance vector.
         gb (list): Input distance vector.
-        baseindex (str, optional): Filter for evaluated DMUs. e.g., "Year=[2010]". Defaults to None (all DMUs).
+        evalindex (str, optional): Filter for evaluated DMUs. e.g., "Year=[2010]". Defaults to None (all DMUs).
         refindex (str, optional): Filter for reference DMUs. e.g., "Year=[2010]". Defaults to None (all DMUs).
 
     Returns:
@@ -1752,23 +1752,23 @@ def assert_NDDFweak_with_indices(data, sent, gy, gx,gb, baseindex, refindex):
     Raises:
         ValueError: If data format or dimensions are inconsistent.
     """
-    # 1. Filter data based on baseindex to get evaluated DMUs
-    if baseindex is not None:
-        parts = baseindex.split('=')
+    # 1. Filter data based on evalindex to get evaluated DMUs
+    if evalindex is not None:
+        parts = evalindex.split('=')
         if len(parts) != 2:
-            raise ValueError("Invalid 'baseindex' format. Expected 'varname=value'")
+            raise ValueError("Invalid 'evalindex' format. Expected 'varname=value'")
         varname1 = parts[0].strip()
         try:
             varvalue1 = ast.literal_eval(parts[1].strip())
         except (ValueError, SyntaxError):
-             raise ValueError(f"Invalid value format in 'baseindex': {parts[1].strip()}")
+             raise ValueError(f"Invalid value format in 'evalindex': {parts[1].strip()}")
 
         # Ensure varvalue1 is iterable for isin
         if not isinstance(varvalue1, (list, tuple, set)):
              varvalue1 = [varvalue1]
 
         if varname1 not in data.columns:
-             raise ValueError(f"Variable '{varname1}' specified in 'baseindex' not found in data columns.")
+             raise ValueError(f"Variable '{varname1}' specified in 'evalindex' not found in data columns.")
 
         # Use .loc for filtering and .copy() to avoid potential SettingWithCopyWarning
         data_base = data.loc[data[varname1].isin(varvalue1)].copy()
@@ -1776,7 +1776,7 @@ def assert_NDDFweak_with_indices(data, sent, gy, gx,gb, baseindex, refindex):
         data_base = data.copy() # Use .copy() for default case too
 
     if data_base.empty:
-         raise ValueError("Filtering with 'baseindex' resulted in an empty dataset for evaluated DMUs.")
+         raise ValueError("Filtering with 'evalindex' resulted in an empty dataset for evaluated DMUs.")
 
     # Store evaluated DMU indices (original index labels)
     evaluated_data_index = data_base.index.tolist()
@@ -2456,11 +2456,11 @@ def assert_valid_yxb(sent,gy,gx,gb):
     gy.columns,gx.columns ,=outputvars,inputvars,
     return outputvars,inputvars,unoutputvars,gy,gx,gb
 
-def assert_valid_yxb2(baseindex,refindex,data,outputvars,inputvars,unoutputvars):
+def assert_valid_yxb2(evalindex,refindex,data,outputvars,inputvars,unoutputvars):
 
-    if type(baseindex) != type(None):
-        varname1 = baseindex.split('=')[0]
-        varvalue1 = ast.literal_eval(baseindex.split('=')[1])
+    if type(evalindex) != type(None):
+        varname1 = evalindex.split('=')[0]
+        varvalue1 = ast.literal_eval(evalindex.split('=')[1])
         y, x, b = data.loc[data[varname1].isin(varvalue1), outputvars
         ], data.loc[data[varname1].isin(varvalue1), inputvars
         ], data.loc[data[varname1].isin(varvalue1), unoutputvars
@@ -2484,12 +2484,12 @@ def assert_valid_yxb2(baseindex,refindex,data,outputvars,inputvars,unoutputvars)
 
 
 
-def assert_valid_yxbz2(baseindex,refindex,data,outputvars,inputvars,unoutputvars,zvars):
+def assert_valid_yxbz2(evalindex,refindex,data,outputvars,inputvars,unoutputvars,zvars):
 
 
-    if type(baseindex) != type(None):
-        varname = baseindex.split('=')[0]
-        yr = ast.literal_eval(baseindex.split('=')[1])
+    if type(evalindex) != type(None):
+        varname = evalindex.split('=')[0]
+        yr = ast.literal_eval(evalindex.split('=')[1])
         y, x, b,z = data.loc[data[varname].isin(yr), outputvars], \
                     data.loc[data[varname].isin(yr), inputvars], \
                     data.loc[data[varname].isin(yr), unoutputvars], \
