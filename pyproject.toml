@@ -6,7 +6,7 @@ dynamic = [
 ]
 description = "dea"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 keywords = [
     "deabook",
 ]
@@ -18,7 +18,6 @@ classifiers = [
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Natural Language :: English",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -29,8 +28,10 @@ classifiers = [
 deabook = "deabook.cli:main"
 
 [project.optional-dependencies]
+book = ["cvxpy>=1.6", "clarabel>=0.9", "highspy>=1.7"]
+test = ["pytest>=8", "highspy>=1.7"]
 all = [
-    "deabook[extra]",
+    "deabook[extra,book,test]",
 ]
 
 extra = [
@@ -44,14 +45,14 @@ include = ["deabook*"]
 exclude = ["docs*"]
 
 [tool.setuptools.package-data]
-deabook = ["data/*"]
+deabook = ["example/book_cases/data/*.csv", "example/book_cases/data/*.xlsx", "example/book_cases/data/*.md"]
 
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}
 
 
 [tool.distutils.bdist_wheel]
-universal = true
+universal = false
 
 
 [tool.bumpversion]

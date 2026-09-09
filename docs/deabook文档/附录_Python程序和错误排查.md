@@ -285,8 +285,9 @@ print("=" * 50)
 from pathlib import Path
 
 # 自动使用正确的路径分隔符
-data_path = Path('data') / 'Ex3.dta'
-# Windows: data\Ex3.dta, macOS/Linux: data/Ex3.dta
+from deabook import data_path
+data_file = Path(data_path("us_electric_plants.csv"))
+# data_path定位安装包中的案例数据，Path适配各操作系统。
 
 # 兼容三种操作系统的写法
 data_file = Path.home() / 'Documents' / 'dea_data' / 'sample.csv'

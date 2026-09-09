@@ -1,0 +1,6 @@
+............................................ss.......................... [ 98%]
+.                                                                        [100%]
+=========================== short test summary info ===========================
+SKIPPED [1] tests\test_deabook.py:367: CQERDFDDFweak requires the optional 'amplpy' solver package
+SKIPPED [1] tests\test_deabook.py:376: CQERDFDDFweak requires the optional 'amplpy' solver package
+71 passed, 2 skipped in 11.50s

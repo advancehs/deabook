@@ -16,11 +16,15 @@ jobs:
             - name: Set up Python
               uses: actions/setup-python@v5
               with:
-                  python-version: "3.x"
+                  python-version: "3.11"
             - name: Install dependencies
               run: |
                   python -m pip install --upgrade pip
                   pip install setuptools wheel twine build
+            - name: Test before publishing
+              run: |
+                  python -m pip install ".[test]"
+                  python -m pytest tests -q
             - name: Build and publish
               env:
                   TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}

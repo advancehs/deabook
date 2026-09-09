@@ -1,0 +1,3 @@
+CH01 DONE rows=19 table=8
+Installed wheel: all five datasets readable; import has no output writes; CLI produces exhibits.
+Wheel metadata and contents verified: deabook-0.0.11-py3-none-any.whl

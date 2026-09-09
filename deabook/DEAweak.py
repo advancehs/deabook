@@ -1003,6 +1003,7 @@ def _ratio_global(glob, cont, id):
     ``mqpi = MEFFCH * MTECHCH``.
     """
     bpg = pd.DataFrame({id: glob[id], "BPG": glob["D11"] / cont["D11"]}, index=glob.index)
+    bpg.attrs = cont.attrs.copy()
     out = pd.DataFrame(index=glob.index)
     out["D11"] = glob["D11"]
     out["mqpi"] = glob["D11"] / _shift(glob, id, "D11")

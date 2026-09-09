@@ -354,6 +354,8 @@ def prepare_dea_data(
             f"{missing}. Available columns: {list(dataframe.columns)}"
         )
 
+    if not dataframe.index.is_unique:
+        raise ValueError("DataFrame index must be unique; use reset_index(drop=True) before fitting.")
     eval_df = select_rows(dataframe, eval_query, "eval_query/evalindex")
     ref_df = select_rows(dataframe, ref_query, "ref_query/refindex")
     if eval_df.empty:
@@ -601,6 +603,8 @@ def solve_pyomo_model(model: Any, config: SolverConfig | None = None, strict: bo
                     # broken, so later (feasible) models still solve.
                     used_solver = name
                     _SOLVER_OK[name] = True
+                    if strict:
+                        raise RuntimeError("Solver did not reach an optimal solution: model is infeasible.") from exc
                     return SolverOutcome(
                         status="infeasible",
                         termination_condition="infeasible",

@@ -13,6 +13,7 @@ Reference-set semantics follow Chapter 3 §3.4 (panel-data reference sets):
 from __future__ import annotations
 
 from typing import Callable
+from numbers import Integral
 
 import numpy as np
 import pandas as pd
@@ -46,10 +47,9 @@ def normalize_tech(tech: str) -> str:
 
 def normalize_window(window: int) -> int:
     """Return ``window`` as a full width (int, >= 1)."""
-    width = int(window)
-    if width < 1:
-        raise ValueError(f"window must be a positive integer (full width); got {window!r}.")
-    return width
+    if isinstance(window, bool) or not isinstance(window, Integral) or window < 1:
+        raise ValueError(f"window must be a positive integer; got {window!r}.")
+    return int(window)
 
 
 def reference_years(years: list, i: int, tech: str, window: int) -> list:
@@ -58,7 +58,7 @@ def reference_years(years: list, i: int, tech: str, window: int) -> list:
     Positional, so it works for non-integer or non-contiguous year labels.
 
     - ``CONTEMPORARY`` -> ``[years[i]]``                       (§3.4-3)
-    - ``WINDOW``       -> centred window, ``half = window//2``  (§3.4-4)
+    - ``WINDOW``       -> centred window; even widths have one extra future period  (§3.4-4)
     - ``SEQUENTIAL``   -> ``years[: i+1]``                     (§3.4-5)
     - ``GLOBAL``       -> all years                            (§3.4-6)
     """
@@ -70,8 +70,10 @@ def reference_years(years: list, i: int, tech: str, window: int) -> list:
     if tech == SEQUENTIAL:
         return list(years[: i + 1])
     if tech == WINDOW:
-        half = normalize_window(window) // 2
-        return list(years[max(0, i - half): min(count - 1, i + half) + 1])
+        width = normalize_window(window)
+        left = (width - 1) // 2
+        right = width // 2  # Even widths allocate the extra period to the future.
+        return list(years[max(0, i - left): min(count, i + right + 1)])
     raise ValueError(f"Unsupported tech {tech!r}.")
 
 
@@ -88,6 +90,10 @@ def panel_years(data: pd.DataFrame, id: str, year: str) -> list:
     for column in (id, year):
         if column not in data.columns:
             raise ValueError(f"Column '{column}' not found in data.")
+    if data.empty or data[[id, year]].isna().any().any():
+        raise ValueError("Panel must be nonempty with nonmissing id and year.")
+    if not data.index.is_unique:
+        raise ValueError("DataFrame index must be unique; use reset_index(drop=True).")
     if data.duplicated(subset=[id, year]).any():
         raise ValueError(f"Duplicate ({id!r}, {year!r}) pairs in the panel.")
     return sorted(pd.Series(data[year]).drop_duplicates().tolist())
@@ -139,6 +145,8 @@ def build_distance_frame(
 
     out = pd.DataFrame(index=work.index)
     out[id_col] = work[id_col].values
+    out.attrs["periods"] = work[year_col].to_dict()
+    out.attrs["years"] = list(years)
     for component, series_list in parts.items():
         if series_list:
             out[component] = pd.concat(series_list).reindex(work.index)
@@ -149,7 +157,14 @@ def build_distance_frame(
 
 def _shift(frame: pd.DataFrame, id: str, column: str) -> pd.Series:
     """Previous-period value of ``column`` within each ``id`` group."""
-    return frame.groupby(id, sort=False)[column].shift(1)
+    shifted = frame.groupby(id, sort=False)[column].shift(1)
+    if "periods" in frame.attrs:
+        periods = pd.Series(frame.attrs["periods"]).reindex(frame.index)
+        years = frame.attrs["years"]
+        expected = periods.map(dict(zip(years[1:], years[:-1])))
+        previous = periods.groupby(frame[id], sort=False).shift(1)
+        shifted = shifted.where(previous.eq(expected) & expected.notna())
+    return shifted
 
 
 def _sqrt_clip(series: pd.Series) -> pd.Series:
@@ -190,17 +205,18 @@ def fgnz_decompose(vrs: pd.DataFrame, crs: pd.DataFrame, id: str) -> pd.DataFram
 
 
 def rd_decompose(vrs: pd.DataFrame, crs: pd.DataFrame, id: str) -> pd.DataFrame:
-    """Ray & Desli (1997) decomposition (eq-4-15..4-17).
+    """VRS technical change and the residual scale-change factor.
 
-    ``EFFCH`` equals FGNZ's ``PEFFCH``; ``TECHCH_RD = M_o / EFFCH`` (=
-    ``SEFFCH * TECHCH``), so the Malmquist index equals FGNZ's ``MQ`` exactly and
-    only the split differs.
+    Keep CRS Malmquist productivity, but measure frontier movement with VRS
+    cross-period distances. Undefined VRS distances propagate to the split.
     """
-    fgnz = fgnz_decompose(vrs, crs, id)
+    crs_split = two_factor(crs, id)
+    vrs_split = two_factor(vrs, id)
     out = pd.DataFrame(index=vrs.index)
-    out["EFFCH"] = fgnz["PEFFCH"]
-    out["TECHCH_RD"] = fgnz["MQ"] / fgnz["PEFFCH"]
-    out["MQ"] = fgnz["MQ"]
+    out["EFFCH"] = vrs_split["MEFFCH"]
+    out["TECHCH_RD"] = vrs_split["MTECHCH"]
+    out["SCALECH_RD"] = crs_split["MQ"] / (out["EFFCH"] * out["TECHCH_RD"])
+    out["MQ"] = crs_split["MQ"]
     return out
 
 
@@ -242,6 +258,7 @@ def pl_global_decompose(
     peffch = v11 / v11_prev
     seffch = (c11 / v11) / (c11_prev / v11_prev)
     bpg_frame = pd.DataFrame({id: cont_crs[id], "BPG": g11 / c11}, index=cont_crs.index)
+    bpg_frame.attrs = cont_crs.attrs.copy()
     techch = bpg_frame["BPG"] / _shift(bpg_frame, id, "BPG")
 
     out = pd.DataFrame(index=cont_vrs.index)

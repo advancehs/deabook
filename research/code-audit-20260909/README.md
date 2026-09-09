@@ -33,4 +33,4 @@ ML跨期参照可能不可行。日志保留失败DMU，指数缺失继续传播
 python research/code-audit-20260909/audit.py
 ```
 
-`results.json`记录逐块结果；`ch*_block*.log`保存输出；`extra11.py`至`extra13.py`为补测；`chapter11_examples.py`至`chapter13_examples.py`从正文提取，可按章独立运行。每章内部共享命名空间，章节之间隔离。本地修改备份与一次性编辑脚本不纳入仓库。
+`results.json`记录逐块结果；`ch*_block*.log`保存输出；`extra11.py`至`extra13.py`为补测；`chapter11_examples.py`至`chapter13_examples.py`从正文提取，可按章独立运行。每章内部共享命名空间，章节之间隔离。`originals/`保留本轮修改前的正文。`fix.py`是一次性历史编辑脚本，不应重复执行。

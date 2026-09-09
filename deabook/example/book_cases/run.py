@@ -2,9 +2,9 @@
 from pathlib import Path
 import sys,json
 ROOT=Path(__file__).resolve().parents[3]
-# Optional local runtime; normal pip installations do not need this path.
-sys.path.insert(0,str(Path.home()/'.cache/deabook-book-runtime'))
-sys.path.insert(0,str(ROOT))
+# Support direct execution from a source checkout without changing import priority.
+if __package__ in (None, ''):
+    sys.path.insert(0, str(ROOT))
 import numpy as np
 import pandas as pd
 import matplotlib
@@ -13,9 +13,21 @@ import matplotlib.pyplot as plt
 from matplotlib import font_manager
 from scipy import stats
 from deabook.example.book_cases.models import radial,bad_distance,sbm,material_balance
+from deabook.example.book_cases.loaders import read_raw
 BASE=Path(__file__).resolve().parent
-OUT=BASE/'results';OUT.mkdir(exist_ok=True)
-IMG=ROOT/'docs/deabook文档/images';IMG.mkdir(exist_ok=True)
+# Importing the module must not write to the source or installation directory.
+_SOURCE_CHECKOUT = (ROOT/'docs/deabook文档').is_dir()
+OUT = BASE/'results' if _SOURCE_CHECKOUT else Path.cwd()/'book-case-output/results'
+IMG = ROOT/'docs/deabook文档/images' if _SOURCE_CHECKOUT else Path.cwd()/'book-case-output/images'
+
+
+def configure_output(output_dir):
+    """Select writable output directories; directories are created only on save."""
+    global OUT, IMG
+    root = Path(output_dir).expanduser().resolve()
+    OUT, IMG = root/'results', root/'images'
+    return OUT, IMG
+
 for font in [Path('C:/Windows/Fonts/msyh.ttc'),Path('/mnt/c/Windows/Fonts/msyh.ttc')]:
     if font.exists():
         font_manager.fontManager.addfont(str(font));plt.rcParams['font.family']=font_manager.FontProperties(fname=str(font)).get_name();break
@@ -23,13 +35,13 @@ plt.rcParams.update({'font.size':9,'axes.spines.top':False,'axes.spines.right':F
 BLUE='#24557A';ORANGE='#B65A2B';GREEN='#41785B'
 
 def data(name):
-    if name=='plants':return pd.read_csv(BASE/'data/us_electric_plants.csv')
-    if name=='firms':return pd.read_csv(ROOT/'deabook/data/electricityFirms.csv')
+    if name=='plants':return read_raw('plants')
+    if name=='firms':return read_raw('firms')
     if name in ['china','oecd']:
-        d=pd.read_excel(ROOT/f'deabook/data/{name} data.xlsx').query('2016<=year<=2019').reset_index(drop=True)
+        d=read_raw(name).query('2016<=year<=2019').reset_index(drop=True)
         d['id']=d['省份' if name=='china' else '国家'];return d
     if name=='power':
-        d=pd.read_excel(ROOT/'deabook/data/power plant data.xlsx');d.columns=['province','K','L','F','Y','CO2','year','id'];return d.query('2015<=year<=2017').reset_index(drop=True)
+        d=read_raw('power');d.columns=['province','K','L','F','Y','CO2','year','id'];return d.query('2015<=year<=2017').reset_index(drop=True)
     raise ValueError(name)
 
 def arrays(d,x,y,b=None):
@@ -41,6 +53,8 @@ def arrays(d,x,y,b=None):
 def save(ch,df,summary,fig,caption):
     from deabook.example.book_cases.exhibits import expand_table
     summary = expand_table(ch, df, summary)
+    OUT.mkdir(parents=True, exist_ok=True)
+    IMG.mkdir(parents=True, exist_ok=True)
     axes = fig.axes
     fig.set_size_inches(7.2, 3.8 if len(axes)>1 else 4.2)
     for i, ax in enumerate(axes):
@@ -76,23 +90,58 @@ def ch3():
     ax[1].scatter(out.crs_input,out.vrs_input,color=BLUE,s=24);ax[1].plot([.75,1],[.75,1],'--',color='gray',lw=.8);ax[1].set(xlabel='CRS投入效率',ylabel='VRS投入效率');fig.tight_layout()
     save(3,out,summ(out,list(labels),labels),fig,'美国19家电厂的效率分布与规模报酬比较')
 
-def dynamic(d,xcols,ycols,mode='output',bcols=None,sequential=False):
-    X,Y,B,_=arrays(d,xcols,ycols,bcols);years=sorted(d.year.unique());rows=[]
-    def dist(i,ref):
-        if bcols:return bad_distance(X[ref],Y[ref],B[ref],X[i],Y[i],B[i],allow_infeasible=True)[0]
-        return radial(X[ref],Y[ref],X[i],Y[i],orient='input' if mode=='energy' else 'output',energy=0 if mode=='energy' else None,allow_infeasible=True)
-    for j in range(1,len(years)):
-        t0,t1=years[j-1:j+1];ref0=(d.year<=t0).to_numpy() if sequential else (d.year==t0).to_numpy();ref1=(d.year<=t1).to_numpy() if sequential else (d.year==t1).to_numpy()
-        prev={v:i for i,v in d.loc[d.year==t0,'id'].items()}
-        for i in d.index[d.year==t1]:
-            p=prev[d.loc[i,'id']];a=dist(p,ref0);bb=dist(i,ref0);c=dist(p,ref1);e=dist(i,ref1)
-            if min(a,bb,c,e)>0 and np.isfinite([a,bb,c,e]).all():
-                mq=np.sqrt(bb/a*e/c);ec=e/a;tc=mq/ec
-            else:mq=ec=tc=np.nan
-            rows.append({'id':d.loc[i,'id'],'year':t1,'D00':a,'D10':bb,'D01':c,'D11':e,'MQ':mq,'EC':ec,'TC':tc})
-    r=pd.DataFrame(rows);valid=r[['MQ','EC','TC']].dropna()
-    assert np.allclose(valid.MQ,valid.EC*valid.TC)
-    return r
+def dynamic(d, xcols, ycols, mode='output', bcols=None, sequential=False):
+    """Adjacent-period indices, invariant to DataFrame labels and row order.
+
+    Unmatched DMUs retain a row with missing distances and indices. Duplicate
+    DMU-years are rejected rather than choosing one silently.
+    """
+    d = d.reset_index(drop=True)
+    if d[['id', 'year']].isna().any().any():
+        raise ValueError('Panel id and year must not be missing')
+    if d.duplicated(['id', 'year']).any():
+        raise ValueError('Duplicate id-year observations')
+    if mode not in ('output', 'energy'):
+        raise ValueError("mode must be 'output' or 'energy'")
+    X, Y, B, _ = arrays(d, xcols, ycols, bcols)
+    years = sorted(d.year.unique())
+    refs = {t: (d.year <= t).to_numpy() if sequential else (d.year == t).to_numpy()
+            for t in years}
+    cache = {}
+
+    def dist(i, year):
+        key = (i, year)
+        if key not in cache:
+            ref = refs[year]
+            if bcols:
+                value = bad_distance(X[ref], Y[ref], B[ref], X[i], Y[i], B[i],
+                                     allow_infeasible=True)[0]
+            else:
+                value = radial(X[ref], Y[ref], X[i], Y[i],
+                               orient='input' if mode == 'energy' else 'output',
+                               energy=0 if mode == 'energy' else None,
+                               allow_infeasible=True)
+            cache[key] = value
+        return cache[key]
+
+    rows = []
+    for t0, t1 in zip(years[:-1], years[1:]):
+        prev = {v: i for i, v in d.loc[d.year == t0, 'id'].items()}
+        for i in d.index[d.year == t1]:
+            p = prev.get(d.loc[i, 'id'])
+            a, bb, c, e = ((dist(p, t0), dist(i, t0), dist(p, t1), dist(i, t1))
+                           if p is not None else (np.nan,) * 4)
+            if np.isfinite([a, bb, c, e]).all() and min(a, bb, c, e) > 0:
+                mq = np.sqrt(bb / a * e / c)
+                ec = e / a
+                tc = mq / ec
+            else:
+                mq = ec = tc = np.nan
+            rows.append({'id': d.loc[i, 'id'], 'year': t1,
+                         'D00': a, 'D10': bb, 'D01': c, 'D11': e,
+                         'MQ': mq, 'EC': ec, 'TC': tc})
+    return pd.DataFrame(rows, columns=['id', 'year', 'D00', 'D10', 'D01', 'D11',
+                                       'MQ', 'EC', 'TC'])
 
 def geo(s):
     a=np.asarray(s);a=a[np.isfinite(a)&(a>0)];return np.exp(np.log(a).mean()) if len(a) else np.nan
@@ -181,7 +230,6 @@ def ch13():
         trade=abs(cost_b/cost_y) if abs(cost_y)>1e-8 else np.nan
         # Finite differences check value-function shadow prices on the scaled LP.
         h=1e-5;b2=b.copy();b2[0]+=h
-        _,r2=bad_distance(X,Y,B,x,y,b2)
         # Direction depends on b as well, so hold the direction fixed in the audit.
         E=np.column_stack([B.T,b]);A=np.vstack([np.column_stack([X.T,np.zeros(3)]),np.column_stack([-Y.T,np.zeros(1)])])
         from deabook.example.book_cases.models import solve
@@ -205,5 +253,20 @@ def introductory(ch):
     fig.tight_layout();save(ch,out,tab,fig,cap)
 
 FUN={1:lambda:introductory(1),2:lambda:introductory(2),3:ch3,4:ch4,5:ch5,6:ch6,7:ch7,8:ch8,9:ch9,10:ch10,11:lambda:introductory(11),12:ch12,13:ch13}
-if __name__=='__main__':
-    for ch in map(int,sys.argv[1:] or range(1,14)):FUN[ch]()
+def main(argv=None):
+    import argparse
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('chapters', nargs='*', type=int)
+    parser.add_argument('--output-dir', type=Path, help='Write results/ and images/ here')
+    args = parser.parse_args(argv)
+    chapters = args.chapters or list(FUN)
+    if any(ch not in FUN for ch in chapters):
+        parser.error('chapter numbers must be between 1 and 13')
+    if args.output_dir is not None:
+        configure_output(args.output_dir)
+    for ch in chapters:
+        FUN[ch]()
+
+
+if __name__ == '__main__':
+    main()

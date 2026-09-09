@@ -267,7 +267,7 @@ class _DdfRho(_PerDmuEnvelopmentModel):
     """
 
     def _add_decision_variables(self, model, actual_index):
-        model.rho = Var(bounds=(0.0, None), doc=f"directional distance for DMU {actual_index}")
+        model.rho = Var(bounds=(None, None), doc=f"directional distance for DMU {actual_index}")
         model.lamda = Var(model.R, bounds=(0.0, None), doc="intensity variables")
 
     def _add_objective(self, model):
@@ -341,7 +341,7 @@ class _RadialModel(_PerDmuEnvelopmentModel):
     """
 
     def _add_decision_variables(self, model, actual_index):
-        bounds = (0.0, 1.0) if self.input_oriented else (1.0, None)
+        bounds = (0.0, None)  # Cross-reference distances may exceed in-sample bounds.
         model.rho = Var(bounds=bounds, doc=f"efficiency for DMU {actual_index}")
         model.lamda = Var(model.R, bounds=(0.0, None), doc="intensity variables")
 
@@ -665,6 +665,7 @@ def mq(data, id, year, sent="inputvar=outputvar", orient="oo",
             glob = build_distance_frame(solve, work, years, GLOBAL, w, year_col, id_col=id, email=email, solver=solver, bundle="E")
             cont = build_distance_frame(solve, work, years, CONTEMPORARY, w, year_col, id_col=id, email=email, solver=solver, bundle="E")
             bpg_frame = pd.DataFrame({id: work[id], "BPG": glob["D11"] / cont["D11"]}, index=work.index)
+            bpg_frame.attrs = cont.attrs.copy()
             result = pd.DataFrame(index=work.index)
             result["D11"] = glob["D11"]
             result["mqpi"] = glob["D11"] / _shift(glob, id, "D11")
@@ -691,6 +692,7 @@ def mqddf(data, id, year, sent="inputvar=outputvar", gy=[1], gx=[0],
                 glob = build_distance_frame(solve, work, years, GLOBAL, w, year_col, id_col=id, email=email, solver=solver, bundle="E")
                 cont = build_distance_frame(solve, work, years, CONTEMPORARY, w, year_col, id_col=id, email=email, solver=solver, bundle="E")
                 bpg_frame = pd.DataFrame({id: work[id], "BPG": glob["D11"] / cont["D11"]}, index=work.index)
+                bpg_frame.attrs = cont.attrs.copy()
                 result = pd.DataFrame(index=work.index)
                 result["D11"] = glob["D11"]
                 result["mqpi"] = glob["D11"] / _shift(glob, id, "D11")
@@ -726,6 +728,7 @@ def ep(data, id, year, sent="E K L=Y", rts=RTS_CRS,
             glob = build_distance_frame(solve, work, years, GLOBAL, w, year_col, id_col=id, email=email, solver=solver, bundle="E")
             cont = build_distance_frame(solve, work, years, CONTEMPORARY, w, year_col, id_col=id, email=email, solver=solver, bundle="E")
             bpg_frame = pd.DataFrame({id: work[id], "BPG": glob["D11"] / cont["D11"]}, index=work.index)
+            bpg_frame.attrs = cont.attrs.copy()
             result = pd.DataFrame(index=work.index)
             result["D11"] = glob["D11"]
             result["mqpi"] = glob["D11"] / _shift(glob, id, "D11")
@@ -754,6 +757,7 @@ def epddf(data, id, year, sent="K L E=Y", gy=[0], gx=[0, 0, 1],
             glob = build_distance_frame(solve, work, years, GLOBAL, w, year_col, id_col=id, email=email, solver=solver, bundle="E")
             cont = build_distance_frame(solve, work, years, CONTEMPORARY, w, year_col, id_col=id, email=email, solver=solver, bundle="E")
             bpg_frame = pd.DataFrame({id: work[id], "BPG": glob["D11"] / cont["D11"]}, index=work.index)
+            bpg_frame.attrs = cont.attrs.copy()
             result = pd.DataFrame(index=work.index)
             result["D11"] = glob["D11"]
             result["mqpi"] = glob["D11"] / _shift(glob, id, "D11")
@@ -798,8 +802,9 @@ def mqrd(data, id, year, sent="inputvar=outputvar", orient="oo",
          tech=CONTEMPORARY, window=3, verbose=False):
     """Ray & Desli (1997) decomposition, via ccr AND bcc.
 
-    ``EFFCH`` equals FGNZ's ``PEFFCH``; ``TECHCH_RD = MQ / EFFCH`` so the
-    Malmquist index equals :func:`mqfgnz`'s ``MQ`` (only the split differs).
+    ``EFFCH`` is VRS efficiency change and ``TECHCH_RD`` uses VRS cross-period
+    distances. ``SCALECH_RD`` completes the three-factor CRS Malmquist split:
+    ``MQ = EFFCH * TECHCH_RD * SCALECH_RD``.
     """
     build = _two_tech_build(sent, orient, id, rd_decompose)
     return _make_model(data, id, year, tech, window, build, "mqrd", orient, verbose)

@@ -23,3 +23,22 @@
 美国1978年电厂来自deaR Electric_plants，关联Färe、Grosskopf和Kokkelenberg（1989）及Simar和Wilson（1998）；芬兰企业与pyStoNED公开文件一致，关联Kuosmanen（2012）。中国/OECD数据沿用项目原始来源。美国2022年煤电厂候选因未核实期刊论文出处而撤出正式案例；相关文件仅作历史资料。外部数据不因放入本项目即改为MIT授权，需保留原包及官方来源声明。
 
 第8章没有排放变量，只计算普通SBM。第10章为加法成本、半正态非效率教学模型，有2个观测发生效率截断，诊断另存。第13章输出标准化边际替代率，未换算为元/吨碳价。
+
+## 数据存放位置
+
+当前正文案例统一从本目录的 `data/` 读取数据，无需访问旧 `deabook/data/` 目录。正式使用的文件及对应章节见 `data/README.md`。`deabook.data_path()` 同样指向此目录。旧数据归档于 `research/legacy-data-20260909/data/`。
+
+## 安装及输出目录
+
+需要 Python 3.9 或更高版本。在源码根目录执行 `python -m pip install -e ".[book,test]"` 可安装案例与测试依赖；正式计算不再自动加载用户目录中的依赖缓存。
+
+运行全部章节：`python -m deabook.example.book_cases.run`。指定章节和输出目录：
+
+```bash
+python -m deabook.example.book_cases.run 4 7 --output-dir ./book-output
+python -m pytest tests -q
+```
+
+源码环境默认沿用正文图表位置；安装包环境默认写入当前目录的 `book-case-output/results` 和 `book-case-output/images`。仅导入模块不会创建目录。Notebook可先 `from deabook.example.book_cases import run`，调用 `run.configure_output("./book-output")`，再执行 `run.FUN[章节号]()`，通过 `run.OUT` 读取结果。
+
+动态计算支持任意行索引，拒绝重复个体—年份；新进入且缺少前期观测的个体保留缺失指数。同一计算中的距离按观测和参照期缓存，不改变样本或模型定义。未采用的候选脚本和数据归档于 `research/legacy-case-candidates-20260910/`。

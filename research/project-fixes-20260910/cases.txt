@@ -1,0 +1,14 @@
+CH01 DONE rows=19 table=8
+CH02 DONE rows=19 table=8
+CH03 DONE rows=19 table=8
+CH04 DONE rows=60 table=6
+CH05 DONE rows=120 table=9
+CH06 DONE rows=33 table=8
+CH07 DONE rows=99 table=9
+CH08 DONE rows=19 table=8
+CH09 DONE rows=90 table=8
+CH10 DONE rows=89 table=8
+CH11 DONE rows=19 table=8
+CH12 DONE rows=30 table=8
+CH13 DONE rows=30 table=8
+All 13 full results match saved results within rtol=1e-5, atol=1e-7.

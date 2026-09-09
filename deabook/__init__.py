@@ -18,10 +18,10 @@ def data_path(name):
     ``pd.read_excel(deabook.data_path("oecd data.xlsx"))``.
     """
     try:
-        return str(files("deabook").joinpath("data", name))
+        return str(files("deabook").joinpath("example", "book_cases", "data", name))
     except (ModuleNotFoundError, FileNotFoundError, TypeError):
         # Fallback for running directly from the source tree
-        return str(Path(__file__).resolve().parent / "data" / name)
+        return str(Path(__file__).resolve().parent / "example" / "book_cases" / "data" / name)
 # from . import CNLS
 # from . import CNLSSDFDDF
 # from . import CNLSSDFDDFweak

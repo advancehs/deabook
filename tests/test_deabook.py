@@ -337,13 +337,19 @@ class TestCNLSWeak:
         df = _feasible_df()
         m = CNLSDDFweak(df, sent="K L E=Y:CO2", gy=[0], gx=[0, 0, 0], gb=[1],
                         fun=FUN_PROD, rts=RTS_VRS1)
-        # mosek may be installed but unlicensed; its failure path falls back to
-        # amplpy, which is also absent here. Treat any solver-availability failure
-        # as a skip (environment limitation, not a missing package dependency).
-        try:
-            m.optimize(solver="mosek" if _solver_available("mosek") else "knitro")
-        except (ModuleNotFoundError, ImportError) as exc:
-            pytest.skip(f"No usable CNLS solver in this environment: {exc}")
+        # Availability is not enough to guarantee a MOSEK license on CI.
+        selected = "mosek" if _solver_available("mosek") else "knitro"
+        if selected == "mosek":
+            import mosek
+            try:
+                with mosek.Env() as env:
+                    env.checkoutlicense(mosek.feature.pton)
+            except mosek.Error as exc:
+                pytest.skip(f"MOSEK license unavailable: {exc.errno}")
+        m.optimize(solver=selected)
+        assert m.optimization_status == 1
+        assert np.isfinite(m.get_residual()).all()
+
 
 
 # ===========================================================================

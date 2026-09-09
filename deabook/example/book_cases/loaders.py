@@ -1,16 +1,30 @@
 """One empirical dataset per chapter; legacy aliases do not change observations."""
-from pathlib import Path
 import pandas as pd
-ROOT=Path(__file__).resolve().parents[3]
-BASE=Path(__file__).resolve().parent
+from deabook import data_path
+
+DATA_FILES = {
+    'plants': 'us_electric_plants.csv',
+    'china': 'china data.xlsx',
+    'oecd': 'oecd data.xlsx',
+    'power': 'power plant data.xlsx',
+    'firms': 'electricityFirms.csv',
+}
+
+
+def read_raw(name):
+    """Read a fresh copy of one official dataset through the package locator."""
+    filename = DATA_FILES[name]
+    path = data_path(filename)
+    return pd.read_csv(path) if filename.endswith('.csv') else pd.read_excel(path)
+
 
 def plants():
-    d=pd.read_csv(BASE/'data/us_electric_plants.csv')
+    d=read_raw('plants')
     d['dmu']=range(1,len(d)+1)
     return d
 
 def china(scaled=False):
-    d=pd.read_excel(ROOT/'deabook/data/china data.xlsx').query('2016<=year<=2019').copy()
+    d=read_raw('china').query('2016<=year<=2019').copy()
     d['id']=pd.factorize(d['省份'],sort=True)[0]+1
     d['t']=d.year-2015
     if scaled:

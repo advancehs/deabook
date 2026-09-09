@@ -38,3 +38,7 @@ programming solver. Install one of the following:
 
 No solver is bundled with deabook — `.optimize()` will raise a clear error until
 one is available.
+
+## Book examples
+
+Python 3.9 or newer is required. For the complete book examples, install `pip install "deabook[book]"`; from a source checkout use `pip install -e ".[book,test]"`. Run `python -m deabook.example.book_cases.run --output-dir ./book-output` to choose a writable output location.

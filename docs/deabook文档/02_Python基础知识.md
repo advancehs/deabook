@@ -995,10 +995,18 @@ print(df_selected)
 pandas提供了一系列用于将表格型数据读取为DataFrame对象的函数。
 
 ```python
-# 读取数据（DEA常用格式）
-df_csv = pd.read_csv(data_path("dea_data.csv"))       # CSV文件
-df_excel = pd.read_excel(data_path("dea_data.xlsx"))  # Excel文件
-df_stata = pd.read_stata(data_path("dea_data.dta"))   # Stata文件
+# 使用本章同一电厂样本演示三种格式
+from deabook import data_path
+from pathlib import Path
+from tempfile import TemporaryDirectory
+
+df_csv = pd.read_csv(data_path("us_electric_plants.csv"))
+with TemporaryDirectory() as temp_dir:
+    temp_dir = Path(temp_dir)
+    df_csv.to_excel(temp_dir / "plants.xlsx", index=False)
+    df_csv.to_stata(temp_dir / "plants.dta", write_index=False, version=118)
+    df_excel = pd.read_excel(temp_dir / "plants.xlsx")
+    df_stata = pd.read_stata(temp_dir / "plants.dta")
 
 # 写入数据
 df.to_csv("dea_results.csv", index=False)       # 不保存行索引

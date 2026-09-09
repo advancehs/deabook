@@ -415,3 +415,7 @@ st = StoNED(model)
 u = st.get_technical_inefficiency(method="MOM")
 print(u)
 ```
+
+## 2026-09-10 接口说明
+
+径向跨期距离允许超出样本内效率范围。输入DataFrame索引必须唯一；面板指数仅匹配相邻观测期，个体缺期保留NaN。窗口宽度必须为正整数，偶数宽度多出的一期放在未来侧，样本边界处截断。`mqrd`返回EFFCH、TECHCH_RD、SCALECH_RD、MQ；总指数为三项乘积。

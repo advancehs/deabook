@@ -28,6 +28,7 @@ crossref:
 format:
   html:
     theme: cosmo
+    html-math-method: mathjax
     css: styles.css
     lang: zh
     number-sections: true
@@ -38,6 +39,8 @@ format:
   pdf:
     documentclass: book
     pdf-engine: lualatex
+    mainfont: Times New Roman
+    monofont: Consolas
     lang: zh
     number-sections: true
     keep-tex: true
@@ -48,6 +51,10 @@ format:
       text: |
         \usepackage{ctex}
         \usepackage{caption}
+        \usepackage{newunicodechar}
+        \newfontfamily\booksymbolfont{Segoe UI Symbol}
+        \newunicodechar{★}{{\booksymbolfont ★}}
+        \newunicodechar{☆}{{\booksymbolfont ☆}}
         \captionsetup{justification=centering}
         % 标准中文图书排版：段落首行缩进 2 字，段间不留空白（仅靠缩进区分）
         \AtBeginDocument{\setlength{\parindent}{2\ccwd}}

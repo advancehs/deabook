@@ -1169,7 +1169,9 @@ print(nddf_result)
 Malmquist生产率指数是衡量跨期生产率变化的重要工具。本节将产出导向与投入导向的Malmquist指数合并讲解，并给出Malmquist分解公式及其代码实现。
 
 ### Malmquist指数的基本原理 {#sec-12-6-1}
-产出方向的Malmquist生产率指数定义如下：$$
+产出方向的Malmquist生产率指数定义如下：
+
+$$
 M(\boldsymbol X_{t}, \boldsymbol Y_{t}, \boldsymbol X_{t+1}, \boldsymbol Y_{t+1})=
 \left[\frac{D^{t}(\boldsymbol X_{t+1}, \boldsymbol Y_{t+1})}{D^{t}(\boldsymbol X_{t}, \boldsymbol Y_{t})}
 \cdot \frac{D^{t+1}(\boldsymbol X_{t+1}, \boldsymbol Y_{t+1})}{D^{t+1}(\boldsymbol X_{t}, \boldsymbol Y_{t})}\right]^{1 / 2}
@@ -1207,12 +1209,20 @@ Malmquist指数可以分解为**效率变化**（efficiency change，追赶效�
 
 $$
 \begin{aligned}
-M &= \underbrace{\frac{D^{t+1}(\boldsymbol X_{t+1}, \boldsymbol Y_{t+1})}{D^{t}(\boldsymbol X_{t}, \boldsymbol Y_{t})}}_{\text{效率变化 (EC)}} \times \underbrace{\left[\frac{D^{t}(\boldsymbol X_{t+1}, \boldsymbol Y_{t+1})}{D^{t+1}(\boldsymbol X_{t+1}, \boldsymbol Y_{t+1})} \cdot \frac{D^{t}(\boldsymbol X_{t}, \boldsymbol Y_{t})}{D^{t+1}(\boldsymbol X_{t}, \boldsymbol Y_{t})}\right]^{1/2}}_{\text{技术变化 (TC)}} \\
-\\
-\text{效率变化 (EC)} &= \frac{\text{时期}t+1\text{的同期效率}}{\text{时期}t\text{的同期效率}} \\
-\text{技术变化 (TC)} &= \left[\frac{\text{时期}t+1\text{DMU到时期}t\text{前沿的距离}}{\text{时期}t+1\text{DMU到时期}t+1\text{前沿的距离}} \cdot \frac{\text{时期}t\text{DMU到时期}t\text{前沿的距离}}{\text{时期}t\text{DMU到时期}t+1\text{前沿的距离}}\right]^{1/2}
+M &= EC \times TC, \\
+EC &= \frac{D^{t+1}(\boldsymbol X_{t+1}, \boldsymbol Y_{t+1})}
+           {D^{t}(\boldsymbol X_{t}, \boldsymbol Y_{t})}, \\
+TC &= \left[
+\frac{D^{t}(\boldsymbol X_{t+1}, \boldsymbol Y_{t+1})}
+     {D^{t+1}(\boldsymbol X_{t+1}, \boldsymbol Y_{t+1})}
+\cdot
+\frac{D^{t}(\boldsymbol X_{t}, \boldsymbol Y_{t})}
+     {D^{t+1}(\boldsymbol X_{t}, \boldsymbol Y_{t})}
+\right]^{1/2}.
 \end{aligned}
 $$
+
+其中，$EC$为两个时期同期效率的比值，反映效率追赶；$TC$比较同一观测值在两个时期前沿下的距离，反映技术前沿的移动。
 
 **经济学解释**：
 - **效率变化 (EC) > 1**：DMU向生产前沿靠近（管理水平提升）

@@ -102,7 +102,7 @@ ENV/
 
 # mypy
 .mypy_cache/
-docs/deabook文档/*.pdf
+docs/deabook文档/
 docs/.omc/
 
 

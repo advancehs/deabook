@@ -155,43 +155,15 @@ def optimize_model2(model, actual_index, use_neos, cet, solver=OPT_DEFAULT):
 
 
 def optimize_model(model, email, cet, solver=OPT_DEFAULT):
-    optimization_status = 0
-    if not set_neos_email(email):
-        if solver is not OPT_DEFAULT:
-            # assert_solver_available_locally(solver)
-            pass
-        elif cet == CET_ADDI:
-            solver = "mosek"
-        elif cet == CET_MULT:
-            raise ValueError(
-                "Please specify the solver for optimizing multiplicative model locally.")
-        try:    
-            solver_instance = SolverFactory(solver)
-            print("Estimating the {} locally with {} solver.".format(
-            CET_Model_Categories[cet], solver), flush=True)
-            return solver_instance.solve(model, tee=True), 1
-        except:
-            from amplpy import modules
-            solver_instance = SolverFactory(solver+"nl", executable=modules.find(solver), 
-                                                solve_io="nl",
-                                                options = {'soltype':1}
-                                                )
-            print("Estimating the {} locally with {} solver.".format(
-            CET_Model_Categories[cet], solver), flush=True)
-            return solver_instance.solve(model, tee=True), 1
-    else:
-        if solver is OPT_DEFAULT and cet is CET_ADDI:
-            solvers = ["mosek"]
-        elif solver is OPT_DEFAULT and cet == CET_MULT:
-            solvers = ["knitro"]
-        else:
-            solvers = [solver]
-        for solver in solvers:
-            model, optimization_status = __try_remote_solver(
-                model, cet, solver)
-            if optimization_status == 1:
-                return model, optimization_status
-        raise Exception("Remote solvers are temporarily not available.")
+    """Solve CNLS with the same optimal-status contract as the DEA core."""
+    from ..core import SolverConfig, solve_pyomo_model
+    if solver is OPT_DEFAULT and cet == CET_MULT:
+        if email == OPT_LOCAL:
+            raise ValueError("Please specify the solver for optimizing multiplicative model locally.")
+        solver = "knitro"
+    outcome = solve_pyomo_model(model, SolverConfig(solver=solver, email=email), strict=True)
+    return outcome.raw, 1
+
 
 def __try_remote_solver(model, cet, solver):
     solver_instance = SolverManagerFactory('neos')
